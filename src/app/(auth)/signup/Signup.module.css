@@ -1,0 +1,385 @@
+.page {
+    min-height: 100vh;
+    background: #f4f9f5;
+    color: #193b2c;
+}
+
+.shell {
+    display: grid;
+    grid-template-columns: minmax(0, 47%) minmax(0, 53%);
+    min-height: 100vh;
+}
+
+/* LEFT BRAND PANEL */
+
+.brandPanel {
+    overflow: hidden;
+    background:
+        radial-gradient(circle at 80% 75%,
+            rgba(111, 200, 136, 0.28),
+            transparent 38%),
+        linear-gradient(145deg, #146a36, #0a4327);
+    color: #ffffff;
+}
+
+.brandContent {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding: 44px clamp(30px, 5vw, 82px);
+}
+
+.brandLink {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    width: fit-content;
+    color: inherit;
+    text-decoration: none;
+}
+
+.brandIcon,
+.mobileBrandIcon {
+    display: grid;
+    flex-shrink: 0;
+    place-items: center;
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.16);
+}
+
+.brandIcon svg,
+.mobileBrandIcon svg {
+    width: 26px;
+    height: 26px;
+}
+
+.brandName {
+    display: flex;
+    flex-direction: column;
+    font-size: 23px;
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -0.5px;
+}
+
+.brandName span {
+    margin-top: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+}
+
+.brandMessage {
+    max-width: 520px;
+    margin-top: clamp(70px, 12vh, 150px);
+}
+
+.eyebrow {
+    color: #b9ebc9;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 2px;
+}
+
+.brandMessage h1 {
+    margin: 20px 0;
+    font-size: clamp(35px, 4.2vw, 62px);
+    line-height: 1.12;
+    letter-spacing: -1.8px;
+}
+
+.brandMessage h1 span {
+    color: #b4ebc3;
+}
+
+.brandMessage p {
+    max-width: 420px;
+    margin: 0;
+    color: #d7eddd;
+    font-size: 15px;
+    line-height: 1.85;
+}
+
+.brandIllustration {
+    display: grid;
+    place-items: center;
+    width: 230px;
+    height: 230px;
+    margin: 42px auto 30px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.illustrationInner {
+    display: grid;
+    place-items: center;
+    width: 125px;
+    height: 125px;
+    border-radius: 50%;
+    background: #ffffff;
+    color: #16803c;
+}
+
+.illustrationInner svg {
+    width: 70px;
+    height: 70px;
+}
+
+.brandFooter {
+    margin: auto 0 0;
+    padding-top: 30px;
+    color: #b9d5c2;
+    font-size: 12px;
+}
+
+/* RIGHT FORM PANEL */
+
+.formPanel {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    padding: 55px 30px;
+    background: #ffffff;
+}
+
+.formContainer {
+    width: min(100%, 455px);
+}
+
+.backLink {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    margin-bottom: 36px;
+    color: #65796e;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.backLink:hover {
+    color: #16803c;
+}
+
+.mobileBrand {
+    display: none;
+}
+
+.heading {
+    margin-bottom: 28px;
+}
+
+.welcomeBadge {
+    display: inline-block;
+    padding: 8px 12px;
+    border-radius: 100px;
+    background: #eaf7ee;
+    color: #16803c;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.2px;
+}
+
+.heading h2 {
+    margin: 18px 0 12px;
+    font-size: clamp(28px, 3vw, 36px);
+    line-height: 1.2;
+    letter-spacing: -1px;
+}
+
+.heading p {
+    margin: 0;
+    color: #65796e;
+    font-size: 14px;
+    line-height: 1.8;
+}
+
+/* SIGN UP FORM */
+
+.signupForm {
+    display: grid;
+    gap: 19px;
+}
+
+.nameGrid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.field {
+    display: grid;
+    gap: 9px;
+    min-width: 0;
+}
+
+.field label {
+    color: #244634;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.field input {
+    width: 100%;
+    min-width: 0;
+    height: 51px;
+    padding: 0 15px;
+    border: 1px solid #dce8df;
+    border-radius: 11px;
+    outline: none;
+    background: #ffffff;
+    color: #193b2c;
+    font: inherit;
+    font-size: 14px;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.field input::placeholder {
+    color: #9aaba0;
+}
+
+.field input:focus {
+    border-color: #16803c;
+    box-shadow: 0 0 0 3px rgba(22, 128, 60, 0.1);
+}
+
+.formNote {
+    margin: 0;
+    color: #718477;
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+.submitButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    min-height: 51px;
+    padding: 13px 20px;
+    border: 0;
+    border-radius: 11px;
+    background: #16803c;
+    color: #ffffff;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.submitButton:disabled {
+    background: #b8c7bd;
+    cursor: not-allowed;
+}
+
+.disabledNote {
+    margin: -8px 0 0;
+    color: #819287;
+    font-size: 12px;
+    text-align: center;
+}
+
+.loginSection {
+    margin-top: 28px;
+    padding-top: 25px;
+    border-top: 1px solid #e7eee9;
+    text-align: center;
+}
+
+.loginSection p {
+    margin: 0;
+    color: #65796e;
+    font-size: 13px;
+}
+
+.loginSection a {
+    color: #16803c;
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.loginSection a:hover {
+    text-decoration: underline;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 900px) {
+    .shell {
+        grid-template-columns: minmax(0, 40%) minmax(0, 60%);
+    }
+
+    .brandContent {
+        padding: 35px 28px;
+    }
+
+    .brandMessage h1 {
+        font-size: 36px;
+    }
+
+    .brandIllustration {
+        width: 190px;
+        height: 190px;
+    }
+}
+
+@media (max-width: 720px) {
+    .shell {
+        display: block;
+    }
+
+    .brandPanel {
+        display: none;
+    }
+
+    .formPanel {
+        min-height: 100vh;
+        padding: 26px 20px 48px;
+    }
+
+    .formContainer {
+        width: min(100%, 455px);
+    }
+
+    .mobileBrand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 28px;
+        font-size: 16px;
+        font-weight: 800;
+    }
+
+    .mobileBrandIcon {
+        width: 38px;
+        height: 38px;
+        background: #eaf7ee;
+        color: #16803c;
+    }
+
+    .heading h2 {
+        font-size: 30px;
+    }
+}
+
+@media (max-width: 420px) {
+    .formPanel {
+        padding-right: 16px;
+        padding-left: 16px;
+    }
+
+    .nameGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .heading h2 {
+        font-size: 28px;
+    }
+}

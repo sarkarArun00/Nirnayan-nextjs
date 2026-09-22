@@ -1,0 +1,181 @@
+/* ========================================
+   DIAGNOSTIC TEST CARD
+======================================== */
+
+.card {
+    display: flex;
+    flex-direction: column;
+
+    min-width: 0;
+    height: 100%;
+    padding: 26px;
+
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: 18px;
+
+    transition:
+        border-color 0.25s ease,
+        box-shadow 0.25s ease,
+        transform 0.25s ease;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    border-color: #b8e1c4;
+
+    box-shadow:
+        0 12px 35px rgba(16, 99, 46, 0.07);
+}
+
+/* CARD HEADER */
+
+.cardHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+
+    margin-bottom: 22px;
+}
+
+.iconBox {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 56px;
+    height: 56px;
+    flex-shrink: 0;
+
+    background: var(--primary-light);
+    color: var(--primary);
+    border-radius: 14px;
+}
+
+.iconBox svg {
+    width: 29px;
+    height: 29px;
+}
+
+.category {
+    padding: 7px 12px;
+
+    background: #f0f9f2;
+    color: var(--primary);
+
+    border-radius: 30px;
+
+    font-size: 11px;
+    font-weight: 700;
+    text-align: center;
+}
+
+/* CARD CONTENT */
+
+.testName {
+    margin: 0 0 12px;
+
+    color: var(--text-primary);
+
+    font-size: 19px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.description {
+    flex: 1;
+
+    margin: 0 0 24px;
+
+    color: var(--text-secondary);
+
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+/* CARD FOOTER */
+
+.cardFooter {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+
+    padding-top: 20px;
+    border-top: 1px solid var(--border-color);
+}
+
+.priceInfo {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.priceLabel {
+    color: var(--text-muted);
+    font-size: 11px;
+}
+
+.priceValue {
+    color: var(--text-primary);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.demoBadge {
+    display: inline-flex;
+    align-items: center;
+
+    padding: 7px 10px;
+
+    background: var(--primary-light);
+    color: var(--primary);
+
+    border-radius: 8px;
+
+    font-size: 11px;
+    font-weight: 700;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 600px) {
+    .card {
+        padding: 22px;
+    }
+
+    .cardHeader {
+        margin-bottom: 18px;
+    }
+
+    .testName {
+        font-size: 18px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .card {
+        transition: none;
+    }
+
+    .card:hover {
+        transform: none;
+    }
+}
+
+.testNameLink {
+    color: inherit;
+    text-decoration: none;
+}
+
+.testNameLink:hover {
+    color: #16803c;
+}
+
+.testNameLink:focus-visible {
+    outline: 2px solid #16803c;
+    outline-offset: 4px;
+    border-radius: 4px;
+}

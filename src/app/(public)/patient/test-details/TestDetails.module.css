@@ -1,0 +1,408 @@
+.page {
+    background: #f7faf8;
+    color: #193b2c;
+    min-height: 100vh;
+}
+
+.container {
+    width: min(1180px, calc(100% - 40px));
+    margin: 0 auto;
+}
+
+/* BREADCRUMB */
+
+.breadcrumbSection {
+    background: #ffffff;
+    border-bottom: 1px solid #e8eee9;
+}
+
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    min-height: 54px;
+    font-size: 13px;
+    color: #65796e;
+}
+
+.breadcrumb a {
+    color: #65796e;
+    text-decoration: none;
+}
+
+.breadcrumb a:hover {
+    color: #16803c;
+}
+
+.breadcrumb [aria-current="page"] {
+    color: #193b2c;
+    font-weight: 600;
+}
+
+/* HERO */
+
+.hero {
+    padding: 46px 0 52px;
+    background:
+        radial-gradient(circle at 95% 5%,
+            rgba(170, 225, 187, 0.35),
+            transparent 35%),
+        linear-gradient(120deg, #effaf2, #ffffff);
+}
+
+.heroContent {
+    display: flex;
+    align-items: flex-start;
+    gap: 22px;
+    max-width: 800px;
+}
+
+.heroIcon {
+    display: grid;
+    place-items: center;
+    flex: 0 0 70px;
+    width: 70px;
+    height: 70px;
+    border-radius: 20px;
+    background: #dcf3e3;
+    color: #16803c;
+}
+
+.heroIcon svg {
+    width: 36px;
+    height: 36px;
+}
+
+.eyebrow,
+.sectionTag,
+.bookingLabel {
+    display: inline-block;
+    color: #16803c;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 1.5px;
+}
+
+.pageTitle {
+    margin: 10px 0 12px;
+    font-size: clamp(29px, 4vw, 43px);
+    line-height: 1.15;
+    letter-spacing: -1.1px;
+}
+
+.heroDescription {
+    margin: 0;
+    max-width: 620px;
+    color: #61766a;
+    font-size: 15px;
+    line-height: 1.8;
+}
+
+.previewBadge {
+    display: inline-block;
+    margin-top: 18px;
+    padding: 7px 12px;
+    border-radius: 100px;
+    background: #e7f5eb;
+    color: #176b38;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* MAIN LAYOUT */
+
+.main {
+    padding: 40px 0 80px;
+}
+
+.layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    align-items: start;
+    gap: 26px;
+}
+
+.content {
+    display: grid;
+    gap: 22px;
+    min-width: 0;
+}
+
+.card,
+.bookingCard,
+.helpCard {
+    background: #ffffff;
+    border: 1px solid #e6eee8;
+    border-radius: 18px;
+    box-shadow: 0 8px 30px rgba(20, 70, 40, 0.035);
+}
+
+.card {
+    padding: 30px;
+}
+
+.sectionHeading {
+    margin-bottom: 20px;
+}
+
+.sectionHeading h2 {
+    margin: 9px 0 0;
+    color: #193b2c;
+    font-size: 23px;
+    letter-spacing: -0.5px;
+}
+
+.bodyText {
+    margin: 0;
+    color: #65796e;
+    font-size: 14px;
+    line-height: 1.85;
+}
+
+/* OVERVIEW INFORMATION */
+
+.infoGrid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    margin-top: 26px;
+}
+
+.infoItem {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    min-width: 0;
+    padding: 18px;
+    background: #f6faf7;
+    border: 1px solid #edf3ee;
+    border-radius: 12px;
+}
+
+.infoLabel {
+    color: #718477;
+    font-size: 12px;
+}
+
+.infoItem strong {
+    color: #244634;
+    font-size: 14px;
+    overflow-wrap: anywhere;
+}
+
+/* DETAIL ROWS */
+
+.detailRow {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.detailIcon {
+    display: grid;
+    place-items: center;
+    flex: 0 0 44px;
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: #edf8f0;
+    color: #16803c;
+}
+
+.detailIcon svg {
+    width: 22px;
+    height: 22px;
+}
+
+.detailRow h3 {
+    margin: 2px 0 8px;
+    font-size: 16px;
+}
+
+.detailRow p {
+    margin: 0;
+    color: #65796e;
+    font-size: 14px;
+    line-height: 1.8;
+}
+
+/* SIDEBAR */
+
+.sidebar {
+    display: grid;
+    gap: 20px;
+}
+
+.bookingCard {
+    padding: 28px;
+}
+
+.bookingCard h2 {
+    margin: 10px 0 12px;
+    font-size: 24px;
+    line-height: 1.3;
+    letter-spacing: -0.5px;
+}
+
+.bookingDescription {
+    margin: 0;
+    color: #65796e;
+    font-size: 14px;
+    line-height: 1.75;
+}
+
+.priceBox {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin: 24px 0;
+    padding: 18px 0;
+    border-top: 1px solid #e8eee9;
+    border-bottom: 1px solid #e8eee9;
+}
+
+.priceBox span {
+    color: #65796e;
+    font-size: 13px;
+}
+
+.priceBox strong {
+    font-size: 14px;
+    text-align: right;
+}
+
+.bookButton {
+    width: 100%;
+    min-height: 48px;
+    padding: 12px 18px;
+    border: 0;
+    border-radius: 10px;
+    background: #16803c;
+    color: #ffffff;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.bookButton:disabled {
+    background: #b8c7bd;
+    cursor: not-allowed;
+}
+
+.bookingNote {
+    margin: 12px 0 0;
+    color: #718477;
+    font-size: 12px;
+    line-height: 1.6;
+    text-align: center;
+}
+
+.helpCard {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 22px;
+}
+
+.helpIcon {
+    display: grid;
+    place-items: center;
+    flex: 0 0 40px;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: #edf8f0;
+    color: #16803c;
+}
+
+.helpIcon svg {
+    width: 21px;
+    height: 21px;
+}
+
+.helpCard h3 {
+    margin: 0 0 9px;
+    font-size: 15px;
+}
+
+.helpCard p {
+    margin: 0 0 14px;
+    color: #65796e;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.browseLink {
+    color: #16803c;
+    font-size: 13px;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.browseLink:hover {
+    text-decoration: underline;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 960px) {
+    .layout {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .sidebar {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        align-items: start;
+    }
+}
+
+@media (max-width: 640px) {
+    .container {
+        width: min(100% - 28px, 1180px);
+    }
+
+    .hero {
+        padding: 34px 0 38px;
+    }
+
+    .heroContent {
+        flex-direction: column;
+        gap: 16px;
+    }
+
+    .heroIcon {
+        flex-basis: auto;
+        width: 58px;
+        height: 58px;
+        border-radius: 16px;
+    }
+
+    .heroIcon svg {
+        width: 29px;
+        height: 29px;
+    }
+
+    .main {
+        padding: 24px 0 50px;
+    }
+
+    .card,
+    .bookingCard {
+        padding: 22px 18px;
+    }
+
+    .sectionHeading h2 {
+        font-size: 21px;
+    }
+
+    .infoGrid,
+    .sidebar {
+        grid-template-columns: 1fr;
+    }
+
+    .infoItem {
+        padding: 15px;
+    }
+}

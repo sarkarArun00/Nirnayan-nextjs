@@ -1,0 +1,15 @@
+# Local environment configuration
+.env
+.env.*
+!.env.example
+
+# Next.js generated files
+.next/
+out/
+
+# Dependencies
+node_modules/
+
+# TypeScript generated files
+*.tsbuildinfo
+next-env.d.ts

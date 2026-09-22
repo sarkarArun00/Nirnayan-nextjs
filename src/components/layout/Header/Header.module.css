@@ -1,0 +1,373 @@
+/* ========================================
+   HEADER
+======================================== */
+
+.header {
+    position: relative;
+    z-index: 100;
+    width: 100%;
+    background: #ffffff;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.container {
+    position: relative;
+    width: min(100% - 40px, var(--container-width));
+    min-height: 88px;
+    margin-inline: auto;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 28px;
+}
+
+/* ========================================
+   BRAND
+======================================== */
+
+.brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+
+    text-decoration: none;
+    flex-shrink: 0;
+}
+
+.logoIcon {
+    width: 44px;
+    height: 44px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: var(--primary);
+    color: #ffffff;
+
+    border-radius: 12px;
+
+    font-size: 25px;
+    font-weight: 800;
+}
+
+.brandText {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+
+.brandName {
+    color: var(--primary);
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.7px;
+}
+
+.brandSubtitle {
+    margin-top: 3px;
+
+    color: var(--text-secondary);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+/* ========================================
+   DESKTOP NAVIGATION
+======================================== */
+
+.desktopNav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(12px, 1.8vw, 30px);
+
+    flex: 1;
+}
+
+.navLink {
+    position: relative;
+
+    padding: 10px 0;
+
+    color: var(--text-primary);
+    font-size: 14px;
+    font-weight: 600;
+
+    text-decoration: none;
+    white-space: nowrap;
+
+    transition: color 0.2s ease;
+}
+
+.navLink:hover {
+    color: var(--primary);
+}
+
+.navLink::after {
+    content: "";
+
+    position: absolute;
+    bottom: 3px;
+    left: 0;
+
+    width: 0;
+    height: 2px;
+
+    background: var(--primary);
+
+    transition: width 0.2s ease;
+}
+
+.navLink:hover::after {
+    width: 100%;
+}
+
+/* ========================================
+   HEADER ACTIONS
+======================================== */
+
+.headerActions {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.bookButton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 44px;
+    padding: 0 22px;
+
+    background: var(--primary);
+    color: #ffffff;
+
+    border-radius: var(--radius-md);
+
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+
+    white-space: nowrap;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+.bookButton:hover {
+    background: var(--primary-dark);
+    color: #ffffff;
+    transform: translateY(-1px);
+}
+
+/* ========================================
+   MOBILE NAVIGATION
+======================================== */
+
+.mobileMenu {
+    display: none;
+}
+
+.menuToggle {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+
+    background: #ffffff;
+    cursor: pointer;
+
+    list-style: none;
+}
+
+.menuToggle::-webkit-details-marker {
+    display: none;
+}
+
+.menuIcon {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.menuIcon span {
+    width: 20px;
+    height: 2px;
+
+    background: var(--primary);
+
+    border-radius: 2px;
+}
+
+.mobileNav {
+    position: absolute;
+    top: calc(100% + 1px);
+    left: 0;
+    right: 0;
+
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    padding: 16px;
+
+    background: #ffffff;
+    border: 1px solid var(--border-color);
+    border-radius: 0 0 16px 16px;
+
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08);
+}
+
+.mobileNavLink {
+    display: block;
+    padding: 12px 14px;
+
+    color: var(--text-primary);
+
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+
+    border-radius: 8px;
+}
+
+.mobileNavLink:hover {
+    background: var(--primary-light);
+    color: var(--primary);
+}
+
+.mobileBookButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 44px;
+    margin-top: 8px;
+
+    background: var(--primary);
+    color: #ffffff;
+
+    border-radius: 10px;
+
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.mobileBookButton:hover {
+    background: var(--primary-dark);
+    color: #ffffff;
+}
+
+/* ========================================
+   ACCESSIBILITY
+======================================== */
+
+.brand:focus-visible,
+.navLink:focus-visible,
+.bookButton:focus-visible,
+.menuToggle:focus-visible,
+.mobileNavLink:focus-visible,
+.mobileBookButton:focus-visible {
+    outline: 3px solid var(--primary);
+    outline-offset: 4px;
+}
+
+/* ========================================
+   TABLET AND MOBILE
+======================================== */
+
+@media (max-width: 1100px) {
+    .desktopNav {
+        display: none;
+    }
+
+    .mobileMenu {
+        display: block;
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        width: calc(100% - 30px);
+        min-height: 72px;
+        gap: 12px;
+    }
+
+    .logoIcon {
+        width: 40px;
+        height: 40px;
+        font-size: 23px;
+    }
+
+    .brandName {
+        font-size: 21px;
+    }
+
+    .brandSubtitle {
+        font-size: 9px;
+        letter-spacing: 1.5px;
+    }
+
+    .headerActions {
+        display: none;
+    }
+}
+
+/* ========================================
+   LOCATION SELECTOR RESPONSIVENESS
+======================================== */
+
+@media (max-width: 600px) {
+    .container {
+        flex-wrap: wrap;
+        column-gap: 12px;
+        row-gap: 0;
+
+        padding-top: 12px;
+        padding-bottom: 12px;
+    }
+
+    .brand {
+        order: 1;
+    }
+
+    .mobileMenu {
+        order: 2;
+        margin-left: auto;
+    }
+}
+
+/* ========================================
+   ACTIVE NAVIGATION LINKS
+======================================== */
+
+/* Desktop: green text and persistent underline */
+
+.navLinkActive,
+.navLinkActive:hover {
+    color: var(--primary);
+}
+
+.navLinkActive::after {
+    width: 100%;
+}
+
+/* Mobile: highlighted background and text */
+
+.mobileNavLinkActive,
+.mobileNavLinkActive:hover {
+    background: var(--primary-light);
+    color: var(--primary);
+    font-weight: 700;
+}

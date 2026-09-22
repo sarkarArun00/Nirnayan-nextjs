@@ -1,0 +1,423 @@
+/* ========================================
+   TEST CATALOGUE
+======================================== */
+
+.catalogue {
+    width: 100%;
+}
+
+/* ========================================
+   FILTER PANEL
+======================================== */
+
+.filterPanel {
+    padding: 28px;
+
+    background: #f7faf8;
+
+    border: 1px solid var(--border-color);
+    border-radius: 18px;
+}
+
+.filterHeader {
+    margin-bottom: 25px;
+}
+
+.filterTitle {
+    margin: 0 0 8px;
+
+    color: var(--text-primary);
+
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.filterDescription {
+    margin: 0;
+
+    color: var(--text-secondary);
+
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+/* ========================================
+   FILTER GRID
+======================================== */
+
+.filterGrid {
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1.6fr) minmax(0, 1fr);
+
+    gap: 20px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+
+    min-width: 0;
+}
+
+.label {
+    color: var(--text-primary);
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+/* ========================================
+   SEARCH FIELD
+======================================== */
+
+.searchWrapper {
+    position: relative;
+    width: 100%;
+}
+
+.searchIcon {
+    position: absolute;
+
+    top: 50%;
+    left: 16px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 20px;
+    height: 20px;
+
+    color: var(--text-muted);
+
+    pointer-events: none;
+
+    transform: translateY(-50%);
+}
+
+.searchIcon svg {
+    width: 20px;
+    height: 20px;
+}
+
+.searchInput {
+    width: 100%;
+    min-height: 50px;
+
+    padding: 12px 16px 12px 46px;
+
+    background: #ffffff;
+
+    border: 1px solid #dce7df;
+    border-radius: 10px;
+
+    color: var(--text-primary);
+
+    font-family: inherit;
+    font-size: 14px;
+
+    outline: none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.searchInput::placeholder {
+    color: var(--text-muted);
+}
+
+.searchInput:focus {
+    border-color: var(--primary);
+
+    box-shadow:
+        0 0 0 3px rgba(22, 128, 60, 0.1);
+}
+
+/* ========================================
+   CATEGORY DROPDOWN
+======================================== */
+
+.categorySelect {
+    width: 100%;
+    min-height: 50px;
+
+    padding: 12px 38px 12px 15px;
+
+    background: #ffffff;
+
+    border: 1px solid #dce7df;
+    border-radius: 10px;
+
+    color: var(--text-primary);
+
+    font-family: inherit;
+    font-size: 14px;
+
+    cursor: pointer;
+    outline: none;
+
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.categorySelect:focus {
+    border-color: var(--primary);
+
+    box-shadow:
+        0 0 0 3px rgba(22, 128, 60, 0.1);
+}
+
+/* ========================================
+   RESULTS HEADER
+======================================== */
+
+.resultsHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    flex-wrap: wrap;
+
+    gap: 15px;
+
+    margin: 30px 0 18px;
+}
+
+.resultsCount {
+    margin: 0;
+
+    color: var(--text-secondary);
+
+    font-size: 14px;
+}
+
+.resultsCount strong {
+    color: var(--primary);
+    font-size: 17px;
+}
+
+.clearButton {
+    padding: 8px 15px;
+
+    background: #ffffff;
+
+    border: 1px solid var(--primary);
+    border-radius: 8px;
+
+    color: var(--primary);
+
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition: background 0.2s ease;
+}
+
+.clearButton:hover {
+    background: var(--primary-light);
+}
+
+.clearButton:focus-visible {
+    outline: 3px solid var(--primary);
+    outline-offset: 3px;
+}
+
+/* ========================================
+   PREVIEW NOTICE
+======================================== */
+
+.previewNotice {
+    margin: 0 0 24px;
+
+    padding: 12px 16px;
+
+    background: #f0f9f2;
+
+    border: 1px solid #d7ebdd;
+    border-radius: 10px;
+
+    color: var(--primary-dark);
+
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+/* ========================================
+   TEST GRID
+======================================== */
+
+.testGrid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 22px;
+}
+
+/* ========================================
+   EMPTY STATE
+======================================== */
+
+.emptyState {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 310px;
+
+    padding: 35px 20px;
+
+    background: #ffffff;
+
+    border: 1px dashed var(--border-color);
+    border-radius: 16px;
+
+    text-align: center;
+}
+
+.emptyIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 70px;
+    height: 70px;
+
+    margin-bottom: 20px;
+
+    background: var(--primary-light);
+    color: var(--primary);
+
+    border-radius: 18px;
+}
+
+.emptyIcon svg {
+    width: 34px;
+    height: 34px;
+}
+
+.emptyTitle {
+    margin: 0 0 10px;
+
+    color: var(--text-primary);
+
+    font-size: 20px;
+    font-weight: 700;
+}
+
+.emptyDescription {
+    max-width: 370px;
+
+    margin: 0 0 22px;
+
+    color: var(--text-secondary);
+
+    font-size: 14px;
+    line-height: 1.7;
+}
+
+.resetButton {
+    min-height: 44px;
+
+    padding: 0 20px;
+
+    background: var(--primary);
+    color: #ffffff;
+
+    border: 1px solid var(--primary);
+    border-radius: 9px;
+
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+.resetButton:hover {
+    background: var(--primary-dark);
+}
+
+.resetButton:focus-visible {
+    outline: 3px solid var(--primary-dark);
+    outline-offset: 3px;
+}
+
+/* ========================================
+   TABLET
+======================================== */
+
+@media (max-width: 1024px) {
+    .testGrid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        gap: 18px;
+    }
+}
+
+/* ========================================
+   MOBILE
+======================================== */
+
+@media (max-width: 600px) {
+    .filterPanel {
+        padding: 20px;
+        border-radius: 14px;
+    }
+
+    .filterTitle {
+        font-size: 18px;
+    }
+
+    .filterDescription {
+        font-size: 13px;
+    }
+
+    .filterGrid {
+        grid-template-columns: 1fr;
+        gap: 18px;
+    }
+
+    .searchInput,
+    .categorySelect {
+        min-height: 48px;
+    }
+
+    .resultsHeader {
+        margin-top: 24px;
+    }
+
+    .testGrid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .emptyState {
+        min-height: 280px;
+        padding: 30px 18px;
+    }
+
+    .emptyTitle {
+        font-size: 18px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .searchInput,
+    .categorySelect,
+    .clearButton {
+        transition: none;
+    }
+}

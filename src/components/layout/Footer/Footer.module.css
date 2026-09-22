@@ -1,0 +1,270 @@
+/* ========================================
+   FOOTER
+======================================== */
+
+.footer {
+    width: 100%;
+    background: #f4faf5;
+    border-top: 1px solid var(--border-color);
+    color: var(--text-primary);
+}
+
+.container {
+    width: min(100% - 40px, var(--container-width));
+    margin-inline: auto;
+}
+
+/* ========================================
+   FOOTER GRID
+======================================== */
+
+.footerGrid {
+    display: grid;
+    grid-template-columns: 1.7fr 1fr 1fr 1fr;
+    gap: 48px;
+    padding: 65px 0 55px;
+}
+
+/* ========================================
+   BRAND SECTION
+======================================== */
+
+.brandColumn {
+    max-width: 350px;
+}
+
+.brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+}
+
+.logoIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 44px;
+    height: 44px;
+
+    background: var(--primary);
+    color: #ffffff;
+
+    border-radius: 12px;
+
+    font-size: 25px;
+    font-weight: 800;
+}
+
+.brandText {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
+
+.brandName {
+    color: var(--primary);
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.7px;
+}
+
+.brandSubtitle {
+    margin-top: 3px;
+
+    color: var(--text-secondary);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+.description {
+    margin: 22px 0 15px;
+
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.8;
+}
+
+.brandMessage {
+    margin: 0;
+
+    color: var(--primary);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* ========================================
+   FOOTER LINK COLUMNS
+======================================== */
+
+.linkColumn {
+    min-width: 0;
+}
+
+.columnTitle {
+    position: relative;
+
+    margin: 0 0 26px;
+    padding-bottom: 13px;
+
+    color: var(--text-primary);
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.4;
+}
+
+.columnTitle::after {
+    content: "";
+
+    position: absolute;
+    bottom: 0;
+    left: 0;
+
+    width: 36px;
+    height: 3px;
+
+    background: var(--primary);
+    border-radius: 3px;
+}
+
+.linkList {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+
+    margin: 0;
+    padding: 0;
+
+    list-style: none;
+}
+
+.footerLink {
+    display: inline-block;
+
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.5;
+    text-decoration: none;
+
+    transition:
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.footerLink:hover {
+    color: var(--primary);
+    transform: translateX(3px);
+}
+
+/* ========================================
+   BOTTOM FOOTER
+======================================== */
+
+.footerBottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+
+    padding: 22px 0;
+
+    border-top: 1px solid #dceadd;
+}
+
+.copyright,
+.bottomMessage {
+    margin: 0;
+
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+/* ========================================
+   ACCESSIBILITY
+======================================== */
+
+.brand:focus-visible,
+.footerLink:focus-visible {
+    outline: 3px solid var(--primary);
+    outline-offset: 4px;
+    border-radius: 4px;
+}
+
+/* ========================================
+   TABLET
+======================================== */
+
+@media (max-width: 1024px) {
+    .footerGrid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 42px 35px;
+        padding: 55px 0 45px;
+    }
+
+    .brandColumn {
+        max-width: 100%;
+    }
+}
+
+/* ========================================
+   MOBILE
+======================================== */
+
+@media (max-width: 600px) {
+    .container {
+        width: calc(100% - 30px);
+    }
+
+    .footerGrid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 35px 20px;
+        padding: 42px 0 35px;
+    }
+
+    .brandColumn {
+        grid-column: 1 / -1;
+    }
+
+    .brandName {
+        font-size: 22px;
+    }
+
+    .description {
+        margin-top: 18px;
+    }
+
+    .columnTitle {
+        margin-bottom: 20px;
+        font-size: 15px;
+    }
+
+    .footerLink {
+        font-size: 13px;
+    }
+
+    .footerBottom {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+        padding: 20px 0;
+    }
+
+    .copyright,
+    .bottomMessage {
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 360px) {
+    .footerGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .brandColumn {
+        grid-column: auto;
+    }
+}
