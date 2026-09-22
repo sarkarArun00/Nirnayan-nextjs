@@ -1,94 +1,89 @@
 import Link from "next/link";
-
+import Image from "next/image";
 import styles from "./Header.module.css";
-import LocationSelector from "./LocationSelector";
-import NavigationLinks from "./NavigationLinks";
-
+// import LocationSelector from "./LocationSelector";
+// import NavigationLinks from "./NavigationLinks";
 export default function Header() {
   return (
-    <header className={styles.header}>
-      <div className={styles.container}>
-        {/* Brand logo */}
-
-        <Link
-          href="/"
-          className={styles.brand}
-          aria-label="Nirnayan Healthcare homepage"
-        >
-          <span
-            className={styles.logoIcon}
-            aria-hidden="true"
-          >
-            N
-          </span>
-
-          <span className={styles.brandText}>
-            <span className={styles.brandName}>
-              Nirnayan
-            </span>
-
-            <span className={styles.brandSubtitle}>
-              HEALTHCARE
-            </span>
-          </span>
-        </Link>
-
-        {/* Desktop navigation */}
-
-        <nav
-          className={styles.desktopNav}
-          aria-label="Main navigation"
-        >
-          <NavigationLinks />
-        </nav>
-
-        {/* Location selector */}
-
-        <LocationSelector />
-
-        {/* Desktop action */}
-
-        <div className={styles.headerActions}>
-          <Link
-            href="/patient/test-list"
-            className={styles.bookButton}
-          >
-            Book a Test
-          </Link>
+    <>
+      <div className={styles['main-header']}>
+        <div className={styles['top-wrap']}>
+          <img src="/assets/images/bell.svg" alt="Notification Bell" />
+          <p>
+            Easy online booking for lab tests, diagnostics and complete health checkups at home
+            <a href="#">
+              Book Test <img src="/assets/images/right-arrow.svg" alt="Right Arrow" />
+            </a>
+          </p>
         </div>
-
-        {/* Mobile navigation */}
-
-        <details className={styles.mobileMenu}>
-          <summary
-            className={styles.menuToggle}
-            aria-label="Open navigation menu"
-          >
-            <span
-              className={styles.menuIcon}
-              aria-hidden="true"
-            >
-              <span />
-              <span />
-              <span />
-            </span>
-          </summary>
-
-          <nav
-            className={styles.mobileNav}
-            aria-label="Mobile navigation"
-          >
-            <NavigationLinks mobile />
-
-            <Link
-              href="/patient/test-list"
-              className={styles.mobileBookButton}
-            >
-              Book a Test
+        <div className={styles['btm-wrap']}>
+          <div className={styles['lt-side']}>
+            {/* Logo Link */}
+            <Link href="/" className={styles.logo}>
+              <div className={styles.img}>
+                <img src="/assets/images/logo.png" alt="Nirnayan Logo" />
+              </div>
+              <div className={styles.text}>
+                <span className="notranslate" translate="no">Nirnayan</span>
+              </div>
             </Link>
-          </nav>
-        </details>
+
+            {/* Location Selector */}
+            <div className={styles['location']}>
+              <i className="fa-solid fa-location-dot location-icon"></i>
+              <h4>Kolkata</h4>
+              <i className="fa-solid fa-chevron-down"></i>
+            </div>
+
+            {/* Hidden Block */}
+            <div className={styles['hidden-block']}>
+              <div className={styles['loc-in']}>
+                <i className="fa-solid fa-location-dot location-icon"></i>
+                <h4>Kolkata</h4>
+                <i className="fa-solid fa-chevron-down"></i>
+              </div>
+
+              <div className={styles['test-search']}>
+                <div className={styles.divider}></div>
+                <div className="d-flex align-items-center flex-grow-1">
+                  <span className={styles['search-text']}>
+                    Search for
+                  </span>
+                </div>
+                <div className="d-flex align-items-center">
+                  <img src="/assets/images/update/rx.svg" alt="Rx Icon" />
+                  <div className={styles.divider}></div>
+                  <div className={styles.shortcut}>Ctrl+K</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className={styles['rt-side']}>
+            <div className={styles.navigation}>
+              <ul>
+                <li>
+                  <Link
+                    href="#">
+                    <img src="/assets/images/blood.svg" alt="Test Icon" /> Test
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    href="#">
+                    <img src="/assets/images/package.svg" alt="Package Icon" /> Packages
+                  </Link>
+                </li>
+              </ul>
+            </div>
+
+            <div className={styles['more-btns']}>
+              <a href="#">
+                More <i className="fa-solid fa-chevron-down"></i>
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
-    </header>
+    </>
   );
 }
