@@ -1,6 +1,6 @@
 
 /* Header Update 2.0 Start */
-.main-header{ position:sticky; top:0; background:var(--up-white); border-bottom:1px solid #F2F2F2; box-shadow:0 2px 6px rgba(0,0,0,0.05); padding:0; margin:0; }
+.main-header{ position:sticky; top:0; background:var(--up-white); border-bottom:1px solid #F2F2F2; box-shadow:0 2px 6px rgba(0,0,0,0.05); z-index:99; padding:0; margin:0; }
 .main-header .top-wrap{ display:flex; align-items:center; justify-content:center; gap:12px; background: linear-gradient(90deg, #FAC801 0%, #00A651 50%, #FAC801 100%); background-size: 200% 100%; padding:10px 10px; animation: moveGradient 5s linear infinite; }
 .main-header .top-wrap > img { animation: bellRing 2.5s ease-in-out infinite; transform-origin: top center; }
 .main-header .top-wrap p{ font-weight:400; color:var(--up-white); margin:0 !important; }

@@ -4,9 +4,9 @@
 .up-footer .newsletter .inn h2{ font-weight:600; color:var(--up-white); text-align:center; }
 .up-footer .newsletter .inn h5{ font-weight:500; color:var(--up-white); text-align:center; margin-bottom:45px; }
 .up-footer .newsletter .inn .mail-wrap{ position:relative; max-width:850px; border:1px solid rgba(255,255,255,0.25); box-shadow:0px 20px 40px 0px #00000026; background:linear-gradient(180deg, rgba(0,187,255,0.1) 0%, rgba(196,77,255,0.1) 100%); border-radius:50px; padding:10px; margin:0 auto; }
-.up-footer .newsletter .inn .mail-wrap .form-control{ border:0 !important; height:80px !important; padding:0 200px 0 70px; }
-.up-footer .newsletter .inn .mail-wrap .fa-envelope{ position:absolute; left:25px; top:30px; width:40px; height:40px; background:rgba(217,217,217,0.5); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:18px; color:rgba(0,0,0,0.5); }
-.up-footer .newsletter .inn .mail-wrap button{ position:absolute; right:25px; top:24px; font-size:18px; line-height:1.2; font-weight:600; color:var(--up-white); border:0; border-radius:50px; background-size:200%; background-image:linear-gradient(to right, var(--up-secondiary), var(--up-theme) 50%, var(--up-secondiary) 100%); transition:all 0.4s; padding:16px 35px; }
+.up-footer .newsletter .inn .mail-wrap .custom-controls{ border:0 !important; height:80px !important; padding:0 200px 0 80px; }
+.up-footer .newsletter .inn .mail-wrap i{ position:absolute; left:35px; top:30px; width:40px; height:40px; background:rgba(217,217,217,0.5); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:18px; color:rgba(0,0,0,0.5); }
+.up-footer .newsletter .inn .mail-wrap button{ position:absolute; right:25px; top:24px; }
 .up-footer .newsletter .inn .mail-wrap button:hover{ background-position:right center; }
 
 .pulse-wrap{ position:absolute; left:50%; top:50%; width:1px; height:1px; transform:translate(-50%, -50%); z-index:1; pointer-events:none; }
@@ -32,8 +32,8 @@
 
 /* ////////////////////// */
 .up-footer .top-block{ position:relative; background:linear-gradient(360deg,rgba(0,0,0,0.2) 0%,rgba(0,166,81,0.2) 46.15%,rgba(0,0,0,0.2) 100%),radial-gradient(42.15% 18.72% at 50% 0%, #404040 0%, #1C1C1C 100%); border-radius:80px 80px 0 0; padding:240px 0 65px; }
-.up-footer .top-block .left-img{ position:absolute; left:0; bottom:0; }
-.up-footer .top-block .right-img{ position:absolute; right:0; top:0; }
+.up-footer .top-block .left-img{ position:absolute; left:0; bottom:0; pointer-events:none; }
+.up-footer .top-block .right-img{ position:absolute; right:0; top:0; pointer-events:none; }
 .up-footer .top-block .logo{ display:flex; align-items:center; cursor:pointer; }
 .up-footer .top-block .logo .img{ width:74px;}
 .up-footer .top-block .logo .img img{ max-width:100%; }
@@ -62,7 +62,7 @@
 .up-footer .exp-block .feature-card .feature-text h5{ line-height:1.2; font-weight:500; color:var(--up-white); margin:0; }
 .up-footer .exp-block .feature-card .feature-text h5 span{ display:block; }
 
-.accordion-box .accordion-item{ background-color:transparent; border:none; border-radius:0; overflow:hidden; }
+/* .accordion-box .accordion-item{ background-color:transparent; border:none; border-radius:0; overflow:hidden; }
 .accordion-box .accordion-item .accordion-header{ margin-bottom:15px !important; }
 .accordion-box .accordion-item .accordion-header .accordion-button{ background:none !important; box-shadow:none !important; border-bottom:1px solid #808080 !important; border-radius:0 !important; padding:15px 0; }
 .accordion-button:not(.collapsed){ color:var(--up-white); background-color:none; box-shadow:none; }
@@ -86,7 +86,7 @@
 .accordion-box .accordion-item .accordion-body .address-card a{ font-size:18px; font-weight:500; color:var(--up-secondiary); transition:all 0.4s; display:flex; align-items:center; gap:0 10px; }
 .accordion-box .accordion-item .accordion-body .address-card a img{ transition:all 0.4s; }
 .accordion-box .accordion-item .accordion-body .address-card a:hover{ color:var(--up-white); }
-.accordion-box .accordion-item .accordion-body .address-card a:hover img{ filter:brightness(0) invert(1); }
+.accordion-box .accordion-item .accordion-body .address-card a:hover img{ filter:brightness(0) invert(1); } */
 
 .feedback{ background:#D9F3E5; padding:35px 0; }
 .feedback .top-sec{ display:flex; align-items:center; justify-content:space-between; padding-bottom:25px; }
