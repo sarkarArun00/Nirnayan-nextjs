@@ -13,7 +13,7 @@ export default function Footer() {
               <div className={styles['mail-wrap']}>
                 <input type="email" placeholder="Enter Your Email" className={`form-control ${styles['custom-controls']}`} />
                 <i className="fa-solid fa-envelope"></i>
-                <button className="cmn-btn">Subscribe</button>
+                <button className="cmn_btn">Subscribe</button>
               </div>
               <div className={styles['pulse-wrap']}>
                 <span className={`${styles['pulse']} ${styles['pulse-1']}`}></span>
