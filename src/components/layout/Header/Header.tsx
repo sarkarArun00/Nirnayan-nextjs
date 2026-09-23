@@ -1,12 +1,36 @@
+"use client";
 import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import styles from "./Header.module.css";
 // import LocationSelector from "./LocationSelector";
 // import NavigationLinks from "./NavigationLinks";
 export default function Header() {
+  const [bannerTouched, setBannerTouched] = useState(false);
+  const headerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const header = headerRef.current;
+      const banner = document.querySelector(".banner_wrap");
+      if (!header || !banner) return;
+      setBannerTouched(
+        banner.getBoundingClientRect().bottom <=
+        header.getBoundingClientRect().bottom
+      );
+    };
+    window.addEventListener("scroll", handleScroll);
+    handleScroll();
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   return (
     <>
-      <div className={styles['main-header']}>
+      <div
+        ref={headerRef}
+        className={`${styles["main-header"]} ${bannerTouched ? styles["banner-touched"] : ""
+          }`}
+      >
         <div className={styles['top-wrap']}>
           <img src="/assets/images/bell.svg" alt="Notification Bell" />
           <p>
@@ -51,7 +75,7 @@ export default function Header() {
                   </span>
                 </div>
                 <div className="d-flex align-items-center">
-                  <img src="/assets/images/update/rx.svg" alt="Rx Icon" />
+                  <img src="/assets/images/rx.svg" alt="Rx Icon" />
                   <div className={styles.divider}></div>
                   <div className={styles.shortcut}>Ctrl+K</div>
                 </div>

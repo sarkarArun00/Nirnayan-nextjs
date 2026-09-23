@@ -15,7 +15,7 @@ export default function HeroSection() {
   };
   return (
     <>
-      <div className={styles.banner_wrap}>
+      <div className={`banner_wrap ${styles.banner}`}>
         <div className={styles.bann_slide}>
           <Slider {...settings}>
             <div className={styles.item}>

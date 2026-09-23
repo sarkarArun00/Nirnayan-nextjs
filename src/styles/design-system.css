@@ -148,9 +148,9 @@ textarea:focus,select:focus,.form-control:focus,.form-select:focus,input:focus {
 .is_slick_dot.is_white .slick-dots li button{ border:1px solid var(--up-white) !important; background:var(--up-white); }
 .is_slick_dot.is_white .slick-dots li.slick-active button{ background:var(--up-theme); border-color:var(--up-theme) !important; }
 
-/* .cmn-right-align{ margin-right: calc(((100vw - 1620px) / 2) * -1); }
+.cmn-right-align{ margin-right: calc(((100vw - 1620px) / 2) * -1); }
 .cmn-right-align .slick-dots{ width:1620px !important; left:0 !important; right:auto !important; text-align:center; }
-.cmn-right-align .slick-list{ padding-right:10% !important; } */
+.cmn-right-align .slick-list{ padding-right:10% !important; }
 
 /* Common Slick Slider End */
 
