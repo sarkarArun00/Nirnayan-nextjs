@@ -1,4 +1,5 @@
 
+import BookWith from "@/components/home/BookWith";
 import HeroSection from "@/components/home/HeroSection";
 import PopularTest from "@/components/home/PopularTest";
 
@@ -7,6 +8,7 @@ export default function HomePage() {
     <>
       <HeroSection />
       <PopularTest />
+      <BookWith />
       
     </>
   );

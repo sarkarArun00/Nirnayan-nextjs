@@ -1,0 +1,15 @@
+.offer_banner{ padding:0; margin:0; }
+.offer_banner img{ width:100%; }
+
+.with_us{ padding-top:var(--cmngap-btm); padding-bottom:var(--cmngap-btm); }
+.with_us .top_section{ display:flex; }
+.with_us .top_section .left{ flex:1; }
+
+
+.with_us h2{ font-weight:600; color:var(--up-black); margin-bottom:20px; }
+.with_us p{ max-width:920px; color:var(--up-gray); margin-bottom:45px; }
+.with_us .box{ position:relative; border-radius:35px; overflow:hidden; min-height:260px; }
+.with_us .box img{ position:absolute; right:-100px; bottom:-30px; }
+.with_us .box .text-block{ position:relative; z-index:1; max-width:210px; padding:55px 0 0 20px; }
+.with_us .box .text-block h5{ font-weight:600; color:var(--up-black); }
+.with_us .box .text-block p{ color:var(--up-gray); margin-bottom:0; }

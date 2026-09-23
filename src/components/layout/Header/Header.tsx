@@ -105,9 +105,15 @@ export default function Header() {
                 More <i className="fa-solid fa-chevron-down"></i>
               </a>
             </div>
+            <div className={styles['cart-wrap']}>
+              <Link href='#'>
+                <i className="fa-solid fa-cart-shopping"></i>
+                <span className={styles['number']}>0</span>
+              </Link>
+            </div>
           </div>
         </div>
-      </div>
+      </div >
     </>
   );
 }
