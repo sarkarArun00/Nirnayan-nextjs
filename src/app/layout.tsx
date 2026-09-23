@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+// import "bootstrap/dist/css/bootstrap.min.css";
+// import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 // import "./globals.css";
 import "@/styles/design-system.css";
@@ -13,6 +15,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="en">
       <head>
         <link href="https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,1..1000&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Arima:wght@100..700&family=Google+Sans+Flex:opsz,wght@6..144,1..1000&display=swap" rel="stylesheet" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.css" />
       </head>
       <body>{children}</body>
