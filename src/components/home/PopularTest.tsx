@@ -17,7 +17,18 @@ function PopularTest() {
         autoplay: true,
         speed: 500,
         slidesToShow: 4,
-        slidesToScroll: 1
+        slidesToScroll: 1,
+        centerMode: true,
+        centerPadding: '50px',
+        responsive: [
+            {
+                breakpoint: 768,
+                settings: {
+                    slidesToShow: 1,
+                    centerPadding: '0px 15% 0px 0px', // Adjust peek for smaller screens
+                },
+            },
+        ],
     };
 
     //organs array
@@ -98,7 +109,7 @@ function PopularTest() {
                         <button className="expand-btn">
                             <span className="icon">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2">
+                                    strokeWidth="2">
                                     <line x1="7" y1="17" x2="17" y2="7"></line>
                                     <polyline points="7 7 17 7 17 17"></polyline>
                                 </svg>

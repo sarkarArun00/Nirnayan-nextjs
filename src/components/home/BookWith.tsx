@@ -10,15 +10,11 @@ function BookWith() {
         arrows: false,
         infinite: true,
         autoplay: true,
+        centerMode: true,
+        centerPadding: '60px',
         responsive: [
             {
                 breakpoint: 768,
-                settings: {
-                    slidesToShow: 2,
-                },
-            },
-            {
-                breakpoint: 480,
                 settings: {
                     slidesToShow: 1,
                 },
@@ -81,15 +77,15 @@ function BookWith() {
 
             <div className={styles.with_us}>
                 <div className="container">
-                    <div className={styles.top_section}>
-                        <div className={styles.left}>
+                    <div className="top-title">
+                        <div className="left-pnl">
                             <h2>Why Test Book With Us</h2>
                             <p>India’s fastest AI powered & temperature - controlled supply chain to collect and test your blood in freshest state.</p>
                         </div>
                         <button className="expand-btn">
                             <span className="icon">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2">
+                                    strokeWidth="2">
                                     <line x1="7" y1="17" x2="17" y2="7"></line>
                                     <polyline points="7 7 17 7 17 17"></polyline>
                                 </svg>

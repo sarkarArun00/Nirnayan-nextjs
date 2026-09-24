@@ -2,10 +2,8 @@
 .offer_banner img{ width:100%; }
 
 .with_us{ padding-top:var(--cmngap-btm); padding-bottom:var(--cmngap-btm); }
-.with_us .top_section{ display:flex; }
-.with_us .top_section .left{ flex:1; }
-
-
+/* .with_us .top_section{ display:flex; }
+.with_us .top_section .left{ flex:1; } */
 .with_us h2{ font-weight:600; color:var(--up-black); margin-bottom:20px; }
 .with_us p{ max-width:920px; color:var(--up-gray); margin-bottom:45px; }
 .with_us .box{ position:relative; border-radius:35px; overflow:hidden; min-height:260px; }
