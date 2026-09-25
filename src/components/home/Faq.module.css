@@ -1,0 +1,25 @@
+.faq_section{ padding:0; margin:0; }
+/* .faq-section .title{ text-align:center; padding-bottom:45px; }
+.faq-section .title h2{ font-weight:600; color:var(--up-black); margin-bottom:15px; }
+.faq-section .title p{ color:var(--up-gray); margin-bottom:0; } */
+
+#faqAccordion{ padding-bottom:var(--cmngap-btm); }
+.accordion-item{ border:1px solid #D9D9D9 !important; border-radius:50px !important; margin-bottom:20px; }
+.accordion-item:has(.accordion-button[aria-expanded="true"]) { background:#EAF8F1; border:none !important; border-radius:25px !important; }
+.accordion-item h2{ margin-bottom:0; }
+.accordion-item:last-child{ margin-bottom:0; }
+.accordion-item .accordion-button{ font-size:18px; line-height:1.2; font-weight:600; color:var(--up-black); background:transparent !important; border-radius:0 !important; padding:20px; box-shadow:none; }
+.accordion-item .accordion-button:after{ width:45px; height:45px; border:1px solid var(--up-gray); border-radius:50%; background-position:center; }
+.accordion-item .accordion-button[aria-expanded="true"]:after{ background-color:var(--up-theme); border:none; background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23ffffff'%3e%3cpath fill-rule='evenodd' d='M1.646 11.354a.5.5 0 0 0 .708 0L8 5.707l5.646 5.647a.5.5 0 0 0 .708-.708l-6-6a.5.5 0 0 0-.708 0l-6 6a.5.5 0 0 0 0 .708z'/%3e%3c/svg%3e"); }
+.accordion-item .accordion-body{ position:relative; padding:25px 20px; }
+.accordion-item .accordion-body:before{ position:absolute; content:""; width:calc(100% - 40px); height:1px; left:0; right:0; top:0; background:var(--up-black); margin:0 auto; }
+.accordion-item .accordion-body p{ color:var(--up-gray); margin-bottom:15px; }
+.accordion-item .accordion-body p strong{ color:var(--up-theme); font-weight:600; }
+.accordion-item .accordion-body a{ color:#0095FF; font-weight:600; text-decoration:underline; }
+
+.questaions{ position:relative; z-index:1; display:flex; align-items:center; background:#EAF8F1; border-radius:25px; overflow:hidden; padding:35px 45px; margin:var(--cmngap-btm) 0; }
+.questaions .text_block{ flex:1; padding-right:15px; }
+.questaions .text_block h2{ font-weight:600; color:var(--up-theme); margin-bottom:15px; }
+.questaions .text_block p{ color:var(--up-gray); margin-bottom:0; }
+.questaions button{ flex-shrink:0; }
+.questaions img{ position:absolute; right:0; bottom:0; pointer-events:none; z-index:-1; }

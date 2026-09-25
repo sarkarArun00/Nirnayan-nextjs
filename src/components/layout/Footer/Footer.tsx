@@ -134,7 +134,7 @@ export default function Footer() {
               </div>
             </div>
 
-            <div className="accordion accordion-box" id="nirnayanAccordion">
+            <div className="is_footer accordion accordion-box" id="nirnayanAccordion">
                 <div className="accordion-item">
                     <h2 className="accordion-header" id="headingTests">
                         <button className="accordion-button" type="button" data-bs-toggle="collapse"
