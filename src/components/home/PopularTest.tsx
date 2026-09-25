@@ -19,7 +19,7 @@ function PopularTest() {
         slidesToShow: 4,
         slidesToScroll: 1,
         centerMode: true,
-        centerPadding: '50px',
+        centerPadding: '60px',
         responsive: [
             {
                 breakpoint: 768,
