@@ -1,4 +1,5 @@
 
+import Blog from "@/components/home/Blog";
 import BookWith from "@/components/home/BookWith";
 import Checkups from "@/components/home/Checkups";
 import Faq from "@/components/home/Faq";
@@ -18,6 +19,7 @@ export default function HomePage() {
       <PopularPackage />
       <Checkups />
       <LifestylePackages />
+      <Blog />
       <Testimonial />
       <OurLocation />
       <Faq />

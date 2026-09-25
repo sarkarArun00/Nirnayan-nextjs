@@ -1,9 +1,9 @@
 "use client";
 import React from 'react'
-import styles from './Checkups.module.css';
+import styles from './Blog.module.css'
 import Slider from 'react-slick';
 
-function Checkups() {
+function Blog() {
     const slideConfig = {
         slidesToShow: 3,
         slidesToScroll: 1,
@@ -29,8 +29,7 @@ function Checkups() {
                 <div className="container">
                     <div className="top-title">
                         <div className="left-pnl">
-                            <h2>Most Booked Checkups</h2>
-                            <p>A complete health checkup designed to monitor your everyday wellness, detect early health risks, and help you maintain a healthier lifestyle.</p>
+                            <h2 className='m-0'>Nirnayan Health Blogs</h2>
                         </div>
                         <button className="expand-btn">
                             <span className="icon">
@@ -47,7 +46,7 @@ function Checkups() {
                         <Slider {...slideConfig} className='is_slick_dot'>
                             <div className="item">
                                 <div className={`cmn_margin ${styles.img_block}`}>
-                                    <img src="/assets/images/checkup1.jpg" alt="" />
+                                    <img src="/assets/images/blog1.png" alt="" />
                                     <div className={styles.text_block}>
                                         <div className={styles.lt_block}>
                                             <h3>Full Body Checkup</h3>
@@ -65,7 +64,7 @@ function Checkups() {
                             </div>
                             <div className="item">
                                 <div className={`cmn_margin ${styles.img_block}`}>
-                                    <img src="/assets/images/checkup2.jpg" alt="" />
+                                    <img src="/assets/images/blog2.png" alt="" />
                                     <div className={styles.text_block}>
                                         <div className={styles.lt_block}>
                                             <h3>Full Body Checkup</h3>
@@ -83,7 +82,7 @@ function Checkups() {
                             </div>
                             <div className="item">
                                 <div className={`cmn_margin ${styles.img_block}`}>
-                                    <img src="/assets/images/checkup3.png" alt="" />
+                                    <img src="/assets/images/blog3.png" alt="" />
                                     <div className={styles.text_block}>
                                         <div className={styles.lt_block}>
                                             <h3>Full Body Checkup</h3>
@@ -101,7 +100,7 @@ function Checkups() {
                             </div>
                             <div className="item">
                                 <div className={`cmn_margin ${styles.img_block}`}>
-                                    <img src="/assets/images/checkup2.jpg" alt="" />
+                                    <img src="/assets/images/blog4.png" alt="" />
                                     <div className={styles.text_block}>
                                         <div className={styles.lt_block}>
                                             <h3>Full Body Checkup</h3>
@@ -125,4 +124,4 @@ function Checkups() {
     )
 }
 
-export default Checkups
+export default Blog
