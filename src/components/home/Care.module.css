@@ -1,0 +1,9 @@
+.preg_care{  overflow:hidden; background:var(--up-white); border-radius:80px 80px 0 0; padding:var(--cmngap-btm) 0; }
+.preg_care .inn{ position:relative; z-index:1; background:#F2F2F2; overflow:hidden; border-radius:65px; padding:20px 50px 0; }
+.preg_care .inn:after{ position:absolute; content:""; left:150px; top:50px; width:340px; height:340px; background:rgba(251,197,2,0.5); filter:blur(200px); z-index:-1; }
+.care_details{ display:flex; align-items:center; }
+.care_details .details_content{ flex:1; padding-left:50px; }
+.care_details .details_content .text_block{ max-width:500px; }
+.care_details .details_content .text_block h2{ color:var(--up-black); font-weight:600; }
+.care_details .details_content .text_block p{ color:var(--up-gray); margin-bottom:30px; }
+.care_details .care_image img{ width:350px; height:450px; object-fit:contain; display:block; }

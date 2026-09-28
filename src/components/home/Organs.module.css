@@ -1,0 +1,15 @@
+.explore_organ{ padding:0 0 var(--cmngap-btm); margin:0; }
+.explore_organ .box{ position:relative; overflow:hidden; border-radius:25px; }
+.explore_organ .box:before{ content:''; position:absolute; left:0; bottom:-100%; width:100%; height:100%; background:linear-gradient(180deg, rgba(0,0,0,0) 0%, #000000 100%); transition:bottom 0.4s ease-in-out; z-index:1; }
+.explore_organ .box:hover:before{ bottom:0; }
+.explore_organ .box img{ width:100%; transition:all 0.4s; }
+.explore_organ .box:hover img{ transform:scale(1.1); }
+.explore_organ .box .text_block{ position:absolute; width:100%; left:0; bottom:0; display:flex; align-items:center; background:linear-gradient(180deg, rgba(0,0,0,0) 0%, #000000 100%); transition:all 0.4s; z-index:2; padding:30px 20px; }
+.explore_organ .box .text_block .left{ flex:1; padding-right:15px; }
+.explore_organ .box .text_block .left h3{ font-weight:600; color:var(--up-white); margin-bottom:15px; }
+.explore_organ .box .text_block .left p{ color:var(--up-white); margin-bottom:0; }
+.explore_organ .box .text_block .right{ flex-shrink:0; }
+.explore_organ .box .text_block .right .arrow_btn{ opacity:0; visibility:hidden; transform:scale(0.5); }
+.explore_organ .box:hover .text_block .right .arrow_btn{ opacity:1; visibility:visible; transform:scale(1); }
+
+.life_style img{ width:100%; border-radius:30px; }
