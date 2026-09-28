@@ -12,4 +12,5 @@
 .explore_organ .box .text_block .right .arrow_btn{ opacity:0; visibility:hidden; transform:scale(0.5); }
 .explore_organ .box:hover .text_block .right .arrow_btn{ opacity:1; visibility:visible; transform:scale(1); }
 
+.life_style{ overflow:hidden; }
 .life_style img{ width:100%; border-radius:30px; }

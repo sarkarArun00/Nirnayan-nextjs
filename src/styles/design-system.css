@@ -152,14 +152,6 @@ textarea:focus,select:focus,.form-control:focus,.form-select:focus,input:focus {
 .cmn-right-align .slick-list{ padding-left:0 !important; }
 /* Common Slick Slider End */
 
-.lifestyle-slider .slick-list{ padding:0 25% !important; }
-.accolades .slick-list{ padding:0 25% !important; }
-.accolades .is_slick_dot .slick-list{ margin:0 !important; }
-.accolades .is_slick_dot .slick-slide{ margin:0 !important; }
-.accolades .slick-list:after{ position:absolute; content:''; left:0; top:0; width:100px; height:100%; background-image: linear-gradient(to right, #fff , transparent); z-index:1; }
-.accolades .slick-list:before{ position:absolute; content:''; right:0; top:0; width:100px; height:100%; background-image: linear-gradient(to right, transparent , #fff); z-index:1; }
-.find-us .slick-list{ padding:0 25% 0 0 !important; }
-
 /* Common Modal Start */
 .cmn-backdrop{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.6); z-index:9; opacity:0; visibility:hidden; transition: opacity 0.3s ease, visibility 0.3s ease; }
 .cmn-backdrop .inn{ padding:30px; border-radius:35px; background:var(--up-white); width:650px; max-width:100%; max-height:650px; overflow:hidden; opacity:0;transform:translateY(20px) scale(0.95); transition:opacity 0.35s ease, transform 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
@@ -200,6 +192,15 @@ textarea:focus,select:focus,.form-control:focus,.form-select:focus,input:focus {
 /* .is_slick_dot .slick-slide.slick-center{ transform:scale(1); } */
 /* Most checkUp Css End */
 
+/* Awards Css Start */
+.accolades .slick-list:after{ position:absolute; content:''; left:0; top:0; width:100px; height:100%; background-image: linear-gradient(to right, #fff , transparent); z-index:1; }
+.accolades .slick-list:before{ position:absolute; content:''; right:0; top:0; width:100px; height:100%; background-image: linear-gradient(to right, transparent , #fff); z-index:1; }
+.accolades .slick-current .award_item{ transform: scale(1); background:#2E1210; margin:0; position:relative; z-index:1; }
+.accolades .slick-current .award_item .img_block{ background:#FFFBEB; }
+.accolades .slick-current .award_item .text_block p{ color:var(--up-white); }
+.accolades .slick-current .award_item:after{ display:none; }
+/* Awards Css End */
+
 /* Our Presence Css Start */
 .sliderWrapper .slick-list{ padding-left:0 !important; }
 /* Our Presence Css Start */
@@ -207,7 +208,6 @@ textarea:focus,select:focus,.form-control:focus,.form-select:focus,input:focus {
 /* Home Faq Css Start */
 #faqAccordion{ padding-bottom:var(--cmngap-btm); }
 #faqAccordion .accordion-item{ box-shadow:0px 4px 4px 0px #E4E4E4CC; border:1px solid #fff !important; border-radius:25px !important; margin-bottom:20px; }
-/* #faqAccordion .accordion-item:has(.accordion-button[aria-expanded="true"]) { background:#EAF8F1; border:none !important; border-radius:25px !important; } */
 #faqAccordion .accordion-item h2{ margin-bottom:0; }
 #faqAccordion .accordion-item:last-child{ margin-bottom:0; }
 #faqAccordion .accordion-item .accordion-button{ font-size:18px; line-height:1.2; font-weight:600; color:var(--up-black); background:transparent !important; border-radius:0 !important; padding:20px; box-shadow:none; }
@@ -219,7 +219,6 @@ textarea:focus,select:focus,.form-control:focus,.form-select:focus,input:focus {
 #faqAccordion .accordion-item .accordion-body p strong{ color:var(--up-theme); font-weight:600; }
 #faqAccordion .accordion-item .accordion-body a{ color:var(--up-theme); font-weight:600; text-decoration:underline; }
 /* Home Faq Css End */
-
 
 
 

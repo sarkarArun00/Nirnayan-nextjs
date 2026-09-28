@@ -1,4 +1,5 @@
 
+import Awards from "@/components/home/Awards";
 import Blog from "@/components/home/Blog";
 import BookWith from "@/components/home/BookWith";
 import Care from "@/components/home/Care";
@@ -23,6 +24,7 @@ export default function HomePage() {
       <LifestylePackages />
       <Care />
       <Organs />
+      <Awards />
       <Blog />
       <Testimonial />
       <OurLocation />
