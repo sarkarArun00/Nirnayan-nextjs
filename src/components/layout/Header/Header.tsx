@@ -23,6 +23,7 @@ export default function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const [isSignIn, setIsSignIn] = useState(false);
   const [isLocation, setIsLocation] = useState(false);
+  const [isSearch, setIsSearch] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -102,6 +103,22 @@ export default function Header() {
   };
   // Google Translate 
 
+  // Ctrl + K Search Function
+  useEffect(() => {
+  const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setIsSearch((prev) => !prev);
+      }
+      if (e.key === 'Escape') {
+        setIsSearch(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+  // Ctrl + K Search Function
+  
   return (
     <>
       <div ref={headerRef} className={`${styles["main-header"]} ${bannerTouched ? styles["banner-touched"] : ""}`}>
@@ -403,7 +420,142 @@ export default function Header() {
       {/* Location Modal End */}
 
       {/* Search Modal Start */}
+      {isSearch && (
+        <div className={`modal_backdrop ${isSearch ? 'active' : ''}`} onClick={() => setIsSearch(false)}>
+          <div className="lab-search-panel" onClick={(e) => e.stopPropagation()}>
+            <div className="lab-search-field">
+              <i className="fa-solid fa-magnifying-glass lab-search-symbol"></i>
+              <input type="text" placeholder="Search for Tests, Health Check-ups"
+                name="labSearch" className="form-control" />
+              <div className="flex-dv d-flex align-items-center gap-2">
+                <button type="button" className="lab-search-rx">
+                  <img src="/assets/images/rx.svg" alt="" />
+                </button>
+                <span className="lab-search-line"></span>
+                <button type="button" className="lab-search-mike">
+                  <i className="fa-solid fa-microphone lab-mic-symbol"></i>
+                </button>
+              </div>
+            </div>
+            <div className="lab-search-content">
+              {/* POPULAR TESTS */}
+              <section className="lab-result-group">
+                <h6>Popular Tests</h6>
+                <div className="scroll-pnl">
+                  <div className="lab-result-row">
+                    <div className="lab-result-picture lab-test-picture">
+                      <i className="fa-solid fa-vial"></i>
+                    </div>
 
+                    <div className="lab-result-details">
+                      <div className="lab-result-name">
+                        CBC
+                      </div>
+                      <div className="lab-result-category">
+                        Tests
+                      </div>
+                    </div>
+
+                    <div className="lab-result-action">
+                      <i className="fa-solid fa-arrow-right"></i>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              {/* POPULAR PACKAGE */}
+              <section className="lab-result-group">
+                <h6>Popular Package</h6>
+                <div className="scroll-pnl">
+                  <div className="lab-result-row">
+                    <div className="lab-result-picture lab-package-picture">
+                      <i className="fa-solid fa-file-medical"></i>
+                    </div>
+                    <div className="lab-result-details">
+                      <div className="lab-result-name">
+                        Suswastham 4.2 - Diabetes Check Up Package - Prime
+                      </div>
+                      <div className="lab-result-category">
+                        Package
+                      </div>
+                    </div>
+
+                    <div className="lab-result-action">
+                      <i className="fa-solid fa-arrow-right"></i>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              {/* TRENDING SEARCHES */}
+              <section className="lab-result-group lab-trending-group">
+                <h6>Trending Searches</h6>
+                <div className="lab-result-row">
+                  <div className="lab-result-picture lab-trending-picture">
+                    <i className="fa-solid fa-arrow-trend-up"></i>
+                  </div>
+                  <div className="lab-result-details">
+                    <div className="lab-result-name">
+                      Glucose-Fasting-Plasma
+                    </div>
+                    <div className="lab-result-category">
+                      Tests
+                    </div>
+                  </div>
+                  <div className="lab-result-action">
+                    <i className="fa-solid fa-arrow-right"></i>
+                  </div>
+                </div>
+
+                <div className="lab-result-row">
+                  <div className="lab-result-picture lab-trending-picture">
+                    <i className="fa-solid fa-arrow-trend-up"></i>
+                  </div>
+                  <div className="lab-result-details">
+                    <div className="lab-result-name">
+                      Glucose-Fasting-Plasma
+                    </div>
+                    <div className="lab-result-category">
+                      Tests
+                    </div>
+                  </div>
+                  <div className="lab-result-action">
+                    <i className="fa-solid fa-arrow-right"></i>
+                  </div>
+                </div>
+
+                <div className="lab-result-row">
+                  <div className="lab-result-picture lab-trending-picture">
+                    <i className="fa-solid fa-arrow-trend-up"></i>
+                  </div>
+                  <div className="lab-result-details">
+                    <div className="lab-result-name">
+                      Suswastham-125-Infertility-Package-Male-Prime
+                    </div>
+                    <div className="lab-result-category">
+                      Package
+                    </div>
+                  </div>
+                  <div className="lab-result-action">
+                    <i className="fa-solid fa-arrow-right"></i>
+                  </div>
+                </div>
+              </section>
+
+              <div className="lab-search-assistance">
+                <div className="inn">
+                  <span className="lab-assistance-icon">
+                    <img src="/assets/images/bot.svg" alt="" />
+                  </span>
+                  <span className="lab-assistance-text">
+                    Not Sure which tests right?
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Search Modal End */}
 
     </>
