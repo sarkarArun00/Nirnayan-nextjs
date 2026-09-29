@@ -236,10 +236,11 @@ textarea:focus,select:focus,.form-control:focus,.form-select:focus,input:focus {
 .is_footer.accordion-box .accordion-item .accordion-body .address-card a:hover img{ filter:brightness(0) invert(1); }
 /* HomePage Accordian Css End */
 
-/* Most checkUp Css Start */
-/* .is_slick_dot .slick-slide{ transform: scaleY(0.9); } */
-/* .is_slick_dot .slick-slide.slick-center{ transform:scale(1); } */
-/* Most checkUp Css End */
+/* Health Css Start */
+/* .health_slider .slick-track{ display:flex !important; align-items:center; }
+.health_slider .slick-slide{ flex:1 1 0% !important; width:auto !important; box-sizing:border-box; }
+.health_slider .slick-slide.slick-current{ flex:1.2 1 0% !important; } */
+/* Health Css End */
 
 /* Awards Css Start */
 .accolades .slick-list:after{ position:absolute; content:''; left:0; top:0; width:100px; height:100%; background-image: linear-gradient(to right, #fff , transparent); z-index:1; }
@@ -268,7 +269,6 @@ textarea:focus,select:focus,.form-control:focus,.form-select:focus,input:focus {
 #faqAccordion .accordion-item .accordion-body p strong{ color:var(--up-theme); font-weight:600; }
 #faqAccordion .accordion-item .accordion-body a{ color:var(--up-theme); font-weight:600; text-decoration:underline; }
 /* Home Faq Css End */
-
 
 
 

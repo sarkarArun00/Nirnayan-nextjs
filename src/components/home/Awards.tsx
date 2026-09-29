@@ -95,8 +95,15 @@ function Awards() {
                     <div className={styles.help_inn}>
                         <div className={styles.banner_wrap}>
                             <div className={styles.text_block}>
-                                <h2>We Are Here To Help, Say “<span>Hi</span>”</h2>
-                                <p>Start a WhatsApp Chat</p>
+                                <div className={styles.flex_block}>
+                                    <div className={styles.lt_side}>
+                                        <img src="/assets/images/wp.png" alt="" />
+                                    </div>
+                                    <div className={styles.rt_side}>
+                                        <h2>We Are Here To Help, Say “<span>Hi</span>”</h2>
+                                        <p>Start a WhatsApp Chat</p>
+                                    </div>
+                                </div>
                                 <button className="cmn_btn">Book Now</button>
                             </div>
                             <div className={styles.img_block}>

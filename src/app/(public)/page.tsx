@@ -5,6 +5,7 @@ import BookWith from "@/components/home/BookWith";
 import Care from "@/components/home/Care";
 import Checkups from "@/components/home/Checkups";
 import Faq from "@/components/home/Faq";
+import Health from "@/components/home/Health";
 import HeroSection from "@/components/home/HeroSection";
 import LifestylePackages from "@/components/home/LifestylePackages";
 import Organs from "@/components/home/Organs";
@@ -22,6 +23,7 @@ export default function HomePage() {
       <PopularPackage />
       <Checkups />
       <LifestylePackages />
+      <Health />
       <Care />
       <Organs />
       <Awards />
