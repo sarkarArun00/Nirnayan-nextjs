@@ -52,11 +52,16 @@ textarea:focus,select:focus,.form-control:focus,.form-select:focus,input:focus {
 ::-webkit-scrollbar-thumb:hover{ background:var(--up-theme) !important; }
 
 /* Expant Btn Styles start */
-.expand-btn{ display:inline-flex; align-items:center; height:50px; padding:0 15px; border:1px solid var(--up-black); border-radius:100px; background:var(--up-white); overflow:hidden; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+.expand-btn{ display:inline-flex; align-items:center; height:50px; padding:0 15px; border:1px solid var(--up-black); border-radius:100px; background:transparent; overflow:hidden; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
 .expand-btn .icon{ display:flex; flex-shrink:0; }
 .expand-btn .btn-text{ max-width:0; opacity:0; white-space:nowrap; font-size:15px; line-height:1.2; font-weight:400; color:var(--up-black); transition: max-width 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, margin-left 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-.expand-btn:hover{ border-color:var(--up-theme); }
-.expand-btn:hover .btn-text{ max-width:150px; opacity:1; margin-left:10px; }
+/* .expand-btn:hover{ border-color:var(--up-theme); }*/ 
+.expand-btn:hover .btn-text{ max-width:150px; opacity:1; margin-left:10px; } 
+
+.expand-btn.is_white{ border-color:var(--up-white); }
+.expand-btn.is_white .btn-text{ color:var(--up-white); }
+.expand-btn.is_white svg{ color:var(--up-white); }
+
 /* Expant Btn Styles End */
 
 /* Header Css Start */

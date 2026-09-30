@@ -148,7 +148,7 @@ function Testimonial() {
                             <h2>Patient’s Feedback</h2>
                             <p>Read genuine testimonials from patients who have trusted us with their healthcare journey.</p>
                         </div>
-                        <button className="expand-btn">
+                        <button className="expand-btn is_white">
                             <span className="icon">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                                     strokeWidth="2">
