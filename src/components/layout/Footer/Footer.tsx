@@ -58,8 +58,8 @@ export default function Footer() {
           <img className={styles['left-img']} src="/assets/images/f-ptrn-left.png" alt="" />
           <img className={styles['right-img']} src="/assets/images/f-ptrn-right.png" alt="" />
           <div className='container'>
-            <div className='row'>
-              <div className='col-lg-4 col-md-12 col-sm-12'>
+            <div className={`row ${styles.row}`}>
+              <div className='col-lg-4 col-md-6 col-sm-12'>
                 <div className={styles['logo']}>
                   <div className={styles['img']}>
                     <img src="/assets/images/logo.png" alt="" />
@@ -78,7 +78,7 @@ export default function Footer() {
                   <button><img src="/assets/images/app-store.png" alt="" /></button>
                 </div>
               </div>
-              <div className='col-lg-2 col-md-6 col-6'>
+              <div className='col-lg-2 col-md-6 col-sm-12'>
                 <h5>Company</h5>
                 <ul>
                   <li><a href="#">About Us</a></li>
@@ -91,7 +91,7 @@ export default function Footer() {
                   <li><a href="#">Contact Us</a></li>
                 </ul>
               </div>
-              <div className='col-lg-2 col-md-6 col-6'>
+              <div className='col-lg-2 col-md-4 col-sm-12'>
                 <h5>Laboratory</h5>
                 <ul>
                   <li><a href="/laboratory/department/16">Department</a></li>
@@ -99,7 +99,7 @@ export default function Footer() {
                   <li><a href="/laboratory/quality">Quality Control</a></li>
                 </ul>
               </div>
-              <div className='col-lg-2 col-md-6 col-6'>
+              <div className='col-lg-2 col-md-4 col-sm-12'>
                 <h5>Quick Links</h5>
                 <ul>
                   <li><a href="https://blog.nirnayanhealthcare.com/" target="_blank" rel="noreferrer">Nirnayan Blogs</a></li>
@@ -109,7 +109,7 @@ export default function Footer() {
                   <li><a href="/others/faq">FAQs</a></li>
                 </ul>
               </div>
-              <div className='col-lg-2 col-md-6 col-6'>
+              <div className='col-lg-2 col-md-4 col-sm-12'>
                 <h5>Patients</h5>
                 <ul>
                   <li><a href="/patient/test-list">Browse all Test</a></li>
@@ -121,7 +121,7 @@ export default function Footer() {
             </div>
 
             <div className={styles['exp-block']}>
-              <div className='row'>
+              <div className={`row ${styles.row}`}>
                 <div className='col-xl-3 col-lg-6 col-sm-6 col-12'>
                   <div className={styles['feature-card']}>
                     <div className={styles['feature-icon']}>
