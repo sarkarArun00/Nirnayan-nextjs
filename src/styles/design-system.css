@@ -39,10 +39,10 @@ p{ font-family: "Google Sans Flex", sans-serif; font-size:15px; line-height:1.2;
 .arrow-btn{ width:48px; height:48px; border:1px solid var(--up-white); background:var(--up-white); display:flex; align-items:center; justify-content:center; border-radius:50%; padding:0; transition:all 0.4s ease; }
 .arrow-btn:hover{ color:var(--up-white); border-color:var(--up-white); background-color:var(--up-theme); }
 
-::placeholder{ color:var(--up-black) !important; opacity:1; }
-::-webkit-input-placeholder{ color:var(--up-black) !important; opacity:1; }
-::-moz-placeholder{ color:var(--up-black) !important; opacity:1; }
-:-ms-input-placeholder{ color:var(--up-black) !important; opacity:1; }
+::placeholder{ color:#D2D2D2 !important; opacity:1; }
+::-webkit-input-placeholder{ color:#D2D2D2 !important; opacity:1; }
+::-moz-placeholder{ color:#D2D2D2 !important; opacity:1; }
+:-ms-input-placeholder{ color:#D2D2D2 !important; opacity:1; }
 
 textarea,select,.form-control,.form-select,input{ font-family: "Google Sans Flex", sans-serif; font-size:15px; outline:none; color:var(--up-black); font-weight:400; border:1px solid var(--up-black); border-radius:50px; background-color:var(--up-white); box-shadow:none !important; height:48px !important; transition:all 0.4s; padding:12px 20px; }
 textarea.form-control{ height:100px; border-radius:20px; padding:20px 30px; resize:none; font-size:15px; }
