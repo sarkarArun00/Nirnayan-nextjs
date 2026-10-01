@@ -362,15 +362,52 @@ textarea:focus,select:focus,.form-control:focus,.form-select:focus,input:focus {
 
 @media screen and (max-width:991px){
   .cmn-right-align{ margin-right: calc(((100vw - 720px) / 2) * -1); }
+
+
+
+  h2{ font-size:30px; }
+
 }
 
 @media screen and (max-width:767px){
+  .is_footer.accordion-box .accordion-item .accordion-body {
+    padding: 20px 20px;
+  }
+  .is_footer.accordion-box .accordion-item .accordion-body .address-card{
+    position:relative;
+  }
+  .is_footer.accordion-box .accordion-item .accordion-body .address-card:after{ position:absolute; content:""; left:0; right:0; bottom:0; width:100%; height:1px; background:var(--up-gray); transition:all 0.4s; margin:0 auto; }
+  .is_footer.accordion-box .accordion-item .accordion-body .address-card:hover:after{ opacity:0; width:50%; }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  h2{ font-size:24px; }
+  ul,li{ font-size:13px; }
+  textarea,select,.form-control,.form-select,input{ font-size:14px; }
   .container{ width:100%; max-width:100%; }
   .cmn-right-align{ margin-right:0; }
   
-  h2{ font-size:24px; }
-  ul,li{ font-size:13px; }
-
 
 
 
