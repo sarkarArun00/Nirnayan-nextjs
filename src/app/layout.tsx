@@ -3,6 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import BootstrapClient from "@/components/BootstrapClient";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import AlertProvider from "@/components/common/Alert/AlertProvider";
 
 // import "./globals.css";
 import "@/styles/design-system.css";
@@ -34,7 +35,9 @@ export default function RootLayout({
         />
       </head>
       <body>
+        <AlertProvider>
         {children}
+        </AlertProvider>
         <BootstrapClient />
       </body>
     </html>

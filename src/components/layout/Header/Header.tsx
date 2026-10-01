@@ -3,7 +3,19 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import styles from "./Header.module.css";
-import { requestOtp, verifyOtp, signUp} from "@/services/auth.service";
+import {
+  requestOtp,
+  verifyOtp,
+  signUp,
+  requestLoginOtp,
+} from "@/services/auth.service";
+import {
+  loginWithOtp,
+  getLoggedInUser,
+  logoutSession,
+} from "@/actions/session.actions";
+import { useAlert } from "@/components/common/Alert/AlertProvider";
+import { usePathname } from "next/navigation";
 
 declare global {
   interface Window {
@@ -15,8 +27,25 @@ declare global {
 const LANGUAGES = [
   { code: "en", label: "English" },
   { code: "hi", label: "Hindi" },
-  // { code: "bn", label: "Bengali" },
+  { code: "bn", label: "Bengali" },
 ];
+
+type LoginUser = {
+  id: number;
+  first_name: string;
+  last_name: string;
+  email: string;
+  mobile_number: string;
+};
+
+type LoginResponse = {
+  status?: number;
+  success?: boolean;
+  accessToken?: string;
+  massage?: string;
+  message?: string;
+  data?: LoginUser | string;
+};
 
 export default function Header() {
   const [bannerTouched, setBannerTouched] = useState(false);
@@ -32,59 +61,61 @@ export default function Header() {
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
-const [timer, setTimer] = useState(20);
+  const [timer, setTimer] = useState(20);
   const [isSignIn, setIsSignIn] = useState(false);
   const [isLocation, setIsLocation] = useState(false);
   const [isSearch, setIsSearch] = useState(false);
 
-  const [signUpFirstName, setSignUpFirstName] =
-  useState("");
+  const [signUpFirstName, setSignUpFirstName] = useState("");
 
-const [signUpLastName, setSignUpLastName] =
-  useState("");
+  const [signUpLastName, setSignUpLastName] = useState("");
 
-const [signUpMobile, setSignUpMobile] =
-  useState("");
+  const [signUpMobile, setSignUpMobile] = useState("");
 
-const [signUpEmail, setSignUpEmail] =
-  useState("");
+  const [signUpEmail, setSignUpEmail] = useState("");
 
-const [signUpTerms, setSignUpTerms] =
-  useState(false);
+  const [signUpTerms, setSignUpTerms] = useState(false);
 
-const [
-  signUpOtpRequested,
-  setSignUpOtpRequested,
-] = useState(false);
+  const [signUpOtpRequested, setSignUpOtpRequested] = useState(false);
 
-const [signUpLoading, setSignUpLoading] =
-  useState(false);
+  const [signUpLoading, setSignUpLoading] = useState(false);
 
-const [
-  signUpError,
-  setSignUpError,
-] = useState("");
+  const [signUpError, setSignUpError] = useState("");
 
-const [
-  signUpSuccess,
-  setSignUpSuccess,
-] = useState("");
-  
-  
-const [signUpOtp, setSignUpOtp] = useState([
-  "",
-  "",
-  "",
-  "",
-  "",
-  "",
-]);
+  const [signUpSuccess, setSignUpSuccess] = useState("");
 
-const [signUpTimer, setSignUpTimer] =
-  useState(20);
+  const [signUpOtp, setSignUpOtp] = useState(["", "", "", "", "", ""]);
 
+  const [signUpTimer, setSignUpTimer] = useState(20);
 
-  
+const [loginSession, setLoginSession] = useState<{
+  user: LoginUser;
+} | null>(null);
+
+    const { confirm } = useAlert();
+
+  const [sessionLoading, setSessionLoading] = useState(true);
+
+  const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
+
+  const accountMenuRef = useRef<HTMLDivElement>(null);
+
+  const { showAlert } = useAlert();
+
+  const handleChangeSignUpMobile = () => {
+    // Allow user to edit the mobile number again
+    setSignUpOtpRequested(false);
+
+    // Clear previously entered OTP
+    setSignUpOtp(["", "", "", "", "", ""]);
+
+    // Reset OTP countdown
+    setSignUpTimer(20);
+
+    // Clear messages
+    setSignUpError("");
+    setSignUpSuccess("");
+  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -93,7 +124,7 @@ const [signUpTimer, setSignUpTimer] =
       if (!header || !banner) return;
       setBannerTouched(
         banner.getBoundingClientRect().bottom <=
-        header.getBoundingClientRect().bottom
+          header.getBoundingClientRect().bottom,
       );
     };
     window.addEventListener("scroll", handleScroll);
@@ -102,41 +133,32 @@ const [signUpTimer, setSignUpTimer] =
   }, []);
 
   useEffect(() => {
-  if (
-    !signUpOtpRequested ||
-    signUpTimer <= 0
-  ) {
-    return;
-  }
+    if (!signUpOtpRequested || signUpTimer <= 0) {
+      return;
+    }
 
-  const timer = setInterval(() => {
-    setSignUpTimer(
-      (previous) => previous - 1
-    );
-  }, 1000);
+    const timer = setInterval(() => {
+      setSignUpTimer((previous) => previous - 1);
+    }, 1000);
 
-  return () => {
-    clearInterval(timer);
-  };
-}, [
-  signUpOtpRequested,
-  signUpTimer,
-]);
-
+    return () => {
+      clearInterval(timer);
+    };
+  }, [signUpOtpRequested, signUpTimer]);
 
   useEffect(() => {
-  if (!otpRequested || timer <= 0) {
-    return;
-  }
+    if (!otpRequested || timer <= 0) {
+      return;
+    }
 
-  const interval = setInterval(() => {
-    setTimer((previous) => previous - 1);
-  }, 1000);
+    const interval = setInterval(() => {
+      setTimer((previous) => previous - 1);
+    }, 1000);
 
-  return () => clearInterval(interval);
-}, [otpRequested, timer]);
+    return () => clearInterval(interval);
+  }, [otpRequested, timer]);
 
-  // Google Translate 
+  // Google Translate
   const [langOpen, setLangOpen] = useState(false);
   const [selectedLang, setSelectedLang] = useState("en");
 
@@ -162,7 +184,8 @@ const [signUpTimer, setSignUpTimer] =
       if (document.getElementById("google-translate-script")) return;
       const script = document.createElement("script");
       script.id = "google-translate-script";
-      script.src = "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+      script.src =
+        "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
       script.async = true;
       document.body.appendChild(script);
       window.googleTranslateElementInit = () => {
@@ -172,7 +195,7 @@ const [signUpTimer, setSignUpTimer] =
             includedLanguages: LANGUAGES.map((l) => l.code).join(","),
             autoDisplay: false,
           },
-          "google_translate_element"
+          "google_translate_element",
         );
       };
     };
@@ -184,87 +207,290 @@ const [signUpTimer, setSignUpTimer] =
     setLangOpen((prev) => !prev);
   };
 
-
-  const handleGetOtp = async () => {
-  setError("");
-  setSuccessMessage("");
-
-  const mobile = mobileNumber.trim();
-
-  if (!mobile) {
-    setError("Please enter your mobile number.");
-    return;
-  }
-
-  if (!/^\d{10}$/.test(mobile)) {
-    setError(
-      "Please enter a valid 10 digit mobile number."
-    );
-    return;
-  }
-
-  try {
-    setLoading(true);
-
-    const response = await requestOtp(mobile);
-
-    console.log(
-      "Request OTP Response:",
-      response
-    );
-
-    setOtpRequested(true);
-    setTimer(20);
-
-    setSuccessMessage(
-      "OTP sent successfully."
-    );
-  } catch (error: unknown) {
-    console.error(
-      "Request OTP Error:",
-      error
-    );
-
-    if (error instanceof Error) {
-      setError(error.message);
-    } else {
-      setError(
-        "Unable to send OTP. Please try again."
-      );
-    }
-  } finally {
-    setLoading(false);
-  }
-  };
   
-  const handleOtpChange = (
-  index: number,
-  value: string
-) => {
-  const digit = value.replace(/\D/g, "").slice(-1);
+  const pathname = usePathname();
 
-  const updatedOtp = [...otp];
+  useEffect(() => {
+    const logUser = () => {
+      if (loginSession?.user) {
+        console.log("Logged-in User:", loginSession.user);
+      } else {
+        console.log("No user logged in");
+      }
+    };
 
-  updatedOtp[index] = digit;
+    // When the page opens, route changes, or session changes
+    logUser();
 
-  setOtp(updatedOtp);
+    // When the browser window receives focus
+    window.addEventListener("focus", logUser);
 
-  if (digit && index < 5) {
-    const nextInput =
-      document.getElementById(
-        `digit-${index + 2}`
-      );
+    return () => {
+      window.removeEventListener("focus", logUser);
+    };
+  }, [pathname, loginSession?.user]);
 
-    nextInput?.focus();
-  }
-};
+  useEffect(() => {
+    if (!isAccountMenuOpen) return;
+
+    const handleOutsideClick = (event: PointerEvent) => {
+      if (
+        accountMenuRef.current &&
+        !accountMenuRef.current.contains(event.target as Node)
+      ) {
+        setIsAccountMenuOpen(false);
+      }
+    };
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsAccountMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("pointerdown", handleOutsideClick);
+    document.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.removeEventListener("pointerdown", handleOutsideClick);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, [isAccountMenuOpen]);
+
+
+  useEffect(() => {
+    let active = true;
+
+    const restoreLoginSession = async () => {
+      try {
+        const user = await getLoggedInUser();
+
+        if (!active) return;
+
+        if (user) {
+          setLoginSession({ user });
+        } else {
+          setLoginSession(null);
+        }
+      } catch (error) {
+        if (active) {
+          setLoginSession(null);
+        }
+
+        console.error("Unable to restore login session");
+      } finally {
+        if (active) {
+          setSessionLoading(false);
+        }
+      }
+    };
+
+    void restoreLoginSession();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
+
+  const handleLogout = async () => {
+    try {
+      const accepted = await confirm({
+        title: "Logout Confirmation",
+        message: "Are you sure you want to log out?",
+        confirmText: "Yes, Logout",
+        cancelText: "Cancel",
+      });
+
+      if (!accepted) return;
+      // Clear the secure session cookie
+      await logoutSession();
+
+      // Clear local UI state
+      setLoginSession(null);
+      setMobileNumber("");
+      setOtp(["", "", "", "", "", ""]);
+      setOtpRequested(false);
+      setTimer(20);
+
+      setError("");
+      setSuccessMessage("");
+
+      setIsAccountMenuOpen(false);
+      setIsOpen(false);
+      setIsSignIn(false);
+
+      // showAlert({
+      //   type: "success",
+      //   title: "Logged Out",
+      //   message: "You have successfully logged out.",
+      //   autoClose: 1500,
+      // });
+    } catch {
+      showAlert({
+        type: "error",
+        title: "Logout Failed",
+        message: "Unable to log out. Please try again.",
+        autoClose: 3000,
+      });
+    }
+  };
+
+  // Google Translate
+
+  // Ctrl + K Search Function
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setIsSearch((prev) => !prev);
+      }
+      if (e.key === "Escape") {
+        setIsSearch(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+  // Ctrl + K Search Function
+
+  // const handleGetOtp = async () => {
+  //   setError("");
+  //   setSuccessMessage("");
+
+  //   const mobile = mobileNumber.trim();
+
+  //   if (!mobile) {
+  //     setError("Please enter your mobile number.");
+  //     return;
+  //   }
+
+  //   if (!/^\d{10}$/.test(mobile)) {
+  //     setError("Please enter a valid 10 digit mobile number.");
+  //     return;
+  //   }
+
+  //   try {
+  //     setLoading(true);
+
+  //     const response = await requestOtp(mobile);
+
+  //     console.log("Request OTP Response:", response);
+
+  //     setOtpRequested(true);
+  //     setTimer(20);
+
+  //     setSuccessMessage("OTP sent successfully.");
+  //   } catch (error: unknown) {
+  //     console.error("Request OTP Error:", error);
+
+  //     if (error instanceof Error) {
+  //       setError(error.message);
+  //     } else {
+  //       setError("Unable to send OTP. Please try again.");
+  //     }
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  const handleGetLoginOtp = async () => {
+    setError("");
+    setSuccessMessage("");
+
+    const mobile = mobileNumber.trim();
+
+    if (!mobile) {
+      setError("Please enter your mobile number.");
+      return;
+    }
+
+    if (!/^\d{10}$/.test(mobile)) {
+      showAlert({
+        type: "warning",
+        title: "Invalid Mobile Number",
+        message: "Please enter a valid 10-digit mobile number.",
+        buttonText: "OK",
+      });
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      const response = await requestLoginOtp(mobile);
+
+      console.log("Request OTP Response:", response);
+      const result = response as LoginResponse | null;
+      if (result?.status == 1) {
+        setOtpRequested(true);
+        setTimer(20);
+  
+        showAlert({
+          type: "success", // "warning" or "error"
+          title: "Sent",
+          message: "OTP sent successfully.",
+          autoClose: 1000,
+        });
+      }
+      else if (result?.status == 0) { 
+         const errorMessage =
+           typeof result?.data === "string"
+             ? result.data
+             : "OTP verification failed. Please try again.";
+
+         showAlert({
+           type: "warning",
+           title: "Login Failed",
+           message: errorMessage,
+           buttonText: "OK",
+           autoClose: 3000,
+         });
+      }
+    } catch (error: unknown) {
+      console.error("Request OTP Error:", error);
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        showAlert({
+          type: "error",
+          title: "Unable to send OTP",
+          message:
+            error instanceof Error
+              ? error.message
+              : "Unable to send OTP. Please try again.",
+          buttonText: "Try Again",
+        });
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleOtpChange = (index: number, value: string) => {
+    const digit = value.replace(/\D/g, "").slice(-1);
+
+    const updatedOtp = [...otp];
+
+    updatedOtp[index] = digit;
+
+    setOtp(updatedOtp);
+
+    if (digit && index < 5) {
+      const nextInput = document.getElementById(`digit-${index + 2}`);
+
+      nextInput?.focus();
+    }
+  };
 
   const handleSelect = (langCode: string) => {
     setSelectedLang(langCode);
     setLangOpen(false);
     document.cookie = `googtrans=/en/${langCode}; path=/; domain=${window.location.hostname}`;
     document.cookie = `googtrans=/en/${langCode}; path=/;`;
-    const selectElem = document.querySelector(".goog-te-combo") as HTMLSelectElement;
+    const selectElem = document.querySelector(
+      ".goog-te-combo",
+    ) as HTMLSelectElement;
     if (selectElem) {
       selectElem.value = langCode;
       selectElem.dispatchEvent(new Event("change"));
@@ -273,424 +499,376 @@ const [signUpTimer, setSignUpTimer] =
     }
   };
 
-  const handleVerifyOtp = async () => {
-  setError("");
-  setSuccessMessage("");
+  // Signup OTP start
+  const handleSignUpGetOtp = async () => {
+    setSignUpError("");
+    setSignUpSuccess("");
 
-  const otpValue = otp.join("");
+    const mobile = signUpMobile.trim();
 
-  if (otpValue.length !== 6) {
-    setError(
-      "Please enter the complete 6 digit OTP."
-    );
-    return;
-  }
+    if (!mobile) {
+      showAlert({
+        type: "warning",
+        title: "Mobile No. Required",
+        message: "Please enter your mobile number.",
+        autoClose: 1000,
+      });
+      return;
+    }
 
-  try {
-    setLoading(true);
+    if (!/^\d{10}$/.test(mobile)) {
+      showAlert({
+        type: "warning",
+        title: "Invalid Mobile Number",
+        message: "Please enter a valid 10-digit mobile number.",
+        buttonText: "OK",
+      });
 
-    const response = await verifyOtp(
-      mobileNumber.trim(),
-      otpValue
-    );
+      return;
+    }
 
-    console.log(
-      "Verify OTP Response:",
-      response
-    );
+    try {
+      setSignUpLoading(true);
+      const response = await requestOtp(mobile);
 
-    if (
-      typeof response === "object" &&
-      response !== null
-    ) {
-      const result = response as {
-        data?: unknown;
-        status?: number;
-        success?: boolean;
-        message?: string;
-      };
+      if (typeof response === "object" && response !== null) {
+        const result = response as {
+          status?: number;
+          success?: boolean;
+          data?: unknown;
+          message?: string;
+        };
 
-      /*
-       * Backend business failure
-       */
-      if (
-        result.status === 0 ||
-        result.success === false
-      ) {
-        if (
-          typeof result.data === "string"
-        ) {
-          setError(result.data);
-        } else if (
-          typeof result.message === "string"
-        ) {
-          setError(result.message);
-        } else {
-          setError(
-            "OTP verification failed."
-          );
+        if (result.status === 0 || result.success === false) {
+          const message =
+            typeof result.data === "string"
+              ? result.data
+              : typeof result.message === "string"
+                ? result.message
+                : "Unable to send OTP.";
+
+          setSignUpError(message);
+
+          return;
         }
-
-        return;
       }
 
-      /*
-       * Successful verification
-       */
-      setSuccessMessage(
-        "OTP verified successfully."
-      );
+      setSignUpOtp(["", "", "", "", "", ""]);
 
-      console.log(
-        "Login successful:",
-        result.data
-      );
+      setSignUpOtpRequested(true);
 
-      return;
+      setSignUpTimer(20);
+
+      // setSignUpSuccess("OTP sent successfully.");
+      showAlert({
+        type: "success",
+        title: "OTP Sent",
+        message: "OTP sent successfully.",
+        autoClose: 1000,
+      });
+    } catch (error: unknown) {
+      showAlert({
+        type: "error",
+        title: "Request Failed",
+        message:
+          error instanceof Error
+            ? error.message
+            : "Something went wrong. Please try again.",
+        buttonText: "Try Again",
+      });
+    } finally {
+      setSignUpLoading(false);
     }
-
-    setError(
-      "Invalid response received from server."
-    );
-  } catch (error: unknown) {
-    console.error(
-      "Verify OTP Error:",
-      error
-    );
-
-    if (error instanceof Error) {
-      setError(error.message);
-    } else {
-      setError(
-        "Unable to verify OTP. Please try again."
-      );
-    }
-  } finally {
-    setLoading(false);
-  }
-};
-  // Google Translate 
-
-  // Ctrl + K Search Function
-  useEffect(() => {
-  const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
-        e.preventDefault();
-        setIsSearch((prev) => !prev);
-      }
-      if (e.key === 'Escape') {
-        setIsSearch(false);
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
-  // Ctrl + K Search Function
-  
-
-const handleSignUpGetOtp = async () => {
-  setSignUpError("");
-  setSignUpSuccess("");
-
-  const mobile =
-    signUpMobile.trim();
-
-  if (!mobile) {
-    setSignUpError(
-      "Please enter your mobile number."
-    );
-    return;
-  }
-
-  if (!/^\d{10}$/.test(mobile)) {
-    setSignUpError(
-      "Please enter a valid 10 digit mobile number."
-    );
-    return;
-  }
-
-  try {
-    setSignUpLoading(true);
-
-    const response =
-      await requestOtp(mobile);
-
-    console.log(
-      "Signup Request OTP Response:",
-      response
-    );
-
-    if (
-      typeof response === "object" &&
-      response !== null
-    ) {
-      const result = response as {
-        status?: number;
-        success?: boolean;
-        data?: unknown;
-        message?: string;
-      };
-
-      if (
-        result.status === 0 ||
-        result.success === false
-      ) {
-        const message =
-          typeof result.data === "string"
-            ? result.data
-            : typeof result.message === "string"
-              ? result.message
-              : "Unable to send OTP.";
-
-        setSignUpError(message);
-
-        return;
-      }
-    }
-
-    setSignUpOtp([
-      "",
-      "",
-      "",
-      "",
-      "",
-      "",
-    ]);
-
-    setSignUpOtpRequested(true);
-
-    setSignUpTimer(20);
-
-    setSignUpSuccess(
-      "OTP sent successfully."
-    );
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      setSignUpError(error.message);
-    } else {
-      setSignUpError(
-        "Unable to send OTP. Please try again."
-      );
-    }
-  } finally {
-    setSignUpLoading(false);
-  }
-};
-
-  const handleSignUpOtpChange = (
-  index: number,
-  value: string
-) => {
-  const digit = value
-    .replace(/\D/g, "")
-    .slice(-1);
-
-  const updatedOtp = [...signUpOtp];
-
-  updatedOtp[index] = digit;
-
-  setSignUpOtp(updatedOtp);
-
-  setSignUpError("");
-
-  if (digit && index < 5) {
-    const nextInput =
-      document.getElementById(
-        `signup-digit-${index + 2}`
-      );
-
-    nextInput?.focus();
-  }
   };
+  // Signup OTP end
+
+  const handleSignUpOtpChange = (index: number, value: string) => {
+    const digit = value.replace(/\D/g, "").slice(-1);
+
+    const updatedOtp = [...signUpOtp];
+
+    updatedOtp[index] = digit;
+
+    setSignUpOtp(updatedOtp);
+
+    setSignUpError("");
+
+    if (digit && index < 5) {
+      const nextInput = document.getElementById(`signup-digit-${index + 2}`);
+
+      nextInput?.focus();
+    }
+  };
+
+  // Signup Start
   const handleRegister = async () => {
-  setSignUpError("");
-  setSignUpSuccess("");
+    setSignUpError("");
+    setSignUpSuccess("");
 
-  const firstName =
-    signUpFirstName.trim();
+    const firstName = signUpFirstName.trim();
 
-  const lastName =
-    signUpLastName.trim();
+    const lastName = signUpLastName.trim();
 
-  const mobile =
-    signUpMobile.trim();
+    const mobile = signUpMobile.trim();
 
-  const email =
-    signUpEmail.trim().toLowerCase();
+    const email = signUpEmail.trim().toLowerCase();
 
-  const otp =
-    signUpOtp.join("");
+    const otp = signUpOtp.join("");
 
-  if (!firstName) {
-    setSignUpError(
-      "Please enter your first name."
-    );
-    return;
-  }
+    if (!firstName) {
+      setSignUpError("Please enter your first name.");
+      return;
+    }
 
-  if (!lastName) {
-    setSignUpError(
-      "Please enter your last name."
-    );
-    return;
-  }
+    if (!lastName) {
+      setSignUpError("Please enter your last name.");
+      return;
+    }
 
-  if (!/^\d{10}$/.test(mobile)) {
-    setSignUpError(
-      "Please enter a valid 10 digit mobile number."
-    );
-    return;
-  }
+    if (!/^\d{10}$/.test(mobile)) {
+      setSignUpError("Please enter a valid 10 digit mobile number.");
+      return;
+    }
 
-  if (!signUpOtpRequested) {
-    setSignUpError(
-      "Please request OTP first."
-    );
-    return;
-  }
+    if (!signUpOtpRequested) {
+      setSignUpError("Please request OTP first.");
+      return;
+    }
 
-  if (otp.length !== 6) {
-    setSignUpError(
-      "Please enter the complete 6 digit OTP."
-    );
-    return;
-  }
+    if (otp.length !== 6) {
+      setSignUpError("Please enter the complete 6 digit OTP.");
+      return;
+    }
 
-  const emailRegex =
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  if (!emailRegex.test(email)) {
-    setSignUpError(
-      "Please enter a valid email address."
-    );
-    return;
-  }
+    if (!emailRegex.test(email)) {
+      setSignUpError("Please enter a valid email address.");
+      return;
+    }
 
-  if (!signUpTerms) {
-    setSignUpError(
-      "Please accept the Terms & Conditions."
-    );
-    return;
-  }
+    if (!signUpTerms) {
+      setSignUpError("Please accept the Terms & Conditions.");
+      return;
+    }
 
-  try {
-    setSignUpLoading(true);
+    try {
+      setSignUpLoading(true);
 
-    const payload = {
-      first_name: firstName,
-      last_name: lastName,
-      email,
-      mobileNumber: mobile,
-    };
-
-    const response =
-      await signUp(payload);
-
-    console.log(
-      "Signup Response:",
-      response
-    );
-
-    if (
-      typeof response === "object" &&
-      response !== null
-    ) {
-      const result = response as {
-        status?: number;
-        success?: boolean;
-        data?: unknown;
-        message?: string;
+      const payload = {
+        first_name: firstName,
+        last_name: lastName,
+        email,
+        mobileNumber: mobile,
+        otp: otp,
       };
 
-      if (
-        result.status === 0 ||
-        result.success === false
-      ) {
-        const message =
-          typeof result.data === "string"
-            ? result.data
-            : typeof result.message === "string"
-              ? result.message
-              : "Registration failed.";
+      const response = await signUp(payload);
 
-        setSignUpError(message);
+      const result =
+        typeof response === "object" && response !== null
+          ? (response as {
+              data?: unknown;
+              status?: number;
+              success?: boolean;
+              message?: string;
+            })
+          : null;
+
+      // SIGNUP SUCCESS
+      if (result?.status === 1 && result.success === true) {
+        // Prefill mobile number in Login popup
+        setMobileNumber(mobile);
+        showAlert({
+          type: "success",
+          title: "Registration Successful!",
+          message:
+            "Your account has been created successfully. Please sign in to continue.",
+          buttonText: "Continue",
+          autoClose: 2000,
+        });
+        // Reset Login OTP state
+        setOtpRequested(false);
+        setOtp(["", "", "", "", "", ""]);
+        setTimer(20);
+        setError("");
+        setSuccessMessage("");
+
+        // Clear Signup form
+        setSignUpFirstName("");
+        setSignUpLastName("");
+        setSignUpMobile("");
+        setSignUpEmail("");
+        setSignUpTerms(false);
+        setSignUpOtp(["", "", "", "", "", ""]);
+        setSignUpOtpRequested(false);
+        setSignUpTimer(20);
+        setSignUpError("");
+        setSignUpSuccess("");
+
+        // Close Signup popup
+        setIsSignIn(false);
+
+        // Open Login popup
+        setIsOpen(true);
 
         return;
       }
 
+      // SIGNUP FAILURE
       const message =
-        typeof result.message === "string"
-          ? result.message
-          : typeof result.data === "string"
-            ? result.data
-            : "Registration successful.";
+        typeof result?.data === "string"
+          ? result.data
+          : typeof result?.message === "string"
+            ? result.message
+            : "Registration failed. Please try again.";
 
-      setSignUpSuccess(message);
+      setSignUpError(message);
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        setSignUpError(error.message);
+      } else {
+        setSignUpError("Unable to register. Please try again.");
+      }
+    } finally {
+      setSignUpLoading(false);
+    }
+  };
+  // Signup End
+
+  // Login Start
+  const handleVerifyOtp = async () => {
+    setError("");
+    setSuccessMessage("");
+
+    const otpValue = otp.join("");
+
+    if (otpValue.length !== 6) {
+      showAlert({
+        type: "warning",
+        title: "Incomplete OTP",
+        message: "Please enter the complete 6 digit OTP.",
+        autoClose: 2000,
+      });
 
       return;
     }
 
-    setSignUpSuccess(
-      "Registration successful."
-    );
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      setSignUpError(error.message);
-    } else {
-      setSignUpError(
-        "Unable to register. Please try again."
-      );
+    try {
+      setLoading(true);
+
+      // Verify OTP and save secure session
+      const result = await loginWithOtp(mobileNumber.trim(), otpValue);
+
+      if (!result.success) {
+        showAlert({
+          type: "warning",
+          title: "Login Failed",
+          message: result.message,
+          buttonText: "OK",
+          autoClose: 3000,
+        });
+
+        return;
+      }
+
+      // Keep only user information in React state
+      setLoginSession({
+        user: result.user,
+      });
+
+      // Reset login form
+      setOtpRequested(false);
+      setOtp(["", "", "", "", "", ""]);
+      setTimer(20);
+
+      setError("");
+      setSuccessMessage("");
+
+      // Close login modal
+      setIsOpen(false);
+      setIsAccountMenuOpen(false);
+
+      // Success alert
+      showAlert({
+        type: "success",
+        title: "Login Successful!",
+        message: `Welcome back, ${result.user.first_name}!`,
+        buttonText: "Continue",
+        autoClose: 2000,
+      });
+    } catch (error: unknown) {
+      showAlert({
+        type: "error",
+        title: "Login Error",
+        message:
+          error instanceof Error
+            ? error.message
+            : "Something went wrong. Please try again.",
+        autoClose: 3000,
+      });
+    } finally {
+      setLoading(false);
     }
-  } finally {
-    setSignUpLoading(false);
-  }
-};
-  
+  };
+
+  // Login End
   return (
     <>
-      <div ref={headerRef} className={`${styles["main-header"]} ${bannerTouched ? styles["banner-touched"] : ""}`}>
-        <div className={styles['top-wrap']}>
+      <div
+        ref={headerRef}
+        className={`${styles["main-header"]} ${bannerTouched ? styles["banner-touched"] : ""}`}
+      >
+        <div className={styles["top-wrap"]}>
           <img src="/assets/images/bell.svg" alt="Notification Bell" />
           <p>
-            Easy online booking for lab tests, diagnostics and complete health checkups at home
+            Easy online booking for lab tests, diagnostics and complete health
+            checkups at home
             <a href="#">
-              Book Test <img src="/assets/images/right-arrow.svg" alt="Right Arrow" />
+              Book Test{" "}
+              <img src="/assets/images/right-arrow.svg" alt="Right Arrow" />
             </a>
           </p>
         </div>
-        <div className={styles['btm-wrap']}>
-          <div className={styles['lt-side']}>
+        <div className={styles["btm-wrap"]}>
+          <div className={styles["lt-side"]}>
             {/* Logo Link */}
             <Link href="/" className={styles.logo}>
               <div className={styles.img}>
                 <img src="/assets/images/logo.png" alt="Nirnayan Logo" />
               </div>
               <div className={styles.text}>
-                <span className={styles.notranslate} translate="no">Nirnayan</span>
+                <span className={styles.notranslate} translate="no">
+                  Nirnayan
+                </span>
               </div>
             </Link>
 
             {/* Location Selector */}
-            <div className={styles['location']} onClick={() => setIsLocation(true)}>
+            <div
+              className={styles["location"]}
+              onClick={() => setIsLocation(true)}
+            >
               <i className="fa-solid fa-location-dot location-icon"></i>
               <h4>Kolkata</h4>
               <i className="fa-solid fa-chevron-down"></i>
             </div>
 
             {/* Hidden Block */}
-            <div className={styles['hidden-block']}>
-              <div className={styles['loc-in']} onClick={() => setIsLocation(true)}>
+            <div className={styles["hidden-block"]}>
+              <div
+                className={styles["loc-in"]}
+                onClick={() => setIsLocation(true)}
+              >
                 <i className="fa-solid fa-location-dot location-icon"></i>
                 <h4>Kolkata</h4>
                 <i className="fa-solid fa-chevron-down"></i>
               </div>
 
-              <div className={styles['test-search']}>
+              <div className={styles["test-search"]}>
                 <div className={styles.divider}></div>
                 <div className="d-flex align-items-center flex-grow-1">
-                  <span className={styles['search-text']}>
-                    Search for
-                  </span>
+                  <span className={styles["search-text"]}>Search for</span>
                 </div>
                 <div className="d-flex align-items-center">
                   <img src="/assets/images/rx.svg" alt="Rx Icon" />
@@ -700,33 +878,41 @@ const handleSignUpGetOtp = async () => {
               </div>
             </div>
           </div>
-          <div className={styles['rt-side']}>
+          <div className={styles["rt-side"]}>
             <div className={styles.navigation}>
               <ul>
                 <li>
-                  <Link
-                    href="#">
+                  <Link href="#">
                     <img src="/assets/images/blood.svg" alt="Test Icon" /> Test
                   </Link>
                 </li>
                 <li>
-                  <Link
-                    href="#">
-                    <img src="/assets/images/package.svg" alt="Package Icon" /> Packages
+                  <Link href="#">
+                    <img src="/assets/images/package.svg" alt="Package Icon" />{" "}
+                    Packages
                   </Link>
                 </li>
               </ul>
             </div>
 
-            <div className={styles['more-btns']}>
+            <div className={styles["more-btns"]}>
               <a href="#">
                 More <i className="fa-solid fa-chevron-down"></i>
               </a>
             </div>
 
-            <div className={`${styles.lang_switcher} lang-switcher ${langOpen ? "open" : ""}`}>
-              <button type="button" className={styles.lang_trigger} onClick={toggleLang}>
-                <img src="/assets/images/lang-switch.svg" alt="Language Switcher" />
+            <div
+              className={`${styles.lang_switcher} lang-switcher ${langOpen ? "open" : ""}`}
+            >
+              <button
+                type="button"
+                className={styles.lang_trigger}
+                onClick={toggleLang}
+              >
+                <img
+                  src="/assets/images/lang-switch.svg"
+                  alt="Language Switcher"
+                />
                 <i className="fa-solid fa-chevron-down"></i>
               </button>
 
@@ -736,7 +922,7 @@ const handleSignUpGetOtp = async () => {
                     <button
                       key={lang.code}
                       type="button"
-                      className={`${styles['lang-item']} ${selectedLang === lang.code ? styles.active : ""}`}
+                      className={`${styles["lang-item"]} ${selectedLang === lang.code ? styles.active : ""}`}
                       onClick={() => handleSelect(lang.code)}
                     >
                       <span>{lang.label}</span>
@@ -746,638 +932,592 @@ const handleSignUpGetOtp = async () => {
               )}
             </div>
 
-            <div className={styles['cart-wrap']}>
-              <Link href='#'>
-                <i className="fa-solid fa-cart-shopping"></i>
-                <span className={styles['number']}>0</span>
-              </Link>
-            </div>
+            {!sessionLoading && loginSession && (
+              <div className={styles["cart-wrap"]}>
+                <Link href="#">
+                  <i className="fa-solid fa-cart-shopping"></i>
+                  <span className={styles["number"]}>0</span>
+                </Link>
+              </div>
+            )}
 
-            <div className={`user ${styles.user}`}>
-              <div className={`dropdown ${styles.dropdown}`}>
+            {/* USER ACCOUNT DROPDOWN */}
+
+            <div className={`user ${styles.user}`} ref={accountMenuRef}>
+              <div className={styles.accountDropdown}>
+                {/* ACCOUNT TRIGGER */}
+
                 <button
-                  className="btn btn-secondary dropdown-toggle"
                   type="button"
-                  data-bs-toggle="dropdown"
-                  aria-expanded="false"
+                  className={styles.accountTrigger}
+                  onClick={() => setIsAccountMenuOpen((previous) => !previous)}
+                  aria-expanded={isAccountMenuOpen}
+                  disabled={sessionLoading}
+                  aria-controls="header-account-menu"
+                  aria-label={
+                    loginSession ? "Open profile menu" : "Open account menu"
+                  }
                 >
-                  <span className={styles.img}>
-                    <img src="/assets/images/user.png" alt="User" />
-                  </span>
+                  {loginSession ? (
+                    <span className={styles.accountAvatar}>
+                      {loginSession.user.first_name
+                        ?.trim()
+                        .charAt(0)
+                        .toUpperCase() || "U"}
+                    </span>
+                  ) : (
+                    <span className={styles.guestAvatar}>
+                      <img src="/assets/images/user.png" alt="" />
+                    </span>
+                  )}
+
+                  <i className="fa-solid fa-chevron-down" />
                 </button>
-                <ul className={`dropdown-menu ${styles.dropdown_menu}`}>
-                  <li>
-                    <a className={`dropdown-item ${styles.dropdown_item}`} href="#" onClick={() => setIsOpen(true)}>
-                      <img src="/assets/images/sign-in.svg" alt="" />
-                      Sign in
-                    </a>
-                  </li>
-                  <li>
-                    <a className={`dropdown-item ${styles.dropdown_item}`} href="#" onClick={() => setIsSignIn(true)}>
-                      <img src="/assets/images/log-in.svg" alt="" />
-                      Sign Up
-                    </a>
-                  </li>
-                </ul>
+
+                {/* DROPDOWN CONTENT */}
+
+                {!sessionLoading && isAccountMenuOpen && (
+                  <div id="header-account-menu" className={styles.accountMenu}>
+                    {loginSession ? (
+                      <>
+                        {/* LOGGED-IN USER PROFILE */}
+
+                        <div className={styles.accountProfile}>
+                          <div className={styles.profileAvatar}>
+                            {loginSession.user.first_name
+                              ?.trim()
+                              .charAt(0)
+                              .toUpperCase() || "U"}
+                          </div>
+
+                          <div className={styles.profileInfo}>
+                            <strong>
+                              {loginSession.user.first_name}{" "}
+                              {loginSession.user.last_name}
+                            </strong>
+
+                            <span>{loginSession.user.email}</span>
+                          </div>
+                        </div>
+
+                        <div className={styles.accountDivider} />
+
+                        {/* PROFILE DETAILS */}
+
+                        <div className={styles.profileDetails}>
+                          <span className={styles.profileLabel}>
+                            MY PROFILE
+                          </span>
+
+                          <p>
+                            <i className="fa-regular fa-user" />{" "}
+                            {loginSession.user.first_name}{" "}
+                            {loginSession.user.last_name}
+                          </p>
+
+                          <p>
+                            <i className="fa-solid fa-phone" />{" "}
+                            {loginSession.user.mobile_number}
+                          </p>
+                        </div>
+
+                        <div className={styles.accountDivider} />
+
+                        {/* LOGOUT */}
+
+                        <button
+                          type="button"
+                          className={`${styles.accountMenuButton} ${styles.logoutButton}`}
+                          onClick={handleLogout}
+                        >
+                          <i className="fa-solid fa-right-from-bracket" />
+                          <span>Logout</span>
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        {/* GUEST: SIGN IN */}
+
+                        <button
+                          type="button"
+                          className={styles.accountMenuButton}
+                          onClick={() => {
+                            setIsAccountMenuOpen(false);
+                            setIsSignIn(false);
+                            setIsOpen(true);
+                          }}
+                        >
+                          <i className="fa-solid fa-right-to-bracket" />
+                          <span>Sign In</span>
+                        </button>
+
+                        {/* GUEST: SIGN UP */}
+
+                        <button
+                          type="button"
+                          className={styles.accountMenuButton}
+                          onClick={() => {
+                            setIsAccountMenuOpen(false);
+                            setIsOpen(false);
+                            setIsSignIn(true);
+                          }}
+                        >
+                          <i className="fa-solid fa-user-plus" />
+                          <span>Sign Up</span>
+                        </button>
+                      </>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
-
           </div>
         </div>
       </div>
 
       {/* Sign Up Modal Start */}
       {isSignIn && (
-  <div
-    className={`is-logged ${
-      isSignIn ? "active" : ""
-    }`}
-    onClick={() =>
-      setIsSignIn(false)
-    }
-  >
-    <div
-      className="inn"
-      onClick={(e) =>
-        e.stopPropagation()
-      }
-    >
-      <div className="row align-items-center">
+        <div
+          className={`is-logged ${isSignIn ? "active" : ""}`}
+          onClick={() => setIsSignIn(false)}
+        >
+          <div className="inn" onClick={(e) => e.stopPropagation()}>
+            <div className="row align-items-center">
+              {/* LEFT IMAGE */}
 
-        {/* LEFT IMAGE */}
-
-        <div className="col-lg-6 col-sm-12">
-
-          <div className="img">
-
-            <img
-              src="/assets/images/log-img.png"
-              alt="Sign Up"
-            />
-
-          </div>
-
-        </div>
-
-        {/* SIGNUP FORM */}
-
-        <div className="col-lg-6 col-sm-12">
-
-          <div className="text">
-
-            <h3>Sign Up</h3>
-
-            <div className="row">
-
-              {/* FIRST NAME */}
-
-              <div className="col-lg-6 col-md-12 col-sm-12">
-
-                <div className="block">
-
-                  <label className="lbl">
-                    First Name
-                    <span>*</span>
-                  </label>
-
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={
-                      signUpFirstName
-                    }
-                    onChange={(e) => {
-                      setSignUpFirstName(
-                        e.target.value
-                      );
-
-                      setSignUpError("");
-                    }}
-                  />
-
+              <div className="col-lg-6 col-sm-12">
+                <div className="img">
+                  <img src="/assets/images/log-img.png" alt="Sign Up" />
                 </div>
-
               </div>
 
-              {/* LAST NAME */}
+              {/* SIGNUP FORM */}
 
-              <div className="col-lg-6 col-md-12 col-sm-12">
+              <div className="col-lg-6 col-sm-12">
+                <div className="text">
+                  <h3>Sign Up</h3>
 
-                <div className="block">
+                  <div className="row">
+                    {/* FIRST NAME */}
 
-                  <label className="lbl">
-                    Last Name
-                    <span>*</span>
-                  </label>
+                    <div className="col-lg-6 col-md-12 col-sm-12">
+                      <div className="block">
+                        <label className="lbl">
+                          First Name
+                          <span>*</span>
+                        </label>
 
-                  <input
-                    type="text"
-                    className="form-control"
-                    value={
-                      signUpLastName
-                    }
-                    onChange={(e) => {
-                      setSignUpLastName(
-                        e.target.value
-                      );
-
-                      setSignUpError("");
-                    }}
-                  />
-
-                </div>
-
-              </div>
-
-              {/* MOBILE */}
-
-              <div className="col-lg-12 col-md-12 col-sm-12">
-
-                <div className="block">
-
-                  <label className="lbl">
-                    Mobile Number
-                    <span>*</span>
-                  </label>
-
-                  <div className="position-relative">
-
-                    <input
-                      type="tel"
-                      placeholder="Enter your 10 digit mobile number"
-                      className="form-control"
-                      maxLength={10}
-                      value={signUpMobile}
-                      disabled={
-                        signUpOtpRequested
-                      }
-                      onChange={(e) => {
-                        const value =
-                          e.target.value.replace(
-                            /\D/g,
-                            ""
-                          );
-
-                        setSignUpMobile(
-                          value
-                        );
-
-                        setSignUpError("");
-                      }}
-                    />
-
-                    <button
-                      type="button"
-                      id="otpButton"
-                      onClick={
-                        handleSignUpGetOtp
-                      }
-                      disabled={
-                        signUpLoading ||
-                        signUpOtpRequested ||
-                        signUpMobile.length !==
-                          10
-                      }
-                    >
-                      {signUpLoading
-                        ? "Sending..."
-                        : signUpOtpRequested
-                          ? "OTP Sent"
-                          : "Get OTP"}
-                    </button>
-
-                  </div>
-
-                </div>
-
-              </div>
-
-              {/* OTP SECTION */}
-
-              {signUpOtpRequested && (
-                <div className="col-lg-12 col-md-12 col-sm-12">
-
-                  <h5>
-                    Enter Your OTP
-                  </h5>
-
-                  <div className="digit-group">
-
-                    {signUpOtp.map(
-                      (digit, index) => (
                         <input
-                          key={index}
-                          type="tel"
-                          id={`signup-digit-${index + 1}`}
-                          name={`signup-digit-${index + 1}`}
-                          value={digit}
-                          maxLength={1}
-                          required
-                          onChange={(e) =>
-                            handleSignUpOtpChange(
-                              index,
-                              e.target.value
-                            )
-                          }
+                          type="text"
+                          className="form-control"
+                          placeholder="First Name"
+                          value={signUpFirstName}
+                          onChange={(e) => {
+                            setSignUpFirstName(e.target.value);
+
+                            setSignUpError("");
+                          }}
                         />
-                      )
+                      </div>
+                    </div>
+
+                    {/* LAST NAME */}
+
+                    <div className="col-lg-6 col-md-12 col-sm-12">
+                      <div className="block">
+                        <label className="lbl">
+                          Last Name
+                          <span>*</span>
+                        </label>
+
+                        <input
+                          type="text"
+                          className="form-control"
+                          placeholder="Last Name"
+                          value={signUpLastName}
+                          onChange={(e) => {
+                            setSignUpLastName(e.target.value);
+
+                            setSignUpError("");
+                          }}
+                        />
+                      </div>
+                    </div>
+
+                    {/* MOBILE */}
+
+                    <div className="col-lg-12 col-md-12 col-sm-12">
+                      <div className="block">
+                        <label className="lbl">
+                          Mobile Number
+                          <span>*</span>
+                        </label>
+
+                        <div className="position-relative">
+                          <input
+                            type="tel"
+                            placeholder="Enter your 10 digit mobile number"
+                            className="form-control"
+                            maxLength={10}
+                            value={signUpMobile}
+                            disabled={signUpOtpRequested}
+                            onChange={(e) => {
+                              const value = e.target.value.replace(/\D/g, "");
+
+                              setSignUpMobile(value);
+
+                              setSignUpError("");
+                            }}
+                          />
+
+                          <button
+                            type="button"
+                            id="otpButton"
+                            onClick={
+                              signUpOtpRequested
+                                ? handleChangeSignUpMobile
+                                : handleSignUpGetOtp
+                            }
+                            disabled={
+                              signUpLoading ||
+                              (!signUpOtpRequested &&
+                                signUpMobile.length !== 10)
+                            }
+                          >
+                            {signUpLoading
+                              ? "Sending..."
+                              : signUpOtpRequested
+                                ? "Change Number"
+                                : "Get OTP"}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* OTP SECTION */}
+
+                    {signUpOtpRequested && (
+                      <div className="col-lg-12 col-md-12 col-sm-12">
+                        <h5>Enter Your OTP</h5>
+
+                        <div className="digit-group">
+                          {signUpOtp.map((digit, index) => (
+                            <input
+                              key={index}
+                              type="tel"
+                              id={`signup-digit-${index + 1}`}
+                              name={`signup-digit-${index + 1}`}
+                              value={digit}
+                              maxLength={1}
+                              required
+                              onChange={(e) =>
+                                handleSignUpOtpChange(index, e.target.value)
+                              }
+                            />
+                          ))}
+                        </div>
+
+                        <div className="otpRequested">
+                          {signUpTimer > 0 ? (
+                            <p>
+                              Time Remaining: <span>{signUpTimer} sec</span>
+                            </p>
+                          ) : (
+                            <p>OTP expired.</p>
+                          )}
+                        </div>
+                      </div>
                     )}
 
-                  </div>
+                    {/* EMAIL */}
 
-                  <div className="otpRequested">
+                    <div className="col-lg-12 col-md-12 col-sm-12">
+                      <div className="block">
+                        <label className="lbl">
+                          Email Address
+                          <span>*</span>
+                        </label>
 
-                    {signUpTimer > 0 ? (
-                      <p>
-                        Time Remaining:{" "}
-                        <span>
-                          {signUpTimer} sec
+                        <input
+                          type="email"
+                          placeholder="Enter your email address"
+                          className="form-control"
+                          value={signUpEmail}
+                          onChange={(e) => {
+                            setSignUpEmail(e.target.value);
+
+                            setSignUpError("");
+                          }}
+                        />
+                      </div>
+                    </div>
+
+                    {/* TERMS */}
+
+                    <div className="col-lg-12 col-md-12 col-sm-12">
+                      <label className="check-custom">
+                        <input
+                          type="checkbox"
+                          checked={signUpTerms}
+                          onChange={(e) => setSignUpTerms(e.target.checked)}
+                        />
+
+                        <span className="checkmark" />
+
+                        <span className="sp-lbl">
+                          I agree to the{" "}
+                          <a href="#" onClick={(e) => e.preventDefault()}>
+                            Terms & Conditions
+                          </a>
                         </span>
-                      </p>
-                    ) : (
-                      <p>
-                        OTP expired.
-                      </p>
+                      </label>
+                    </div>
+
+                    {/* ERROR */}
+
+                    {signUpError && (
+                      <div className="col-12">
+                        <p
+                          style={{
+                            color: "#d92d20",
+                            marginTop: "10px",
+                            marginBottom: "10px",
+                          }}
+                        >
+                          {signUpError}
+                        </p>
+                      </div>
                     )}
 
+                    {/* SUCCESS */}
+
+                    {signUpSuccess && (
+                      <div className="col-12">
+                        <p
+                          style={{
+                            color: "#16803c",
+                            marginTop: "10px",
+                            marginBottom: "10px",
+                          }}
+                        >
+                          {signUpSuccess}
+                        </p>
+                      </div>
+                    )}
                   </div>
 
-                </div>
-              )}
+                  {/* REGISTER */}
 
-              {/* EMAIL */}
+                  <button
+                    type="button"
+                    className="cmn_btn w-100"
+                    onClick={handleRegister}
+                    disabled={signUpLoading}
+                  >
+                    {signUpLoading ? "Registering..." : "Register"}
+                  </button>
 
-              <div className="col-lg-12 col-md-12 col-sm-12">
+                  {/* SIGN IN */}
 
-                <div className="block">
-
-                  <label className="lbl">
-                    Email Address
-                    <span>*</span>
-                  </label>
-
-                  <input
-                    type="email"
-                    placeholder="Enter your email address"
-                    className="form-control"
-                    value={signUpEmail}
-                    onChange={(e) => {
-                      setSignUpEmail(
-                        e.target.value
-                      );
-
-                      setSignUpError("");
-                    }}
-                  />
-
-                </div>
-
-              </div>
-
-              {/* TERMS */}
-
-              <div className="col-lg-12 col-md-12 col-sm-12">
-
-                <label className="check-custom">
-
-                  <input
-                    type="checkbox"
-                    checked={
-                      signUpTerms
-                    }
-                    onChange={(e) =>
-                      setSignUpTerms(
-                        e.target.checked
-                      )
-                    }
-                  />
-
-                  <span className="checkmark" />
-
-                  <span className="sp-lbl">
-                    I agree to the{" "}
-
+                  <p className="text-center mt-3">
+                    I already have an account
+                    {" | "}
                     <a
                       href="#"
-                      onClick={(e) =>
-                        e.preventDefault()
-                      }
+                      className="sign-text"
+                      onClick={(e) => {
+                        e.preventDefault();
+
+                        setIsSignIn(false);
+
+                        setIsOpen(true);
+                      }}
                     >
-                      Terms & Conditions
+                      Sign In
                     </a>
-
-                  </span>
-
-                </label>
-
+                  </p>
+                </div>
               </div>
-
-              {/* ERROR */}
-
-              {signUpError && (
-                <div className="col-12">
-
-                  <p
-                    style={{
-                      color: "#d92d20",
-                      marginTop: "10px",
-                      marginBottom: "10px",
-                    }}
-                  >
-                    {signUpError}
-                  </p>
-
-                </div>
-              )}
-
-              {/* SUCCESS */}
-
-              {signUpSuccess && (
-                <div className="col-12">
-
-                  <p
-                    style={{
-                      color: "#16803c",
-                      marginTop: "10px",
-                      marginBottom: "10px",
-                    }}
-                  >
-                    {signUpSuccess}
-                  </p>
-
-                </div>
-              )}
-
             </div>
-
-            {/* REGISTER */}
-
-            <button
-              type="button"
-              className="cmn_btn w-100"
-              onClick={
-                handleRegister
-              }
-              disabled={
-                signUpLoading
-              }
-            >
-              {signUpLoading
-                ? "Registering..."
-                : "Register"}
-            </button>
-
-            {/* SIGN IN */}
-
-            <p className="text-center mt-3">
-
-              I already have an account
-              {" | "}
-
-              <a
-                href="#"
-                className="sign-text"
-                onClick={(e) => {
-                  e.preventDefault();
-
-                  setIsSignIn(false);
-
-                  setIsOpen(true);
-                }}
-              >
-                Sign In
-              </a>
-
-            </p>
-
           </div>
-
         </div>
-
-      </div>
-    </div>
-  </div>
-)}
+      )}
       {/* Sign Up Modal End */}
 
       {/* Sign In Modal Start */}
       {isOpen && (
-  <div
-    className={`is-logged ${isOpen ? "active" : ""}`}
-    onClick={() => setIsOpen(false)}
-    >
-    <div
-      className="inn"
-      onClick={(e) => e.stopPropagation()}
-    >
-      <div className="row align-items-center">
+        <div
+          className={`is-logged ${isOpen ? "active" : ""}`}
+          onClick={() => setIsOpen(false)}
+        >
+          <div className="inn" onClick={(e) => e.stopPropagation()}>
+            <div className="row align-items-center">
+              {/* LEFT IMAGE */}
 
-        {/* LEFT IMAGE */}
-
-        <div className="col-lg-6 col-sm-12">
-          <div className="img">
-            <img
-              src="/assets/images/log-img.png"
-              alt="Login"
-            />
-          </div>
-        </div>
-
-        {/* RIGHT LOGIN */}
-
-        <div className="col-lg-6 col-sm-12">
-          <div className="text">
-
-            <h3>
-              Sign in to your account
-            </h3>
-
-            <p>
-              View your reports and upcoming
-              health checkups at one place.
-            </p>
-
-            <div className="row">
-
-              {/* MOBILE NUMBER */}
-
-              <div className="col-lg-12 col-md-12 col-sm-12">
-
-                <div className="block">
-
-                  <label className="lbl">
-                    Mobile Number
-                    <span>*</span>
-                  </label>
-
-                  <input
-                    type="tel"
-                    placeholder="Enter your 10 digit mobile number"
-                    className="form-control"
-                    value={mobileNumber}
-                    maxLength={10}
-                    disabled={
-                      loading ||
-                      otpRequested
-                    }
-                    onChange={(event) => {
-                      const value =
-                        event.target.value.replace(
-                          /\D/g,
-                          ""
-                        );
-
-                      setMobileNumber(value);
-
-                      setError("");
-                      setSuccessMessage("");
-                    }}
-                  />
-
+              <div className="col-lg-6 col-sm-12">
+                <div className="img">
+                  <img src="/assets/images/log-img.png" alt="Login" />
                 </div>
-
               </div>
 
-              {/* ERROR */}
+              {/* RIGHT LOGIN */}
 
-              {error && (
-                <div className="col-12">
-                  <p
-                    style={{
-                      color: "#d92d20",
-                      marginTop: "8px",
-                      marginBottom: "8px",
-                    }}
-                  >
-                    {error}
+              <div className="col-lg-6 col-sm-12">
+                <div className="text">
+                  <h3>Sign in to your account</h3>
+
+                  <p>
+                    View your reports and upcoming health checkups at one place.
                   </p>
-                </div>
-              )}
 
-              {/* SUCCESS */}
+                  <div className="row">
+                    {/* MOBILE NUMBER */}
 
-              {successMessage && (
-                <div className="col-12">
-                  <p
-                    style={{
-                      color: "#16803c",
-                      marginTop: "8px",
-                      marginBottom: "8px",
-                    }}
-                  >
-                    {successMessage}
-                  </p>
-                </div>
-              )}
+                    <div className="col-lg-12 col-md-12 col-sm-12">
+                      <div className="block">
+                        <label className="lbl">
+                          Mobile Number
+                          <span>*</span>
+                        </label>
 
-              {/* OTP SECTION */}
-
-              {otpRequested && (
-                <div className="col-lg-12 col-md-12 col-sm-12">
-
-                  <h5>
-                    Enter Your OTP
-                  </h5>
-
-                  <div className="digit-group">
-
-                    {otp.map(
-                      (digit, index) => (
                         <input
-                          key={index}
                           type="tel"
-                          id={`digit-${index + 1}`}
-                          name={`digit-${index + 1}`}
-                          value={digit}
-                          maxLength={1}
-                          required
-                          onChange={(event) =>
-                            handleOtpChange(
-                              index,
-                              event.target.value
-                            )
-                          }
+                          placeholder="Enter your 10 digit mobile number"
+                          className="form-control"
+                          value={mobileNumber}
+                          maxLength={10}
+                          disabled={loading || otpRequested}
+                          onChange={(event) => {
+                            const value = event.target.value.replace(/\D/g, "");
+
+                            setMobileNumber(value);
+
+                            setError("");
+                            setSuccessMessage("");
+                          }}
                         />
-                      )
+                      </div>
+                    </div>
+
+                    {/* ERROR */}
+
+                    {error && (
+                      <div className="col-12">
+                        <p
+                          style={{
+                            color: "#d92d20",
+                            marginTop: "8px",
+                            marginBottom: "8px",
+                          }}
+                        >
+                          {error}
+                        </p>
+                      </div>
                     )}
 
-                  </div>
+                    {/* SUCCESS */}
 
-                  <div className="otpRequested">
-
-                    {timer > 0 ? (
-                      <p>
-                        Time Remaining:{" "}
-                        <span>
-                          {timer} sec
-                        </span>
-                      </p>
-                    ) : (
-                      <p>
-                        OTP expired. You can
-                        request another OTP.
-                      </p>
+                    {successMessage && (
+                      <div className="col-12">
+                        <p
+                          style={{
+                            color: "#16803c",
+                            marginTop: "8px",
+                            marginBottom: "8px",
+                          }}
+                        >
+                          {successMessage}
+                        </p>
+                      </div>
                     )}
 
+                    {/* OTP SECTION */}
+
+                    {otpRequested && (
+                      <div className="col-lg-12 col-md-12 col-sm-12">
+                        <h5>Enter Your OTP</h5>
+
+                        <div className="digit-group">
+                          {otp.map((digit, index) => (
+                            <input
+                              key={index}
+                              type="tel"
+                              id={`digit-${index + 1}`}
+                              name={`digit-${index + 1}`}
+                              value={digit}
+                              maxLength={1}
+                              required
+                              onChange={(event) =>
+                                handleOtpChange(index, event.target.value)
+                              }
+                            />
+                          ))}
+                        </div>
+
+                        <div className="otpRequested">
+                          {timer > 0 ? (
+                            <p>
+                              Time Remaining: <span>{timer} sec</span>
+                            </p>
+                          ) : (
+                            <p>OTP expired. You can request another OTP.</p>
+                          )}
+                        </div>
+                      </div>
+                    )}
                   </div>
 
+                  {/* GET OTP */}
+
+                  {!otpRequested && (
+                    <button
+                      type="button"
+                      className="cmn_btn w-100"
+                      onClick={handleGetLoginOtp}
+                      disabled={loading || mobileNumber.length !== 10}
+                    >
+                      {loading ? "Sending OTP..." : "Get OTP"}
+                    </button>
+                  )}
+
+                  {/* OTP RECEIVED */}
+
+                  {loginSession && (
+                    <span>Welcome, {loginSession.user.first_name}</span>
+                  )}
+
+                  {otpRequested && (
+                    <button
+                      type="button"
+                      className="cmn_btn w-100"
+                      onClick={handleVerifyOtp}
+                      disabled={loading || otp.some((digit) => digit === "")}
+                    >
+                      {loading ? "Verifying..." : "Verify OTP"}
+                    </button>
+                  )}
                 </div>
-              )}
-
+              </div>
             </div>
-
-            {/* GET OTP */}
-
-            {!otpRequested && (
-              <button
-                type="button"
-                className="cmn_btn w-100"
-                onClick={handleGetOtp}
-                disabled={
-                  loading ||
-                  mobileNumber.length !== 10
-                }
-              >
-                {loading
-                  ? "Sending OTP..."
-                  : "Get OTP"}
-              </button>
-            )}
-
-            {/* OTP RECEIVED */}
-
-            {otpRequested && (
-            <button
-              type="button"
-              className="cmn_btn w-100"
-              onClick={handleVerifyOtp}
-              disabled={
-                loading ||
-                otp.some((digit) => digit === "")
-              }
-            >
-              {loading
-                ? "Verifying..."
-                : "Verify OTP"}
-            </button>
-          )}
-
           </div>
         </div>
-
-      </div>
-    </div>
-  </div>
-        )}
+      )}
       {/* Sign In Modal End */}
 
       {/* Location Modal Start */}
       {isLocation && (
-        <div className={`location-modal-backdrop ${isLocation ? 'active' : ''}`} onClick={() => setIsLocation(false)}>
+        <div
+          className={`location-modal-backdrop ${isLocation ? "active" : ""}`}
+          onClick={() => setIsLocation(false)}
+        >
           <div className="inn" onClick={(e) => e.stopPropagation()}>
             <div className="search-wrap position-relative">
               <i className="fa-solid fa-magnifying-glass"></i>
-              <input type="text" placeholder="Search Your City" className="form-control" />
+              <input
+                type="text"
+                placeholder="Search Your City"
+                className="form-control"
+              />
             </div>
             <h6>Select Location</h6>
             <ul>
@@ -1425,12 +1565,22 @@ const handleSignUpGetOtp = async () => {
 
       {/* Search Modal Start */}
       {isSearch && (
-        <div className={`modal_backdrop ${isSearch ? 'active' : ''}`} onClick={() => setIsSearch(false)}>
-          <div className="lab-search-panel" onClick={(e) => e.stopPropagation()}>
+        <div
+          className={`modal_backdrop ${isSearch ? "active" : ""}`}
+          onClick={() => setIsSearch(false)}
+        >
+          <div
+            className="lab-search-panel"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="lab-search-field">
               <i className="fa-solid fa-magnifying-glass lab-search-symbol"></i>
-              <input type="text" placeholder="Search for Tests, Health Check-ups"
-                name="labSearch" className="form-control" />
+              <input
+                type="text"
+                placeholder="Search for Tests, Health Check-ups"
+                name="labSearch"
+                className="form-control"
+              />
               <div className="flex-dv d-flex align-items-center gap-2">
                 <button type="button" className="lab-search-rx">
                   <img src="/assets/images/rx.svg" alt="" />
@@ -1452,12 +1602,8 @@ const handleSignUpGetOtp = async () => {
                     </div>
 
                     <div className="lab-result-details">
-                      <div className="lab-result-name">
-                        CBC
-                      </div>
-                      <div className="lab-result-category">
-                        Tests
-                      </div>
+                      <div className="lab-result-name">CBC</div>
+                      <div className="lab-result-category">Tests</div>
                     </div>
 
                     <div className="lab-result-action">
@@ -1479,9 +1625,7 @@ const handleSignUpGetOtp = async () => {
                       <div className="lab-result-name">
                         Suswastham 4.2 - Diabetes Check Up Package - Prime
                       </div>
-                      <div className="lab-result-category">
-                        Package
-                      </div>
+                      <div className="lab-result-category">Package</div>
                     </div>
 
                     <div className="lab-result-action">
@@ -1502,9 +1646,7 @@ const handleSignUpGetOtp = async () => {
                     <div className="lab-result-name">
                       Glucose-Fasting-Plasma
                     </div>
-                    <div className="lab-result-category">
-                      Tests
-                    </div>
+                    <div className="lab-result-category">Tests</div>
                   </div>
                   <div className="lab-result-action">
                     <i className="fa-solid fa-arrow-right"></i>
@@ -1519,9 +1661,7 @@ const handleSignUpGetOtp = async () => {
                     <div className="lab-result-name">
                       Glucose-Fasting-Plasma
                     </div>
-                    <div className="lab-result-category">
-                      Tests
-                    </div>
+                    <div className="lab-result-category">Tests</div>
                   </div>
                   <div className="lab-result-action">
                     <i className="fa-solid fa-arrow-right"></i>
@@ -1536,9 +1676,7 @@ const handleSignUpGetOtp = async () => {
                     <div className="lab-result-name">
                       Suswastham-125-Infertility-Package-Male-Prime
                     </div>
-                    <div className="lab-result-category">
-                      Package
-                    </div>
+                    <div className="lab-result-category">Package</div>
                   </div>
                   <div className="lab-result-action">
                     <i className="fa-solid fa-arrow-right"></i>
@@ -1561,7 +1699,6 @@ const handleSignUpGetOtp = async () => {
         </div>
       )}
       {/* Search Modal End */}
-
     </>
   );
 }

@@ -113,6 +113,18 @@ export function requestOtp(
         payload
     );
 }
+export function requestLoginOtp(
+    emailOrMobile: string
+) {
+    const payload: RequestOtpPayload = {
+        email_or_mobile: emailOrMobile,
+    };
+
+    return postRequest<unknown>(
+        "b2c/request-b2c-loginotp",
+        payload
+    );
+}
 
 /* =========================
    RESEND OTP

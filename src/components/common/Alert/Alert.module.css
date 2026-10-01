@@ -1,0 +1,371 @@
+/* =====================================
+   BACKDROP
+===================================== */
+
+.overlay {
+    position: fixed;
+    inset: 0;
+
+    z-index: 99999;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    background: rgba(11, 35, 27, 0.55);
+
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+
+    animation: fadeIn 0.2s ease;
+}
+
+/* =====================================
+   DIALOG
+===================================== */
+
+.dialog {
+    --status-color: #16864e;
+    --status-background: #e8f7ee;
+
+    position: relative;
+
+    width: 100%;
+    max-width: 420px;
+
+    overflow: hidden;
+
+    padding: 38px 32px 30px;
+
+    background: #ffffff;
+
+    border: 1px solid #e2eee7;
+    border-radius: 22px;
+
+    text-align: center;
+
+    box-shadow:
+        0 25px 70px rgba(4, 40, 23, 0.18),
+        0 8px 20px rgba(4, 40, 23, 0.06);
+
+    animation: slideUp 0.25s ease;
+}
+
+/* STATUS COLORS */
+
+.success {
+    --status-color: #16864e;
+    --status-background: #e8f7ee;
+}
+
+.warning {
+    --status-color: #b77911;
+    --status-background: #fff5dc;
+}
+
+.error {
+    --status-color: #cb3545;
+    --status-background: #fdebec;
+}
+
+/* TOP ACCENT */
+
+.dialog::before {
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    left: 0;
+    right: 0;
+
+    height: 5px;
+
+    background: var(--status-color);
+}
+
+/* =====================================
+   CLOSE BUTTON
+===================================== */
+
+.closeButton {
+    position: absolute;
+
+    top: 14px;
+    right: 16px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 32px;
+    height: 32px;
+
+    padding: 0;
+
+    background: #f3f7f4;
+
+    border: none;
+    border-radius: 50%;
+
+    color: #586b60;
+
+    font-size: 24px;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+.closeButton:hover {
+    background: #e8f0eb;
+    transform: rotate(90deg);
+}
+
+/* =====================================
+   BRAND
+===================================== */
+
+.brand {
+    margin-bottom: 26px;
+
+    color: #19824d;
+
+    font-size: 11px;
+    font-weight: 800;
+
+    letter-spacing: 2px;
+}
+
+/* =====================================
+   STATUS ICON
+===================================== */
+
+.iconWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 84px;
+    height: 84px;
+
+    margin: 0 auto 22px;
+
+    background: var(--status-background);
+
+    border-radius: 50%;
+
+    color: var(--status-color);
+}
+
+.iconWrapper svg {
+    width: 46px;
+    height: 46px;
+}
+
+/* =====================================
+   TEXT
+===================================== */
+
+.title {
+    margin: 0 0 12px;
+
+    color: #173c2b;
+
+    font-size: 24px;
+    font-weight: 750;
+
+    line-height: 1.3;
+}
+
+.message {
+    margin: 0 0 28px;
+
+    color: #677a70;
+
+    font-size: 14px;
+    font-weight: 400;
+
+    line-height: 1.7;
+
+    overflow-wrap: anywhere;
+}
+
+/* =====================================
+   PRIMARY BUTTON
+===================================== */
+
+.actionButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+    min-height: 48px;
+
+    padding: 12px 20px;
+
+    background: #16864e;
+
+    border: 1px solid #16864e;
+    border-radius: 12px;
+
+    color: #ffffff;
+
+    font-size: 14px;
+    font-weight: 700;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.actionButton:hover {
+    background: #106b3c;
+
+    box-shadow:
+        0 8px 18px rgba(22, 134, 78, 0.2);
+
+    transform: translateY(-1px);
+}
+
+.actionButton:active {
+    transform: translateY(0);
+}
+
+.actionButton:focus-visible,
+.closeButton:focus-visible {
+    outline: 3px solid #91d5ad;
+    outline-offset: 3px;
+}
+
+/* =====================================
+   ANIMATIONS
+===================================== */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(18px) scale(0.97);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* =====================================
+   MOBILE
+===================================== */
+
+@media (max-width: 480px) {
+    .overlay {
+        padding: 15px;
+    }
+
+    .dialog {
+        padding: 34px 22px 24px;
+        border-radius: 18px;
+    }
+
+    .title {
+        font-size: 21px;
+    }
+
+    .message {
+        font-size: 13px;
+    }
+
+    .iconWrapper {
+        width: 74px;
+        height: 74px;
+    }
+
+    .iconWrapper svg {
+        width: 40px;
+        height: 40px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .overlay,
+    .dialog {
+        animation: none;
+    }
+
+    .actionButton,
+    .closeButton {
+        transition: none;
+    }
+}
+
+/* =====================================
+   CONFIRMATION POPUP
+===================================== */
+
+.confirmActions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    width: 100%;
+}
+
+.cancelButton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    min-height: 48px;
+    width: 100%;
+
+    padding: 12px 18px;
+
+    background: #ffffff;
+    border: 1px solid #d7e5dc;
+    border-radius: 12px;
+
+    color: #315342;
+    font-size: 14px;
+    font-weight: 700;
+
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.cancelButton:hover {
+    background: #f1f8f3;
+}
+
+.dangerButton {
+    background: #d43d48;
+    border-color: #d43d48;
+}
+
+.dangerButton:hover {
+    background: #b72f3a;
+    box-shadow: 0 8px 18px rgba(212, 61, 72, 0.18);
+}
+
+.cancelButton:focus-visible {
+    outline: 3px solid #91d5ad;
+    outline-offset: 3px;
+}
