@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import styles from "./Header.module.css";
+import { requestOtp, verifyOtp, signUp} from "@/services/auth.service";
 
 declare global {
   interface Window {
@@ -21,9 +22,69 @@ export default function Header() {
   const [bannerTouched, setBannerTouched] = useState(false);
   const headerRef = useRef<HTMLDivElement>(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [mobileNumber, setMobileNumber] = useState("");
+  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+
+  const [otpRequested, setOtpRequested] = useState(false);
+
+  const [loading, setLoading] = useState(false);
+
+  const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+
+const [timer, setTimer] = useState(20);
   const [isSignIn, setIsSignIn] = useState(false);
   const [isLocation, setIsLocation] = useState(false);
   const [isSearch, setIsSearch] = useState(false);
+
+  const [signUpFirstName, setSignUpFirstName] =
+  useState("");
+
+const [signUpLastName, setSignUpLastName] =
+  useState("");
+
+const [signUpMobile, setSignUpMobile] =
+  useState("");
+
+const [signUpEmail, setSignUpEmail] =
+  useState("");
+
+const [signUpTerms, setSignUpTerms] =
+  useState(false);
+
+const [
+  signUpOtpRequested,
+  setSignUpOtpRequested,
+] = useState(false);
+
+const [signUpLoading, setSignUpLoading] =
+  useState(false);
+
+const [
+  signUpError,
+  setSignUpError,
+] = useState("");
+
+const [
+  signUpSuccess,
+  setSignUpSuccess,
+] = useState("");
+  
+  
+const [signUpOtp, setSignUpOtp] = useState([
+  "",
+  "",
+  "",
+  "",
+  "",
+  "",
+]);
+
+const [signUpTimer, setSignUpTimer] =
+  useState(20);
+
+
+  
 
   useEffect(() => {
     const handleScroll = () => {
@@ -39,6 +100,41 @@ export default function Header() {
     handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+  if (
+    !signUpOtpRequested ||
+    signUpTimer <= 0
+  ) {
+    return;
+  }
+
+  const timer = setInterval(() => {
+    setSignUpTimer(
+      (previous) => previous - 1
+    );
+  }, 1000);
+
+  return () => {
+    clearInterval(timer);
+  };
+}, [
+  signUpOtpRequested,
+  signUpTimer,
+]);
+
+
+  useEffect(() => {
+  if (!otpRequested || timer <= 0) {
+    return;
+  }
+
+  const interval = setInterval(() => {
+    setTimer((previous) => previous - 1);
+  }, 1000);
+
+  return () => clearInterval(interval);
+}, [otpRequested, timer]);
 
   // Google Translate 
   const [langOpen, setLangOpen] = useState(false);
@@ -88,6 +184,81 @@ export default function Header() {
     setLangOpen((prev) => !prev);
   };
 
+
+  const handleGetOtp = async () => {
+  setError("");
+  setSuccessMessage("");
+
+  const mobile = mobileNumber.trim();
+
+  if (!mobile) {
+    setError("Please enter your mobile number.");
+    return;
+  }
+
+  if (!/^\d{10}$/.test(mobile)) {
+    setError(
+      "Please enter a valid 10 digit mobile number."
+    );
+    return;
+  }
+
+  try {
+    setLoading(true);
+
+    const response = await requestOtp(mobile);
+
+    console.log(
+      "Request OTP Response:",
+      response
+    );
+
+    setOtpRequested(true);
+    setTimer(20);
+
+    setSuccessMessage(
+      "OTP sent successfully."
+    );
+  } catch (error: unknown) {
+    console.error(
+      "Request OTP Error:",
+      error
+    );
+
+    if (error instanceof Error) {
+      setError(error.message);
+    } else {
+      setError(
+        "Unable to send OTP. Please try again."
+      );
+    }
+  } finally {
+    setLoading(false);
+  }
+  };
+  
+  const handleOtpChange = (
+  index: number,
+  value: string
+) => {
+  const digit = value.replace(/\D/g, "").slice(-1);
+
+  const updatedOtp = [...otp];
+
+  updatedOtp[index] = digit;
+
+  setOtp(updatedOtp);
+
+  if (digit && index < 5) {
+    const nextInput =
+      document.getElementById(
+        `digit-${index + 2}`
+      );
+
+    nextInput?.focus();
+  }
+};
+
   const handleSelect = (langCode: string) => {
     setSelectedLang(langCode);
     setLangOpen(false);
@@ -101,6 +272,103 @@ export default function Header() {
       window.location.reload();
     }
   };
+
+  const handleVerifyOtp = async () => {
+  setError("");
+  setSuccessMessage("");
+
+  const otpValue = otp.join("");
+
+  if (otpValue.length !== 6) {
+    setError(
+      "Please enter the complete 6 digit OTP."
+    );
+    return;
+  }
+
+  try {
+    setLoading(true);
+
+    const response = await verifyOtp(
+      mobileNumber.trim(),
+      otpValue
+    );
+
+    console.log(
+      "Verify OTP Response:",
+      response
+    );
+
+    if (
+      typeof response === "object" &&
+      response !== null
+    ) {
+      const result = response as {
+        data?: unknown;
+        status?: number;
+        success?: boolean;
+        message?: string;
+      };
+
+      /*
+       * Backend business failure
+       */
+      if (
+        result.status === 0 ||
+        result.success === false
+      ) {
+        if (
+          typeof result.data === "string"
+        ) {
+          setError(result.data);
+        } else if (
+          typeof result.message === "string"
+        ) {
+          setError(result.message);
+        } else {
+          setError(
+            "OTP verification failed."
+          );
+        }
+
+        return;
+      }
+
+      /*
+       * Successful verification
+       */
+      setSuccessMessage(
+        "OTP verified successfully."
+      );
+
+      console.log(
+        "Login successful:",
+        result.data
+      );
+
+      return;
+    }
+
+    setError(
+      "Invalid response received from server."
+    );
+  } catch (error: unknown) {
+    console.error(
+      "Verify OTP Error:",
+      error
+    );
+
+    if (error instanceof Error) {
+      setError(error.message);
+    } else {
+      setError(
+        "Unable to verify OTP. Please try again."
+      );
+    }
+  } finally {
+    setLoading(false);
+  }
+};
   // Google Translate 
 
   // Ctrl + K Search Function
@@ -118,6 +386,265 @@ export default function Header() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
   // Ctrl + K Search Function
+  
+
+const handleSignUpGetOtp = async () => {
+  setSignUpError("");
+  setSignUpSuccess("");
+
+  const mobile =
+    signUpMobile.trim();
+
+  if (!mobile) {
+    setSignUpError(
+      "Please enter your mobile number."
+    );
+    return;
+  }
+
+  if (!/^\d{10}$/.test(mobile)) {
+    setSignUpError(
+      "Please enter a valid 10 digit mobile number."
+    );
+    return;
+  }
+
+  try {
+    setSignUpLoading(true);
+
+    const response =
+      await requestOtp(mobile);
+
+    console.log(
+      "Signup Request OTP Response:",
+      response
+    );
+
+    if (
+      typeof response === "object" &&
+      response !== null
+    ) {
+      const result = response as {
+        status?: number;
+        success?: boolean;
+        data?: unknown;
+        message?: string;
+      };
+
+      if (
+        result.status === 0 ||
+        result.success === false
+      ) {
+        const message =
+          typeof result.data === "string"
+            ? result.data
+            : typeof result.message === "string"
+              ? result.message
+              : "Unable to send OTP.";
+
+        setSignUpError(message);
+
+        return;
+      }
+    }
+
+    setSignUpOtp([
+      "",
+      "",
+      "",
+      "",
+      "",
+      "",
+    ]);
+
+    setSignUpOtpRequested(true);
+
+    setSignUpTimer(20);
+
+    setSignUpSuccess(
+      "OTP sent successfully."
+    );
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      setSignUpError(error.message);
+    } else {
+      setSignUpError(
+        "Unable to send OTP. Please try again."
+      );
+    }
+  } finally {
+    setSignUpLoading(false);
+  }
+};
+
+  const handleSignUpOtpChange = (
+  index: number,
+  value: string
+) => {
+  const digit = value
+    .replace(/\D/g, "")
+    .slice(-1);
+
+  const updatedOtp = [...signUpOtp];
+
+  updatedOtp[index] = digit;
+
+  setSignUpOtp(updatedOtp);
+
+  setSignUpError("");
+
+  if (digit && index < 5) {
+    const nextInput =
+      document.getElementById(
+        `signup-digit-${index + 2}`
+      );
+
+    nextInput?.focus();
+  }
+  };
+  const handleRegister = async () => {
+  setSignUpError("");
+  setSignUpSuccess("");
+
+  const firstName =
+    signUpFirstName.trim();
+
+  const lastName =
+    signUpLastName.trim();
+
+  const mobile =
+    signUpMobile.trim();
+
+  const email =
+    signUpEmail.trim().toLowerCase();
+
+  const otp =
+    signUpOtp.join("");
+
+  if (!firstName) {
+    setSignUpError(
+      "Please enter your first name."
+    );
+    return;
+  }
+
+  if (!lastName) {
+    setSignUpError(
+      "Please enter your last name."
+    );
+    return;
+  }
+
+  if (!/^\d{10}$/.test(mobile)) {
+    setSignUpError(
+      "Please enter a valid 10 digit mobile number."
+    );
+    return;
+  }
+
+  if (!signUpOtpRequested) {
+    setSignUpError(
+      "Please request OTP first."
+    );
+    return;
+  }
+
+  if (otp.length !== 6) {
+    setSignUpError(
+      "Please enter the complete 6 digit OTP."
+    );
+    return;
+  }
+
+  const emailRegex =
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  if (!emailRegex.test(email)) {
+    setSignUpError(
+      "Please enter a valid email address."
+    );
+    return;
+  }
+
+  if (!signUpTerms) {
+    setSignUpError(
+      "Please accept the Terms & Conditions."
+    );
+    return;
+  }
+
+  try {
+    setSignUpLoading(true);
+
+    const payload = {
+      first_name: firstName,
+      last_name: lastName,
+      email,
+      mobileNumber: mobile,
+    };
+
+    const response =
+      await signUp(payload);
+
+    console.log(
+      "Signup Response:",
+      response
+    );
+
+    if (
+      typeof response === "object" &&
+      response !== null
+    ) {
+      const result = response as {
+        status?: number;
+        success?: boolean;
+        data?: unknown;
+        message?: string;
+      };
+
+      if (
+        result.status === 0 ||
+        result.success === false
+      ) {
+        const message =
+          typeof result.data === "string"
+            ? result.data
+            : typeof result.message === "string"
+              ? result.message
+              : "Registration failed.";
+
+        setSignUpError(message);
+
+        return;
+      }
+
+      const message =
+        typeof result.message === "string"
+          ? result.message
+          : typeof result.data === "string"
+            ? result.data
+            : "Registration successful.";
+
+      setSignUpSuccess(message);
+
+      return;
+    }
+
+    setSignUpSuccess(
+      "Registration successful."
+    );
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      setSignUpError(error.message);
+    } else {
+      setSignUpError(
+        "Unable to register. Please try again."
+      );
+    }
+  } finally {
+    setSignUpLoading(false);
+  }
+};
   
   return (
     <>
@@ -261,110 +788,587 @@ export default function Header() {
 
       {/* Sign Up Modal Start */}
       {isSignIn && (
-        <div className={`is-logged ${isSignIn ? 'active' : ''}`} onClick={() => setIsSignIn(false)}>
-          <div className="inn" onClick={(e) => e.stopPropagation()}>
-            <div className="row align-items-center">
-              <div className="col-lg-6 col-sm-12">
-                <div className="img">
-                  <img src="/assets/images/log-img.png" alt="" />
-                </div>
-              </div>
-              <div className="col-lg-6 col-sm-12">
-                <div className="text">
-                  <h3>Sign Up</h3>
-                  <div className="row">
-                    <div className="col-lg-6 col-md-12 col-sm-12">
-                      <div className="block">
-                        <label className="lbl">First Name<span>*</span></label>
-                        <input type="text" placeholder="" className="form-control" />
-                      </div>
-                    </div>
-                    <div className="col-lg-6 col-md-12 col-sm-12">
-                      <div className="block">
-                        <label className="lbl">Last Name<span>*</span></label>
-                        <input type="text" placeholder="" className="form-control" />
-                      </div>
-                    </div>
-                    <div className="col-lg-12 col-md-12 col-sm-12">
-                      <div className="block">
-                        <label className="lbl">Mobile Number<span>*</span></label>
-                        <div className="position-relative">
-                          <input type="tel" placeholder="Enter your 10 digit mobile number" className="form-control" />
-                          <button id="otpButton">
-                            Get OTP
-                          </button>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-lg-12 col-md-12 col-sm-12 d-none">
-                      <h5>Enter Your OTP</h5>
-                      <div className="digit-group">
-                        <input type="tel" id="digit-1" name="digit-1" required />
-                        <input type="tel" id="digit-2" name="digit-2" required />
-                        <input type="tel" id="digit-3" name="digit-3" required />
-                        <input type="tel" id="digit-4" name="digit-4" required />
-                        <input type="tel" id="digit-5" name="digit-5" required />
-                        <input type="tel" id="digit-6" name="digit-6" required />
-                      </div>
-                      <div className="otpRequested">
-                        <p>Time Remaining: <span>20 sec</span></p>
-                      </div>
-                    </div>
-                    <div className="col-lg-12 col-md-12 col-sm-12">
-                      <div className="block">
-                        <label className="lbl">Email Address<span>*</span></label>
-                        <input type="text" placeholder="" className="form-control" />
-                      </div>
-                    </div>
-                    <div className="col-lg-12 col-md-12 col-sm-12">
-                      <label className="check-custom">
-                        <input type="checkbox" />
-                        <span className="checkmark"></span>
-                        <span className="sp-lbl">
-                          I agree to the <a href="#">Terms & Conditions</a>
-                        </span>
-                      </label>
-                    </div>
-                  </div>
-                  <button className="cmn_btn w-100">Register</button>
-                  <p className="text-center mt-3">I have already an account | <a href="#" className="sign-text">Sign In</a></p>
-                </div>
-              </div>
-            </div>
+  <div
+    className={`is-logged ${
+      isSignIn ? "active" : ""
+    }`}
+    onClick={() =>
+      setIsSignIn(false)
+    }
+  >
+    <div
+      className="inn"
+      onClick={(e) =>
+        e.stopPropagation()
+      }
+    >
+      <div className="row align-items-center">
+
+        {/* LEFT IMAGE */}
+
+        <div className="col-lg-6 col-sm-12">
+
+          <div className="img">
+
+            <img
+              src="/assets/images/log-img.png"
+              alt="Sign Up"
+            />
+
           </div>
+
         </div>
-      )}
+
+        {/* SIGNUP FORM */}
+
+        <div className="col-lg-6 col-sm-12">
+
+          <div className="text">
+
+            <h3>Sign Up</h3>
+
+            <div className="row">
+
+              {/* FIRST NAME */}
+
+              <div className="col-lg-6 col-md-12 col-sm-12">
+
+                <div className="block">
+
+                  <label className="lbl">
+                    First Name
+                    <span>*</span>
+                  </label>
+
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={
+                      signUpFirstName
+                    }
+                    onChange={(e) => {
+                      setSignUpFirstName(
+                        e.target.value
+                      );
+
+                      setSignUpError("");
+                    }}
+                  />
+
+                </div>
+
+              </div>
+
+              {/* LAST NAME */}
+
+              <div className="col-lg-6 col-md-12 col-sm-12">
+
+                <div className="block">
+
+                  <label className="lbl">
+                    Last Name
+                    <span>*</span>
+                  </label>
+
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={
+                      signUpLastName
+                    }
+                    onChange={(e) => {
+                      setSignUpLastName(
+                        e.target.value
+                      );
+
+                      setSignUpError("");
+                    }}
+                  />
+
+                </div>
+
+              </div>
+
+              {/* MOBILE */}
+
+              <div className="col-lg-12 col-md-12 col-sm-12">
+
+                <div className="block">
+
+                  <label className="lbl">
+                    Mobile Number
+                    <span>*</span>
+                  </label>
+
+                  <div className="position-relative">
+
+                    <input
+                      type="tel"
+                      placeholder="Enter your 10 digit mobile number"
+                      className="form-control"
+                      maxLength={10}
+                      value={signUpMobile}
+                      disabled={
+                        signUpOtpRequested
+                      }
+                      onChange={(e) => {
+                        const value =
+                          e.target.value.replace(
+                            /\D/g,
+                            ""
+                          );
+
+                        setSignUpMobile(
+                          value
+                        );
+
+                        setSignUpError("");
+                      }}
+                    />
+
+                    <button
+                      type="button"
+                      id="otpButton"
+                      onClick={
+                        handleSignUpGetOtp
+                      }
+                      disabled={
+                        signUpLoading ||
+                        signUpOtpRequested ||
+                        signUpMobile.length !==
+                          10
+                      }
+                    >
+                      {signUpLoading
+                        ? "Sending..."
+                        : signUpOtpRequested
+                          ? "OTP Sent"
+                          : "Get OTP"}
+                    </button>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+              {/* OTP SECTION */}
+
+              {signUpOtpRequested && (
+                <div className="col-lg-12 col-md-12 col-sm-12">
+
+                  <h5>
+                    Enter Your OTP
+                  </h5>
+
+                  <div className="digit-group">
+
+                    {signUpOtp.map(
+                      (digit, index) => (
+                        <input
+                          key={index}
+                          type="tel"
+                          id={`signup-digit-${index + 1}`}
+                          name={`signup-digit-${index + 1}`}
+                          value={digit}
+                          maxLength={1}
+                          required
+                          onChange={(e) =>
+                            handleSignUpOtpChange(
+                              index,
+                              e.target.value
+                            )
+                          }
+                        />
+                      )
+                    )}
+
+                  </div>
+
+                  <div className="otpRequested">
+
+                    {signUpTimer > 0 ? (
+                      <p>
+                        Time Remaining:{" "}
+                        <span>
+                          {signUpTimer} sec
+                        </span>
+                      </p>
+                    ) : (
+                      <p>
+                        OTP expired.
+                      </p>
+                    )}
+
+                  </div>
+
+                </div>
+              )}
+
+              {/* EMAIL */}
+
+              <div className="col-lg-12 col-md-12 col-sm-12">
+
+                <div className="block">
+
+                  <label className="lbl">
+                    Email Address
+                    <span>*</span>
+                  </label>
+
+                  <input
+                    type="email"
+                    placeholder="Enter your email address"
+                    className="form-control"
+                    value={signUpEmail}
+                    onChange={(e) => {
+                      setSignUpEmail(
+                        e.target.value
+                      );
+
+                      setSignUpError("");
+                    }}
+                  />
+
+                </div>
+
+              </div>
+
+              {/* TERMS */}
+
+              <div className="col-lg-12 col-md-12 col-sm-12">
+
+                <label className="check-custom">
+
+                  <input
+                    type="checkbox"
+                    checked={
+                      signUpTerms
+                    }
+                    onChange={(e) =>
+                      setSignUpTerms(
+                        e.target.checked
+                      )
+                    }
+                  />
+
+                  <span className="checkmark" />
+
+                  <span className="sp-lbl">
+                    I agree to the{" "}
+
+                    <a
+                      href="#"
+                      onClick={(e) =>
+                        e.preventDefault()
+                      }
+                    >
+                      Terms & Conditions
+                    </a>
+
+                  </span>
+
+                </label>
+
+              </div>
+
+              {/* ERROR */}
+
+              {signUpError && (
+                <div className="col-12">
+
+                  <p
+                    style={{
+                      color: "#d92d20",
+                      marginTop: "10px",
+                      marginBottom: "10px",
+                    }}
+                  >
+                    {signUpError}
+                  </p>
+
+                </div>
+              )}
+
+              {/* SUCCESS */}
+
+              {signUpSuccess && (
+                <div className="col-12">
+
+                  <p
+                    style={{
+                      color: "#16803c",
+                      marginTop: "10px",
+                      marginBottom: "10px",
+                    }}
+                  >
+                    {signUpSuccess}
+                  </p>
+
+                </div>
+              )}
+
+            </div>
+
+            {/* REGISTER */}
+
+            <button
+              type="button"
+              className="cmn_btn w-100"
+              onClick={
+                handleRegister
+              }
+              disabled={
+                signUpLoading
+              }
+            >
+              {signUpLoading
+                ? "Registering..."
+                : "Register"}
+            </button>
+
+            {/* SIGN IN */}
+
+            <p className="text-center mt-3">
+
+              I already have an account
+              {" | "}
+
+              <a
+                href="#"
+                className="sign-text"
+                onClick={(e) => {
+                  e.preventDefault();
+
+                  setIsSignIn(false);
+
+                  setIsOpen(true);
+                }}
+              >
+                Sign In
+              </a>
+
+            </p>
+
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+)}
       {/* Sign Up Modal End */}
 
       {/* Sign In Modal Start */}
       {isOpen && (
-        <div className={`is-logged ${isOpen ? 'active' : ''}`} onClick={() => setIsOpen(false)}>
-          <div className="inn" onClick={(e) => e.stopPropagation()}>
-            <div className="row align-items-center">
-              <div className="col-lg-6 col-sm-12">
-                <div className="img">
-                  <img src="/assets/images/log-img.png" alt="" />
-                </div>
-              </div>
-              <div className="col-lg-6 col-sm-12">
-                <div className="text">
-                  <h3>Sign in to your account</h3>
-                  <p>View your reports and upcominghealth checkups at one place.</p>
-                  <div className="row">
-                    <div className="col-lg-12 col-md-12 col-sm-12">
-                      <div className="block">
-                        <label className="lbl">Mobile Number<span>*</span></label>
-                        <input type="tel" placeholder="Enter your 10 digit mobile number" className="form-control" />
-                      </div>
-                    </div>
-                  </div>
-                  <button className="cmn_btn w-100">Get OTP</button>
-                </div>
-              </div>
-            </div>
+  <div
+    className={`is-logged ${isOpen ? "active" : ""}`}
+    onClick={() => setIsOpen(false)}
+    >
+    <div
+      className="inn"
+      onClick={(e) => e.stopPropagation()}
+    >
+      <div className="row align-items-center">
+
+        {/* LEFT IMAGE */}
+
+        <div className="col-lg-6 col-sm-12">
+          <div className="img">
+            <img
+              src="/assets/images/log-img.png"
+              alt="Login"
+            />
           </div>
         </div>
-      )}
+
+        {/* RIGHT LOGIN */}
+
+        <div className="col-lg-6 col-sm-12">
+          <div className="text">
+
+            <h3>
+              Sign in to your account
+            </h3>
+
+            <p>
+              View your reports and upcoming
+              health checkups at one place.
+            </p>
+
+            <div className="row">
+
+              {/* MOBILE NUMBER */}
+
+              <div className="col-lg-12 col-md-12 col-sm-12">
+
+                <div className="block">
+
+                  <label className="lbl">
+                    Mobile Number
+                    <span>*</span>
+                  </label>
+
+                  <input
+                    type="tel"
+                    placeholder="Enter your 10 digit mobile number"
+                    className="form-control"
+                    value={mobileNumber}
+                    maxLength={10}
+                    disabled={
+                      loading ||
+                      otpRequested
+                    }
+                    onChange={(event) => {
+                      const value =
+                        event.target.value.replace(
+                          /\D/g,
+                          ""
+                        );
+
+                      setMobileNumber(value);
+
+                      setError("");
+                      setSuccessMessage("");
+                    }}
+                  />
+
+                </div>
+
+              </div>
+
+              {/* ERROR */}
+
+              {error && (
+                <div className="col-12">
+                  <p
+                    style={{
+                      color: "#d92d20",
+                      marginTop: "8px",
+                      marginBottom: "8px",
+                    }}
+                  >
+                    {error}
+                  </p>
+                </div>
+              )}
+
+              {/* SUCCESS */}
+
+              {successMessage && (
+                <div className="col-12">
+                  <p
+                    style={{
+                      color: "#16803c",
+                      marginTop: "8px",
+                      marginBottom: "8px",
+                    }}
+                  >
+                    {successMessage}
+                  </p>
+                </div>
+              )}
+
+              {/* OTP SECTION */}
+
+              {otpRequested && (
+                <div className="col-lg-12 col-md-12 col-sm-12">
+
+                  <h5>
+                    Enter Your OTP
+                  </h5>
+
+                  <div className="digit-group">
+
+                    {otp.map(
+                      (digit, index) => (
+                        <input
+                          key={index}
+                          type="tel"
+                          id={`digit-${index + 1}`}
+                          name={`digit-${index + 1}`}
+                          value={digit}
+                          maxLength={1}
+                          required
+                          onChange={(event) =>
+                            handleOtpChange(
+                              index,
+                              event.target.value
+                            )
+                          }
+                        />
+                      )
+                    )}
+
+                  </div>
+
+                  <div className="otpRequested">
+
+                    {timer > 0 ? (
+                      <p>
+                        Time Remaining:{" "}
+                        <span>
+                          {timer} sec
+                        </span>
+                      </p>
+                    ) : (
+                      <p>
+                        OTP expired. You can
+                        request another OTP.
+                      </p>
+                    )}
+
+                  </div>
+
+                </div>
+              )}
+
+            </div>
+
+            {/* GET OTP */}
+
+            {!otpRequested && (
+              <button
+                type="button"
+                className="cmn_btn w-100"
+                onClick={handleGetOtp}
+                disabled={
+                  loading ||
+                  mobileNumber.length !== 10
+                }
+              >
+                {loading
+                  ? "Sending OTP..."
+                  : "Get OTP"}
+              </button>
+            )}
+
+            {/* OTP RECEIVED */}
+
+            {otpRequested && (
+            <button
+              type="button"
+              className="cmn_btn w-100"
+              onClick={handleVerifyOtp}
+              disabled={
+                loading ||
+                otp.some((digit) => digit === "")
+              }
+            >
+              {loading
+                ? "Verifying..."
+                : "Verify OTP"}
+            </button>
+          )}
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+        )}
       {/* Sign In Modal End */}
 
       {/* Location Modal Start */}
