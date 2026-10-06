@@ -6,3 +6,8 @@
 .questaions .text_block p{ color:var(--up-gray); margin-bottom:0; }
 .questaions button{ flex-shrink:0; }
 .questaions img{ position:absolute; right:0; bottom:0; pointer-events:none; z-index:-1; }
+
+@media screen and (max-width:575px){
+    .questaions{ flex-wrap:wrap; flex-direction:column; padding:35px; margin-top:25px; }
+    .questaions .text_block{ flex:1; width:100%; text-align:center; padding-right:0; margin-bottom:25px; }
+}

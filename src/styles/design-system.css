@@ -56,15 +56,20 @@ textarea:focus,select:focus,.form-control:focus,.form-select:focus,input:focus {
 ::-webkit-scrollbar-thumb:hover{ background:var(--up-theme) !important; }
 
 /* Expant Btn Styles start */
-.expand-btn{ display:inline-flex; align-items:center; height:50px; padding:0 15px; border:1px solid var(--up-black); border-radius:100px; background:transparent; overflow:hidden; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+.expand-btn{ display:inline-flex; align-items:center; flex-direction:row-reverse; height:50px; padding:0 17px; border:1px solid var(--up-black); border-radius:100px; background:transparent; overflow:hidden; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
 .expand-btn .icon{ display:flex; flex-shrink:0; }
-.expand-btn .btn-text{ max-width:0; opacity:0; white-space:nowrap; font-size:15px; line-height:1.2; font-weight:400; color:var(--up-black); transition: max-width 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, margin-left 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-/* .expand-btn:hover{ border-color:var(--up-theme); }*/ 
-.expand-btn:hover .btn-text{ max-width:150px; opacity:1; margin-left:10px; } 
+.expand-btn .btn-text{ max-width:0; opacity:0; white-space:nowrap; font-size:15px; line-height:1.2; font-weight:400; color:var(--up-black); transition: max-width 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, margin-right 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+.expand-btn:hover .btn-text{ max-width:150px; opacity:1; margin-right:10px; } 
 .expand-btn.is_white{ border-color:var(--up-white); }
 .expand-btn.is_white .btn-text{ color:var(--up-white); }
-.expand-btn.is_white svg{ color:var(--up-white); }
+.expand-btn.is_white img{ filter: brightness(0) invert(1); }
 /* Expant Btn Styles End */
+
+/* Mobile Explore Button Start */
+.is-exp-btn{ margin-top:25px; display:none; }
+.exp-btn{ display:flex; align-items:center; gap:12px; height:48px; padding:0 32px; border:1px solid var(--up-black); border-radius:50px; background:var(--up-white); transition: all 0.4s; }
+
+/* Mobile Explore Button Start */
 
 /* Header Css Start */
 .homeheader{ position:sticky; top:0; z-index:99; }
@@ -304,7 +309,7 @@ textarea:focus,select:focus,.form-control:focus,.form-select:focus,input:focus {
 /* Our Presence Css Start */
 
 /* Home Faq Css Start */
-#faqAccordion{ padding-bottom:var(--cmngap-btm); }
+#faqAccordion{ padding-bottom:45px; }
 #faqAccordion .accordion-item{ box-shadow:0px 4px 4px 0px #E4E4E4CC; border:1px solid #fff !important; border-radius:25px !important; margin-bottom:20px; }
 #faqAccordion .accordion-item h2{ margin-bottom:0; }
 #faqAccordion .accordion-item:last-child{ margin-bottom:0; }
@@ -378,10 +383,22 @@ textarea:focus,select:focus,.form-control:focus,.form-select:focus,input:focus {
   }
   .is_footer.accordion-box .accordion-item .accordion-body .address-card:after{ position:absolute; content:""; left:0; right:0; bottom:0; width:100%; height:1px; background:var(--up-gray); transition:all 0.4s; margin:0 auto; }
   .is_footer.accordion-box .accordion-item .accordion-body .address-card:hover:after{ opacity:0; width:50%; }
-
-
-
-
+  .top-title {
+    padding-bottom: 25px;
+  }
+  .top-title .left-pnl{ text-align:center; }
+  .expand-btn{ display:none; }
+  #faqAccordion{ padding-bottom:0; }
+  #faqAccordion .accordion-item .accordion-button {
+    padding: 20px 20px 15px;
+    font-size: 15px;
+  }
+  #faqAccordion .accordion-item .accordion-button:after{
+    width: 30px;
+    height: 30px;
+    background-size: 16px;
+    background-position: center center;
+  }
 
 
 
@@ -407,13 +424,15 @@ textarea:focus,select:focus,.form-control:focus,.form-select:focus,input:focus {
   textarea,select,.form-control,.form-select,input{ font-size:14px; }
   .container{ width:100%; max-width:100%; }
   .cmn-right-align{ margin-right:0; }
-  
+  .is-exp-btn{ display: flex; justify-content: center; }
 
 
 
 }
 
+@media screen and (max-width:575px){
 
+}
 
 
 

@@ -82,7 +82,7 @@ function OurLocation() {
                 <div className="container">
                     <div className={styles.top_block}>
                         <h2>Uniting Forces for Growth</h2>
-                        <ul>
+                        <ul className='d-none d-md-flex'>
                             <li><img src="/assets/images/med-logo.png" alt="" /></li>
                             <li><img src="/assets/images/exi-logo.png" alt="" /></li>
                             <li><img src="/assets/images/health-logo.png" alt="" /></li>
@@ -140,13 +140,11 @@ function OurLocation() {
                                                             <h5><i className="fa-solid fa-location-dot"></i> {item.city}</h5>
                                                             <p>{item.address}</p>
                                                         </div>
-
-                                                        <button
-                                                            className="cmn_btn"
-                                                            type="button"
-                                                            onClick={() => handleViewMap(item)}
-                                                        >
-                                                            View Map
+                                                        <button className={`arrow-btn ${styles.arrow_btn}`} onClick={() => handleViewMap(item)}>
+                                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                                <line x1="7" y1="17" x2="17" y2="7"></line>
+                                                                <polyline points="7 7 17 7 17 17"></polyline>
+                                                            </svg>
                                                         </button>
                                                     </div>
                                                 </div>

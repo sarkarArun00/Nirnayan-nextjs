@@ -52,3 +52,10 @@
 .download_wrap .text_block .app_store_btn{ display:flex; gap:0 10px; }
 .download_wrap .text_block .app_store_btn button{ border:0; background:none; padding:0; }
 /* Download Section Start */
+
+@media screen and (max-width:1199px){
+  .find_us .btm_block{ width:100%; }
+}
+@media screen and (max-width:767px){
+
+}
