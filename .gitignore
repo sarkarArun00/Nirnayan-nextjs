@@ -1,6 +1,6 @@
 # Local environment configuration
-.env
-.env.*
+# .env
+# .env.*
 !.env.example
 
 # Next.js generated files

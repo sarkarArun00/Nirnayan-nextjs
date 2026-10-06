@@ -713,6 +713,14 @@ const [loginSession, setLoginSession] = useState<{
         setIsOpen(true);
 
         return;
+      } else {
+        showAlert({
+          type: "error",
+          title: "Registration Failed!",
+          message: "Unable to register. Please try again.",
+          buttonText: "Ok",
+          autoClose: 2000,
+        });
       }
 
       // SIGNUP FAILURE

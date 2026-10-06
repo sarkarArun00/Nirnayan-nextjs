@@ -179,3 +179,34 @@ export function signUp(
         payload
     );
 }
+
+
+export async function getBannerContent(
+    bannerType: string | number
+) {
+    const params = new URLSearchParams({
+        baner_type: String(bannerType),
+    });
+
+    const response = await fetch(
+        `${getBaseUrl()}b2c/advertisement/getAllVisibleAdvertisements?${params.toString()}`,
+        {
+            method: "GET",
+            headers: {
+                Accept: "application/json",
+            },
+            cache: "no-store",
+        }
+    );
+
+    const data: unknown =
+        await response.json();
+
+    if (!response.ok) {
+        throw new Error(
+            "Unable to load banner content."
+        );
+    }
+
+    return data;
+}
