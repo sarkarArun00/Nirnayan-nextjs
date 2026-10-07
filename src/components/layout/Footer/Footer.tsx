@@ -63,67 +63,6 @@ export default function Footer() {
           <img className={styles['left-img']} src="/assets/images/f-ptrn-left.png" alt="" />
           <img className={styles['right-img']} src="/assets/images/f-ptrn-right.png" alt="" />
           <div className='container'>
-            {/* <div className={`row ${styles.is_row}`}>
-              <div className='col-lg-4 col-md-7 col-sm-12'>
-                <div className={styles['logo']}>
-                  <div className={styles['img']}>
-                    <img src="/assets/images/logo.png" alt="" />
-                  </div>
-                  <div className={styles['text']}>
-                    <span className={styles['notranslate']} translate="no">Nirnayan</span>
-                  </div>
-                </div>
-                <div className={styles['corporate-info']}>
-                  <h5>Corporate Office:</h5>
-                  <p>145, Rajarhat Main Rd, Zarda Bagan,<span>Jyangra, Baguiati, Kolkata, West Bengal 7000136</span></p>
-                </div>
-
-                <div className={styles['app-store-btn']}>
-                  <button><img src="/assets/images/play-store.png" alt="" /></button>
-                  <button><img src="/assets/images/app-store.png" alt="" /></button>
-                </div>
-              </div>
-              <div className='col-lg-2 col-md-5 col-sm-12'>
-                <h5>Company</h5>
-                <ul>
-                  <li><a href="#">About Us</a></li>
-                  <li><a href="/about-us/our-team">Our Team</a></li>
-                  <li><a href="/about-us/about/value">Journey</a></li>
-                  <li>
-                    <a href="/others/career">Careers With Us</a>
-                    <span>Hiring</span>
-                  </li>
-                  <li><a href="#">Contact Us</a></li>
-                </ul>
-              </div>
-              <div className='col-lg-2 col-md-4 col-sm-12'>
-                <h5>Laboratory</h5>
-                <ul>
-                  <li><a href="/laboratory/department/16">Department</a></li>
-                  <li><a href="/laboratory/accreditation">Accreditation</a></li>
-                  <li><a href="/laboratory/quality">Quality Control</a></li>
-                </ul>
-              </div>
-              <div className='col-lg-2 col-md-4 col-sm-12'>
-                <h5>Quick Links</h5>
-                <ul>
-                  <li><a href="https://blog.nirnayanhealthcare.com/" target="_blank" rel="noreferrer">Nirnayan Blogs</a></li>
-                  <li><a href="/others/association">Associations</a></li>
-                  <li><a href="/others/events">Events</a></li>
-                  <li><a href="/others/media">Media</a></li>
-                  <li><a href="/others/faq">FAQs</a></li>
-                </ul>
-              </div>
-              <div className='col-lg-2 col-md-4 col-sm-12'>
-                <h5>Patients</h5>
-                <ul>
-                  <li><a href="/patient/test-list">Browse all Test</a></li>
-                  <li><a href="/patient/package-list">Browse all Packages</a></li>
-                  <li><a href="/science/encyclopedia">Medical Encyclopedia</a></li>
-                  <li><a href="/patient/find-center">Find A Center</a></li>
-                </ul>
-              </div>
-            </div> */}
             <div className={`row ${styles.is_row}`}>
               <div className={`col-lg-4 col-md-7 col-sm-12 ${styles.footer_info}`}>
                 <div className={styles.logo}>

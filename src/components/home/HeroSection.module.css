@@ -6,7 +6,7 @@
 
 .banner_action{ position:relative; z-index:1; max-width:1500px; width:100%; display:flex; border:1px solid rgba(255,255,255,0.2); background:rgba(255,255,255,0.2); box-shadow:0px 8px 40px 0px #C5C5C540; backdrop-filter:blur(5px); border-radius:100px; margin:-53px auto 50px; padding:14px 18px; }
 
-.test_search{ width:750px; height:65px; border:1px solid #D9F3E5; box-shadow:0px 0px 4px 0px #0000001F; border-radius:50px; display:flex; align-items:center; padding:0 12px; box-sizing:border-box; font-size:15px; background:var(--up-white); flex-shrink:0; }
+.test_search{ flex:1; height:65px; border:1px solid #D9F3E5; box-shadow:0px 0px 4px 0px #0000001F; border-radius:50px; display:flex; align-items:center; padding:0 12px; box-sizing:border-box; font-size:15px; background:var(--up-white); flex-shrink:0; }
 .test_search i:nth-child(1){ color:var(--up-gray); font-size:15px; margin-right:12px; }
 .test_search .mk-icon{ font-size:16px; color:var(--up-theme); }
 .test_search .search_text{ position:relative; color:var(--up-black); flex-shrink:0; }
@@ -47,13 +47,37 @@
 .test_search .divider{ width:1px; height:20px; background:#ddd; margin:0 10px; }
 .test_search .mic-icon{ font-size:16px; color:var(--up-theme); }
 
-.rt_side{ flex:1; display:flex; flex-wrap:wrap; justify-content:space-between; padding-left:25px; }
+.rt_side{ flex-shrink:0; display:flex; flex-wrap:wrap; justify-content:space-between; gap:0 15px; padding-left:25px; }
 .rt_side .upload_btn{ width:292px; height:65px; display:flex; align-items:center; justify-content:space-between; font-size:20px; line-height:1.2; color:var(--up-black); font-weight:700; border-radius:50px; border:0; background:url(/assets/images/uploadbg.jpg); padding:0 28px; }
 .rt_side .report_btn{ width:292px; height:65px; display:flex; align-items:center; justify-content:space-between; font-size:20px; line-height:1.2; color:var(--up-black); font-weight:700; border-radius:50px; border:1px solid var(--up-white); background:url(/assets/images/reportbg.jpg); padding:0 28px; }
 .rt_side .wp_btn{ font-size:30px; color:var(--up-white); width:65px; height:65px; display:flex; align-items:center; justify-content:center; border:1px solid var(--up-white); background:linear-gradient(180deg, #00A651 0%, #000000 100%); box-shadow:0px -2px 6px 0px #FFFFFF40 inset; border-radius:50%; }
 
 /* Banner Css 2.0 End */
 
+@media screen and (max-width:1600px){
+  .banner_action{ max-width:1150px; width:100%; padding:14px 14px; }
+  .rt_side{ padding-left:15px; }
+  .rt_side .upload_btn{ width:230px; font-size:15px; padding:0 18px; }
+  .rt_side .report_btn{ width:230px; font-size:15px; padding:0 18px; }
 
+}
 
+@media screen and (max-width:1300px){
+  .banner_action{ max-width:1050px; width:100%; padding:12px; }
+  
+}
 
+@media screen and (max-width:1199px){
+  .banner_action{ max-width:920px; width:100%; padding:12px; }
+  .rt_side .upload_btn{ width:215px; font-size:15px; padding:0 15px; }
+  .rt_side .report_btn{ width:215px; font-size:15px; padding:0 15px; }
+  .banner:after{ width:800px; height:450px; }
+
+}
+
+@media screen and (max-width:991px){
+  .banner:after{ display:none; }
+  .banner_action{ display:none; }
+
+  
+}

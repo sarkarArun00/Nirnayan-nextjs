@@ -821,6 +821,59 @@ export default function Header() {
   };
 
   // Login End
+  // For More Menu Start
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [mobileOpenIndex, setMobileOpenIndex] = useState<number | null>(null);
+  const [isOpens, setIsOpens] = useState(false);
+
+  const menuData = [
+    {
+      id: 'company',
+      label: 'Company',
+      content: [
+        { label: 'About Us', link: '/about' },
+        { label: 'Our Team', link: '/team' },
+        { label: 'Journey', link: '/journey' },
+        { label: 'Careers With Us', link: '/careers', badge: 'Hiring' },
+        { label: 'Contact Us', link: '/contact' },
+      ],
+    },
+    {
+      id: 'laboratory',
+      label: 'Laboratory',
+      content: [
+        { label: 'Lab Tests', link: '/tests' },
+        { label: 'Diagnostic Tools', link: '/diagnostics' },
+        { label: 'Quality Standards', link: '/quality' },
+      ],
+    },
+    {
+      id: 'quick-link',
+      label: 'Quick Link',
+      content: [
+        { label: 'Book Appointment', link: '/book' },
+        { label: 'Download Reports', link: '/reports' },
+        { label: 'FAQs', link: '/faqs' },
+      ],
+    },
+    {
+      id: 'patients',
+      label: 'Patients',
+      content: [
+        { label: 'Patient Portal', link: '/portal' },
+        { label: 'Insurance Info', link: '/insurance' },
+        { label: 'Preparation Guide', link: '/prep' },
+      ],
+    },
+  ];
+
+  const toggleAccordion = (index: number) => {
+    setMobileOpenIndex((previous) =>
+      previous === index ? null : index
+    );
+  };
+  // For More Menu End
+
   return (
     <>
       <div
@@ -903,7 +956,7 @@ export default function Header() {
               </ul>
             </div>
 
-            <div className={styles["more-btns"]}>
+            <div className={styles["more-btns"]} onClick={() => setIsOpens((prev) => !prev)}>
               <a href="#">
                 More <i className="fa-solid fa-chevron-down"></i>
               </a>
@@ -1034,6 +1087,123 @@ export default function Header() {
                     )}
                   </div>
                 )}
+              </div>
+            </div>
+          </div>
+          <button onClick={() => setIsOpens((prev) => !prev)} className={`d-block d-xl-none ${styles.mob_menu}`}>
+            <img src="/assets/images/menu-icon.svg" alt="" />
+          </button>
+        </div>
+
+        <div className={`${styles.sub_menu} ${isOpens ? styles.show : ""}`}>
+          <button className={styles.close_btn} onClick={() => setIsOpens(false)}><i className="fa-solid fa-x"></i></button>
+          <div className="container">
+            <div className={`row ${styles.row}`}>
+              <div className={`col-xl-4 col-lg-12 col-md-12 col-sm-12 ${styles.menu_column}`}>
+                <h2>Explore More</h2>
+                <h4>Everything you need, all in one place.</h4>
+                <p>Explore our wide range of healthcare services, diagnostic solutions, health packages, and helpful resources, all in one place. Find everything you need to make your healthcare journey simple, convenient, and hassle-free.</p>
+              </div>
+              <div className={`col-xl-4 col-lg-6 col-md-6 col-sm-12 ${styles.menu_column}`}>
+                <div className={styles.flex_wrap}>
+                  <ul className={styles.sidebar}>
+                    {menuData.map((item, index) => {
+                      const isActive = activeIndex === index;
+                      return (
+                        <li
+                          key={item.id}
+                          className={`${styles.menuItem} ${isActive ? styles.active : ''}`}
+                          onMouseEnter={() => setActiveIndex(index)}
+                        >
+                          <span>{item.label}</span>
+                          <span className={styles.arrow}>
+                            {isActive ? (
+                              // <i className="fa-solid fa-arrow-right"></i>
+                              <i className="fa-solid fa-chevron-right"></i>
+                            ) : (
+                              <i className="fa-solid fa-chevron-right"></i>
+                            )}
+                          </span>
+                        </li>
+                      );
+                    })}
+                  </ul>
+
+                  <ul className={styles.linkList}>
+                    {menuData[activeIndex]?.content.map((linkItem, i) => (
+                      <li key={i} className={styles.linkRow}>
+                        <a href={linkItem.link} className={styles.navLink}>
+                          {linkItem.label}
+                        </a>
+                        {linkItem.badge && (
+                          <span className={styles.badge}>{linkItem.badge}</span>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className={styles.accordionContainer}>
+                  {menuData.map((item, index) => {
+                    const isOpen = mobileOpenIndex === index;
+
+                    return (
+                      <div
+                        key={item.id}
+                        className={styles.accordionItem}
+                      >
+                        <button
+                          type="button"
+                          className={`${styles.accordionHeader} ${isOpen ? styles.activeHeader : ""
+                            }`}
+                          onClick={() => toggleAccordion(index)}
+                          aria-expanded={isOpen}
+                        >
+                          <span>{item.label}</span>
+
+                          <span className={styles.accordionIcon}>
+                            <i
+                              className={`fa-solid ${isOpen
+                                ? "fa-chevron-up"
+                                : "fa-chevron-down"
+                                }`}
+                            />
+                          </span>
+                        </button>
+
+                        {isOpen && (
+                          <ul className={styles.mobileLinkList}>
+                            {item.content.map((linkItem, i) => (
+                              <li
+                                key={i}
+                                className={styles.mobileLinkRow}
+                              >
+                                <a
+                                  href={linkItem.link}
+                                  className={styles.mobileNavLink}
+                                >
+                                  {linkItem.label}
+                                </a>
+
+                                {linkItem.badge && (
+                                  <span className={styles.badge}>
+                                    {linkItem.badge}
+                                  </span>
+                                )}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+              <div className={`col-xl-4 col-lg-6 col-md-6 col-sm-12 ${styles.menu_column}`}>
+                <div className={styles.video}>
+                  <img src="/assets/images/video.jpg" alt="" />
+                  <i className="fa-solid fa-circle-play"></i>
+                </div>
               </div>
             </div>
           </div>

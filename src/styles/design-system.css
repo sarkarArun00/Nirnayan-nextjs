@@ -359,6 +359,8 @@ textarea:focus,select:focus,.form-control:focus,.form-select:focus,input:focus {
 
 @media screen and (max-width:1199px){
   .cmn-right-align{ margin-right: calc(((100vw - 960px) / 2) * -1); }
+  h2{ font-size:32px; }
+
 }
 
 @media screen and (max-width:991px){
