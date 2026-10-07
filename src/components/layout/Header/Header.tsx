@@ -88,11 +88,11 @@ export default function Header() {
 
   const [signUpTimer, setSignUpTimer] = useState(20);
 
-const [loginSession, setLoginSession] = useState<{
-  user: LoginUser;
-} | null>(null);
+  const [loginSession, setLoginSession] = useState<{
+    user: LoginUser;
+  } | null>(null);
 
-    const { confirm } = useAlert();
+  const { confirm } = useAlert();
 
   const [sessionLoading, setSessionLoading] = useState(true);
 
@@ -124,7 +124,7 @@ const [loginSession, setLoginSession] = useState<{
       if (!header || !banner) return;
       setBannerTouched(
         banner.getBoundingClientRect().bottom <=
-          header.getBoundingClientRect().bottom,
+        header.getBoundingClientRect().bottom,
       );
     };
     window.addEventListener("scroll", handleScroll);
@@ -207,7 +207,7 @@ const [loginSession, setLoginSession] = useState<{
     setLangOpen((prev) => !prev);
   };
 
-  
+
   const pathname = usePathname();
 
   useEffect(() => {
@@ -425,7 +425,7 @@ const [loginSession, setLoginSession] = useState<{
       if (result?.status == 1) {
         setOtpRequested(true);
         setTimer(20);
-  
+
         showAlert({
           type: "success", // "warning" or "error"
           title: "Sent",
@@ -433,19 +433,19 @@ const [loginSession, setLoginSession] = useState<{
           autoClose: 1000,
         });
       }
-      else if (result?.status == 0) { 
-         const errorMessage =
-           typeof result?.data === "string"
-             ? result.data
-             : "OTP verification failed. Please try again.";
+      else if (result?.status == 0) {
+        const errorMessage =
+          typeof result?.data === "string"
+            ? result.data
+            : "OTP verification failed. Please try again.";
 
-         showAlert({
-           type: "warning",
-           title: "Login Failed",
-           message: errorMessage,
-           buttonText: "OK",
-           autoClose: 3000,
-         });
+        showAlert({
+          type: "warning",
+          title: "Login Failed",
+          message: errorMessage,
+          buttonText: "OK",
+          autoClose: 3000,
+        });
       }
     } catch (error: unknown) {
       console.error("Request OTP Error:", error);
@@ -668,11 +668,11 @@ const [loginSession, setLoginSession] = useState<{
       const result =
         typeof response === "object" && response !== null
           ? (response as {
-              data?: unknown;
-              status?: number;
-              success?: boolean;
-              message?: string;
-            })
+            data?: unknown;
+            status?: number;
+            success?: boolean;
+            message?: string;
+          })
           : null;
 
       // SIGNUP SUCCESS
@@ -974,73 +974,30 @@ const [loginSession, setLoginSession] = useState<{
                         .toUpperCase() || "U"}
                     </span>
                   ) : (
-                    <span className={styles.guestAvatar}>
-                      <img src="/assets/images/user.png" alt="" />
-                    </span>
+                    // <span className={styles.guestAvatar}>
+                    <img src="/assets/images/user.png" alt="" />
+                    // </span>
                   )}
 
-                  <i className="fa-solid fa-chevron-down" />
+                  {/* <i className="fa-solid fa-chevron-down" /> */}
                 </button>
 
                 {/* DROPDOWN CONTENT */}
 
                 {!sessionLoading && isAccountMenuOpen && (
-                  <div id="header-account-menu" className={styles.accountMenu}>
+                  <div id="header-account-menu" className={styles.dropdown_menu}>
                     {loginSession ? (
                       <>
-                        {/* LOGGED-IN USER PROFILE */}
-
-                        <div className={styles.accountProfile}>
-                          <div className={styles.profileAvatar}>
-                            {loginSession.user.first_name
-                              ?.trim()
-                              .charAt(0)
-                              .toUpperCase() || "U"}
-                          </div>
-
-                          <div className={styles.profileInfo}>
-                            <strong>
-                              {loginSession.user.first_name}{" "}
-                              {loginSession.user.last_name}
-                            </strong>
-
-                            <span>{loginSession.user.email}</span>
-                          </div>
-                        </div>
-
-                        <div className={styles.accountDivider} />
-
-                        {/* PROFILE DETAILS */}
-
-                        <div className={styles.profileDetails}>
-                          <span className={styles.profileLabel}>
-                            MY PROFILE
-                          </span>
-
-                          <p>
-                            <i className="fa-regular fa-user" />{" "}
-                            {loginSession.user.first_name}{" "}
-                            {loginSession.user.last_name}
-                          </p>
-
-                          <p>
-                            <i className="fa-solid fa-phone" />{" "}
-                            {loginSession.user.mobile_number}
-                          </p>
-                        </div>
-
-                        <div className={styles.accountDivider} />
-
-                        {/* LOGOUT */}
-
-                        <button
-                          type="button"
-                          className={`${styles.accountMenuButton} ${styles.logoutButton}`}
-                          onClick={handleLogout}
-                        >
-                          <i className="fa-solid fa-right-from-bracket" />
-                          <span>Logout</span>
+                        <button>
+                          <img src="/assets/images/profile.svg" alt="" /> My Profile
                         </button>
+                        <button>
+                          <img src="/assets/images/orders.svg" alt="" /> My Order
+                        </button>
+                        <button>
+                          <img src="/assets/images/rx.svg" alt="" /> Prescriptions
+                        </button>
+                        <button><img src="/assets/images/logout.svg" alt="" /> Logout</button>
                       </>
                     ) : (
                       <>
@@ -1055,7 +1012,7 @@ const [loginSession, setLoginSession] = useState<{
                             setIsOpen(true);
                           }}
                         >
-                          <i className="fa-solid fa-right-to-bracket" />
+                          <img src="/assets/images/sign-in.svg" alt="" />
                           <span>Sign In</span>
                         </button>
 
@@ -1070,7 +1027,7 @@ const [loginSession, setLoginSession] = useState<{
                             setIsSignIn(true);
                           }}
                         >
-                          <i className="fa-solid fa-user-plus" />
+                          <img src="/assets/images/log-in.svg" alt="" />
                           <span>Sign Up</span>
                         </button>
                       </>
