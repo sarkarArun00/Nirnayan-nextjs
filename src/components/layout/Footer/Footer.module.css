@@ -44,7 +44,7 @@
 .up-footer .top-block .corporate-info p{ font-weight:400; color:var(--up-white); }
 .up-footer .top-block .corporate-info p span{ display:block; }
 .up-footer .top-block .app-store-btn{ display:flex; gap:0 10px; }
-.up-footer .top-block .app-store-btn button{ border:0; background:none; padding:0; }
+.up-footer .top-block .app-store-btn button{ width:auto; border:0; background:none; padding:0; }
 
 .up-footer .top-block button{ font-weight:500; color:var(--up-secondiary); border:0; background:0; padding:0; margin-bottom:25px; }
 .up-footer .top-block ul li{ display:flex; align-items:center; gap:0 5px; margin-bottom:15px; }
@@ -139,17 +139,18 @@
 }
 
 @media screen and (max-width:767px){
-  .up-footer .newsletter .inn .mail-wrap{ border-radius:15px; }
-  .up-footer .newsletter .inn .mail-wrap button{ width:100%; position:inherit; right:0; top:0; margin-top:10px; }
+  .up-footer .newsletter .inn .mail-wrap{ border-radius:15px; border:none; box-shadow:none; background:none; padding:0; }
+  .up-footer .newsletter .inn .mail-wrap button{ width:100%; position:inherit; right:0; top:0; margin-top:10px; background:linear-gradient(263.03deg, #FFFFFF 4.86%, #FAC801 94.11%); border:0; color:var(--up-black); }
   .up-footer .newsletter .inn .mail-wrap .custom-controls{ border:0 !important; height:50px !important; padding:0 15px 0 55px; }
-  .up-footer .newsletter .inn .mail-wrap i{ width:34px; height:34px; top:18px; left:18px; }
+  .up-footer .newsletter .inn .mail-wrap i{ width:34px; height:34px; top:8px; left:8px; }
   .up-footer .top-block .logo{ justify-content:center; }
   .up-footer .top-block .corporate-info{ text-align:center; }
   .up-footer .top-block .corporate-info h5{ margin-bottom:20px; }
-  .up-footer .newsletter .inn{ padding:25px 20px; border-radius:15px; margin-bottom:-75px; }
+  .up-footer .top-block .app-store-btn{ justify-content:center; }
+  .up-footer .newsletter .inn{ padding:25px 20px; border-radius:15px; margin-bottom:-100px; }
   .up-footer .newsletter .inn h2{ margin-bottom:10px; }
   .up-footer .newsletter .inn h5{ font-size:15px; font-weight:400; margin-bottom:15px; }
-  .up-footer .top-block{ padding:120px 0 20px; }
+  .up-footer .top-block{ padding:140px 0 20px; border-color:35px 35px 0 0; }
   .up-footer .exp-block{ border:0; }
   .feedback .top-sec .qr-wrap{ width:100%; flex-wrap:wrap; }
   .feedback .top-sec .qr-wrap .icon{ margin:0 auto 15px; }
@@ -202,14 +203,14 @@
   .footer_menu ul {
     max-height: 0;
     overflow: hidden;
-    transition:
-      max-height 0.35s ease,
-      padding 0.35s ease;
+    transition:max-height 0.35s ease, padding 0.35s ease;
   }
   .footer_menu ul.open {
     max-height: 400px;
     padding:10px 0 0;
   }
+  
+
 
 
 }

@@ -76,8 +76,8 @@
 }
 
 @media screen and (max-width:991px){
-  .banner:after{ display:none; }
   .banner_action{ display:none; }
+  .banner:after{ width:200px; height:150px; }
 
   
 }
