@@ -1,44 +1,132 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
 import Slider from "react-slick";
 
 import { getBannerContent } from "@/services/auth.service";
 
 import styles from "./HeroSection.module.css";
 
+interface BannerItem {
+  id: number;
+  advertisementTitle: string;
+  pageLink: string;
+
+  attachment: {
+    mobile: string;
+    website: string;
+  };
+
+  visible: number;
+  status: number;
+  delete_status: number | null;
+  is_banner: boolean;
+}
+
 export default function HeroSection() {
-  const [bannerData, setBannerData] = useState<unknown>(null);
+  const [bannerData, setBannerData] = useState<BannerItem[]>([]);
 
   const [bannerLoading, setBannerLoading] = useState(true);
+
+  /* ================================
+     IMAGE BASE URL
+  ================================= */
+
+  const IMAGE_BASE_URL = process.env.NEXT_PUBLIC_LIMS_API_BASE_URL || "";
+
+  const getImageUrl = (path: string) => {
+    if (!path) return "";
+
+    // Already complete URL
+    if (path.startsWith("http://") || path.startsWith("https://")) {
+      return path;
+    }
+
+    const baseUrl = IMAGE_BASE_URL.endsWith("/")
+      ? IMAGE_BASE_URL
+      : `${IMAGE_BASE_URL}/`;
+
+    const cleanPath = path.startsWith("/") ? path.substring(1) : path;
+
+    return `${baseUrl}${cleanPath}`;
+  };
+
+  /* ================================
+     SLIDER SETTINGS
+  ================================= */
 
   const settings = {
     dots: false,
     arrows: false,
-    infinite: true,
-    autoplay: true,
+
+    infinite: bannerData.length > 1,
+
+    autoplay: bannerData.length > 1,
+
+    autoplaySpeed: 4000,
+
     speed: 500,
+
     slidesToShow: 1,
     slidesToScroll: 1,
+
+    pauseOnHover: true,
   };
+
+  /* ================================
+     GET BANNERS
+  ================================= */
 
   useEffect(() => {
     const loadBanner = async () => {
       try {
         setBannerLoading(true);
 
-        /*
-         * Replace the value below with the same
-         * banner type value used in your Angular app.
-         */
         const response = await getBannerContent("website");
 
         console.log("Banner API Response:", response);
 
-        setBannerData(response);
+        let banners: BannerItem[] = [];
+
+        if (Array.isArray(response)) {
+          banners = response as BannerItem[];
+        } else if (
+          typeof response === "object" &&
+          response !== null &&
+          "data" in response &&
+          Array.isArray(
+            (
+              response as {
+                data?: unknown;
+              }
+            ).data,
+          )
+        ) {
+          banners = (
+            response as {
+              data: BannerItem[];
+            }
+          ).data;
+        }
+
+        /*
+         * Hero banner only
+         */
+
+        const visibleBanners = banners.filter(
+          (banner) =>
+            banner.status == 1 &&
+            banner.is_banner == true &&
+            banner.attachment?.website,
+        );
+
+        setBannerData(visibleBanners);
+
+        console.log('ressss', bannerData)
       } catch (error) {
         console.error("Banner API Error:", error);
+
+        setBannerData([]);
       } finally {
         setBannerLoading(false);
       }
@@ -50,38 +138,61 @@ export default function HeroSection() {
   return (
     <>
       <div className={`banner_wrap ${styles.banner}`}>
+        {/* ===========================
+            BANNER SLIDER
+        ============================ */}
+
         <div className={styles.bann_slide}>
           {bannerLoading ? (
+            /* LOADING FALLBACK */
+
             <div className={styles.item}>
               <img src="/assets/images/banner1.jpg" alt="Nirnayan Healthcare" />
             </div>
-          ) : (
+          ) : bannerData.length > 0 ? (
+            /* API BANNERS */
+
             <Slider {...settings}>
-              {/*
-                Keep current banner temporarily.
+              {bannerData.map((banner) => (
+                <div key={banner.id} className={styles.item}>
+                  <a
+                    href={banner.pageLink || "#"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <picture>
+                      {/* MOBILE BANNER */}
 
-                Once you send me the real API response,
-                we'll replace this with:
+                      {banner.attachment.mobile && (
+                        <source
+                          media="(max-width: 767px)"
+                          srcSet={getImageUrl(banner.attachment.mobile)}
+                        />
+                      )}
 
-                bannerData.map(...)
-              */}
+                      {/* DESKTOP BANNER */}
 
-              <div className={styles.item}>
-                <img
-                  src="/assets/images/banner1.jpg"
-                  alt="Nirnayan Healthcare"
-                />
-              </div>
-
-              <div className={styles.item}>
-                <img
-                  src="/assets/images/banner1.jpg"
-                  alt="Nirnayan Healthcare"
-                />
-              </div>
+                      <img
+                        src={getImageUrl(banner.attachment.website)}
+                        alt={banner.advertisementTitle || "Nirnayan Healthcare"}
+                      />
+                    </picture>
+                  </a>
+                </div>
+              ))}
             </Slider>
+          ) : (
+            /* API EMPTY FALLBACK */
+
+            <div className={styles.item}>
+              <img src="/assets/images/banner1.jpg" alt="Nirnayan Healthcare" />
+            </div>
           )}
         </div>
+
+        {/* ===========================
+            BANNER ACTION
+        ============================ */}
 
         <div className={styles.banner_action}>
           <div className={styles.test_search}>
@@ -101,12 +212,12 @@ export default function HeroSection() {
           </div>
 
           <div className={styles.rt_side}>
-            <button className={styles.upload_btn}>
+            <button type="button" className={styles.upload_btn}>
               Upload Prescription
               <img src="/assets/images/uppres.svg" alt="" />
             </button>
 
-            <button className={styles.report_btn}>
+            <button type="button" className={styles.report_btn}>
               Download Report
               <img src="/assets/images/download.svg" alt="" />
             </button>

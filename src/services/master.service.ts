@@ -3,16 +3,10 @@ import { RequestOtpPayload } from "@/types/auth/login.types";
 const BASE_URL =
     process.env.NEXT_PUBLIC_LIMS_API_BASE_URL;
 
-export interface VerifyOtpPayload {
-    email_or_mobile: string;
-    otp: string;
-}
-
-
 function getBaseUrl() {
     if (!BASE_URL) {
         throw new Error(
-            "API base URL is not configured."
+            "NEXT_PUBLIC_LIMS_API_BASE_URL is not configured."
         );
     }
 
@@ -101,64 +95,6 @@ async function postRequest<TResponse>(
 //     );
 // }
 
-export function requestOtp(
-    emailOrMobile: string
-) {
-    const payload: RequestOtpPayload = {
-        email_or_mobile: emailOrMobile,
-    };
-
-    return postRequest<unknown>(
-        "b2c/request-otp-b2c",
-        payload
-    );
-}
-export function requestLoginOtp(
-    emailOrMobile: string
-) {
-    const payload: RequestOtpPayload = {
-        email_or_mobile: emailOrMobile,
-    };
-
-    return postRequest<unknown>(
-        "b2c/request-b2c-loginotp",
-        payload
-    );
-}
-
-/* =========================
-   RESEND OTP
-========================= */
-
-export function resendOtp(
-    emailOrMobile: string
-) {
-    const value =
-        encodeURIComponent(emailOrMobile);
-
-    return getRequest<unknown>(
-        `b2c/requestOTP?email_or_mobile=${value}`
-    );
-}
-
-/* =========================
-   VERIFY OTP
-========================= */
-
-export function verifyOtp(
-    emailOrMobile: string,
-    otp: string
-) {
-    const payload: VerifyOtpPayload = {
-        email_or_mobile: emailOrMobile,
-        otp,
-    };
-
-    return postRequest<unknown>(
-        "b2c/verify-otp-b2c",
-        payload
-    );
-}
 
 /* =========================
    Sign Up
@@ -181,32 +117,24 @@ export function signUp(
 }
 
 
-export async function getBannerContent(
-    bannerType: string | number
-) {
-    const params = new URLSearchParams({
-        baner_type: String(bannerType),
+export async function getAllState() {
+    const url = `${getBaseUrl()}global/address/state`;
+
+    console.log("STATE API URL:", url);
+
+    const response = await fetch(url, {
+        method: "GET",
+        headers: {
+            Accept: "application/json",
+        },
+        cache: "no-store",
     });
-
-    const response = await fetch(
-        `${getBaseUrl()}b2c/advertisement/getAllVisibleAdvertisements?${params.toString()}`,
-        {
-            method: "GET",
-            headers: {
-                Accept: "application/json",
-            },
-            cache: "no-store",
-        }
-    );
-
-    const data: any =
-        await response.json();
 
     if (!response.ok) {
         throw new Error(
-            "Unable to load banner content."
+            `State API failed with status ${response.status}`
         );
     }
 
-    return data;
+    return response.json();
 }

@@ -16,6 +16,11 @@ import {
 } from "@/actions/session.actions";
 import { useAlert } from "@/components/common/Alert/AlertProvider";
 import { usePathname } from "next/navigation";
+import { getAllState } from "@/services/master.service"
+
+
+
+
 
 declare global {
   interface Window {
@@ -46,6 +51,50 @@ type LoginResponse = {
   message?: string;
   data?: LoginUser | string;
 };
+
+type StateItem = {
+  id: number;
+  name: string;
+};
+
+type CityItem = {
+  name: string;
+  image: string;
+  stateName: string;
+};
+
+const LOCATION_CITIES: CityItem[] = [
+  {
+    name: "Kolkata",
+    image: "/assets/images/kolkata.png",
+    stateName: "West Bengal",
+  },
+  {
+    name: "Siliguri",
+    image: "/assets/images/siliguri.png",
+    stateName: "West Bengal",
+  },
+  {
+    name: "Patna",
+    image: "/assets/images/patna.png",
+    stateName: "Bihar",
+  },
+  {
+    name: "Asansol",
+    image: "/assets/images/asansol.png",
+    stateName: "West Bengal",
+  },
+  {
+    name: "Assam",
+    image: "/assets/images/assam.png",
+    stateName: "Assam",
+  },
+  {
+    name: "Baharampur",
+    image: "/assets/images/baharampur.png",
+    stateName: "West Bengal",
+  },
+];
 
 export default function Header() {
   const [bannerTouched, setBannerTouched] = useState(false);
@@ -87,6 +136,7 @@ export default function Header() {
   const [signUpOtp, setSignUpOtp] = useState(["", "", "", "", "", ""]);
 
   const [signUpTimer, setSignUpTimer] = useState(20);
+  const [stateData, setStateData] = useState([]);
 
   const [loginSession, setLoginSession] = useState<{
     user: LoginUser;
@@ -100,7 +150,19 @@ export default function Header() {
 
   const accountMenuRef = useRef<HTMLDivElement>(null);
 
+  const [selectedStateName, setSelectedStateName] = useState("");
+
   const { showAlert } = useAlert();
+
+  const [states, setStates] = useState<StateItem[]>([]);
+  const LOCATION_STORAGE_KEY = "nirnayan_selected_state";
+
+  const [selectedState, setSelectedState] = useState<StateItem | null>(null);
+
+  const [locationSearch, setLocationSearch] = useState("");
+
+
+  
 
   const handleChangeSignUpMobile = () => {
     // Allow user to edit the mobile number again
@@ -203,6 +265,116 @@ export default function Header() {
     addGoogleTranslateScript();
   }, []);
 
+  const handleCitySelect = (city: CityItem) => {
+    const normalizeName = (value: string) => value.trim().toLowerCase();
+
+    const matchedState = states.find(
+      (state) => normalizeName(state.name) === normalizeName(city.stateName),
+    );
+
+    if (!matchedState) {
+      showAlert({
+        type: "warning",
+        title: "Location Unavailable",
+        message: `${city.stateName} is not available in the current location list.`,
+        autoClose: 2500,
+      });
+
+      return;
+    }
+
+    // Set React state
+    setSelectedState(matchedState);
+
+    // Store state permanently
+    localStorage.setItem(LOCATION_STORAGE_KEY, JSON.stringify(matchedState));
+
+    // Console selected values
+    console.log("Selected City:", city.name);
+
+    console.log("Selected State:", matchedState.name);
+
+    console.log("Selected State ID:", matchedState.id);
+
+    // Close modal
+    setIsLocation(false);
+
+    // Clear search
+    setLocationSearch("");
+  };
+
+   /* ================================
+       GET BANNERS
+    ================================= */
+  useEffect(() => {
+    const loadStates = async () => {
+      try {
+        const response = await getAllState();
+
+        console.log("State API Response:", response);
+
+        let stateList: StateItem[] = [];
+
+        // API directly returns [...]
+        if (Array.isArray(response)) {
+          stateList = response;
+        }
+
+        // Also support { data: [...] }
+        else if (
+          typeof response === "object" &&
+          response !== null &&
+          "data" in response &&
+          Array.isArray((response as { data?: unknown }).data)
+        ) {
+          stateList = (
+            response as {
+              data: StateItem[];
+            }
+          ).data;
+        }
+
+        console.log("FINAL STATE LIST:", stateList);
+
+        setStates(stateList);
+      } catch (error) {
+        console.error("State API Error:", error);
+
+        setStates([]);
+      }
+    };
+
+    void loadStates();
+  }, []);
+
+  useEffect(() => {
+    try {
+      const savedState = localStorage.getItem(LOCATION_STORAGE_KEY);
+
+      if (!savedState) {
+        return;
+      }
+
+      const parsedState = JSON.parse(savedState) as StateItem;
+
+      if (
+        parsedState &&
+        typeof parsedState.id === "number" &&
+        typeof parsedState.name === "string"
+      ) {
+        setSelectedState(parsedState);
+
+        console.log("Restored State:", parsedState);
+
+        console.log("Restored State ID:", parsedState.id);
+      }
+    } catch (error) {
+      console.error("Unable to restore selected state:", error);
+
+      localStorage.removeItem(LOCATION_STORAGE_KEY);
+    }
+  }, []);
+  
   const toggleLang = () => {
     setLangOpen((prev) => !prev);
   };
@@ -394,6 +566,7 @@ export default function Header() {
   //   }
   // };
 
+  const [loginOtp, setLoginOtp] = useState("")
   const handleGetLoginOtp = async () => {
     setError("");
     setSuccessMessage("");
@@ -418,10 +591,10 @@ export default function Header() {
     try {
       setLoading(true);
 
-      const response = await requestLoginOtp(mobile);
-
+      const response:any = await requestLoginOtp(mobile);
       console.log("Request OTP Response:", response);
       const result = response as LoginResponse | null;
+      setLoginOtp(response?.otpDets.otp);
       if (result?.status == 1) {
         setOtpRequested(true);
         setTimer(20);
@@ -883,7 +1056,8 @@ export default function Header() {
         <div className={styles["top-wrap"]}>
           <img src="/assets/images/bell.svg" alt="Notification Bell" />
           <p className="d-none d-lg-block">
-            Easy online booking for lab tests, diagnostics and complete health checkups at home
+            Easy online booking for lab tests, diagnostics and complete health
+            checkups at home
             <a href="#">
               Book Test{" "}
               <img src="/assets/images/right-arrow.svg" alt="Right Arrow" />
@@ -917,7 +1091,7 @@ export default function Header() {
               onClick={() => setIsLocation(true)}
             >
               <i className="fa-solid fa-location-dot location-icon"></i>
-              <h4>Kolkata</h4>
+              <h4>{selectedState?.name || "Select Location"}</h4>
               <i className="fa-solid fa-chevron-down"></i>
             </div>
 
@@ -928,7 +1102,7 @@ export default function Header() {
                 onClick={() => setIsLocation(true)}
               >
                 <i className="fa-solid fa-location-dot location-icon"></i>
-                <h4>Kolkata</h4>
+                <h4>{selectedState?.name || "Select Location"}</h4>
                 <i className="fa-solid fa-chevron-down"></i>
               </div>
 
@@ -962,7 +1136,10 @@ export default function Header() {
               </ul>
             </div>
 
-            <div className={styles["more-btns"]} onClick={() => setIsOpens((prev) => !prev)}>
+            <div
+              className={styles["more-btns"]}
+              onClick={() => setIsOpens((prev) => !prev)}
+            >
               <a href="#">
                 More <i className="fa-solid fa-chevron-down"></i>
               </a>
@@ -1044,19 +1221,27 @@ export default function Header() {
                 {/* DROPDOWN CONTENT */}
 
                 {!sessionLoading && isAccountMenuOpen && (
-                  <div id="header-account-menu" className={styles.dropdown_menu}>
+                  <div
+                    id="header-account-menu"
+                    className={styles.dropdown_menu}
+                  >
                     {loginSession ? (
                       <>
                         <button>
-                          <img src="/assets/images/profile.svg" alt="" /> My Profile
+                          <img src="/assets/images/profile.svg" alt="" /> My
+                          Profile
                         </button>
                         <button>
-                          <img src="/assets/images/orders.svg" alt="" /> My Order
+                          <img src="/assets/images/orders.svg" alt="" /> My
+                          Order
                         </button>
                         <button>
-                          <img src="/assets/images/rx.svg" alt="" /> Prescriptions
+                          <img src="/assets/images/rx.svg" alt="" />{" "}
+                          Prescriptions
                         </button>
-                        <button><img src="/assets/images/logout.svg" alt="" /> Logout</button>
+                        <button onClick={handleLogout}>
+                          <img src="/assets/images/logout.svg" alt="" /> Logout
+                        </button>
                       </>
                     ) : (
                       <>
@@ -1096,21 +1281,38 @@ export default function Header() {
               </div>
             </div>
           </div>
-          <button onClick={() => setIsOpens((prev) => !prev)} className={`d-block d-xl-none ${styles.mob_menu}`}>
+          <button
+            onClick={() => setIsOpens((prev) => !prev)}
+            className={`d-block d-xl-none ${styles.mob_menu}`}
+          >
             <img src="/assets/images/menu-icon.svg" alt="" />
           </button>
         </div>
 
         <div className={`${styles.sub_menu} ${isOpens ? styles.show : ""}`}>
-          <button className={styles.close_btn} onClick={() => setIsOpens(false)}><i className="fa-solid fa-x"></i></button>
+          <button
+            className={styles.close_btn}
+            onClick={() => setIsOpens(false)}
+          >
+            <i className="fa-solid fa-x"></i>
+          </button>
           <div className="container">
             <div className={`row ${styles.row}`}>
-              <div className={`col-xl-4 col-lg-12 col-md-12 col-sm-12 ${styles.menu_column}`}>
+              <div
+                className={`col-xl-4 col-lg-12 col-md-12 col-sm-12 ${styles.menu_column}`}
+              >
                 <h2>Explore More</h2>
                 <h4>Everything you need, all in one place.</h4>
-                <p>Explore our wide range of healthcare services, diagnostic solutions, health packages, and helpful resources, all in one place. Find everything you need to make your healthcare journey simple, convenient, and hassle-free.</p>
+                <p>
+                  Explore our wide range of healthcare services, diagnostic
+                  solutions, health packages, and helpful resources, all in one
+                  place. Find everything you need to make your healthcare
+                  journey simple, convenient, and hassle-free.
+                </p>
               </div>
-              <div className={`col-xl-4 col-lg-6 col-md-6 col-sm-12 ${styles.menu_column}`}>
+              <div
+                className={`col-xl-4 col-lg-6 col-md-6 col-sm-12 ${styles.menu_column}`}
+              >
                 <div className={styles.flex_wrap}>
                   <ul className={styles.sidebar}>
                     {menuData.map((item, index) => {
@@ -1118,7 +1320,7 @@ export default function Header() {
                       return (
                         <li
                           key={item.id}
-                          className={`${styles.menuItem} ${isActive ? styles.active : ''}`}
+                          className={`${styles.menuItem} ${isActive ? styles.active : ""}`}
                           onMouseEnter={() => setActiveIndex(index)}
                         >
                           <span>{item.label}</span>
@@ -1154,14 +1356,12 @@ export default function Header() {
                     const isOpen = mobileOpenIndex === index;
 
                     return (
-                      <div
-                        key={item.id}
-                        className={styles.accordionItem}
-                      >
+                      <div key={item.id} className={styles.accordionItem}>
                         <button
                           type="button"
-                          className={`${styles.accordionHeader} ${isOpen ? styles.activeHeader : ""
-                            }`}
+                          className={`${styles.accordionHeader} ${
+                            isOpen ? styles.activeHeader : ""
+                          }`}
                           onClick={() => toggleAccordion(index)}
                           aria-expanded={isOpen}
                         >
@@ -1169,23 +1369,20 @@ export default function Header() {
 
                           <span className={styles.accordionIcon}>
                             <i
-                              className={`fa-solid ${isOpen
-                                  ? "fa-chevron-up"
-                                  : "fa-chevron-down"
-                                }`}
+                              className={`fa-solid ${
+                                isOpen ? "fa-chevron-up" : "fa-chevron-down"
+                              }`}
                             />
                           </span>
                         </button>
 
                         <ul
-                          className={`${styles.linkList} ${isOpen ? styles.open : ""
-                            }`}
+                          className={`${styles.linkList} ${
+                            isOpen ? styles.open : ""
+                          }`}
                         >
                           {item.content.map((linkItem, i) => (
-                            <li
-                              key={i}
-                              className={styles.mobileLinkRow}
-                            >
+                            <li key={i} className={styles.mobileLinkRow}>
                               <a
                                 href={linkItem.link}
                                 className={styles.mobileNavLink}
@@ -1206,7 +1403,9 @@ export default function Header() {
                   })}
                 </div>
               </div>
-              <div className={`col-xl-4 col-lg-6 col-md-6 col-sm-12 ${styles.menu_column}`}>
+              <div
+                className={`col-xl-4 col-lg-6 col-md-6 col-sm-12 ${styles.menu_column}`}
+              >
                 <div className={styles.video}>
                   <img src="/assets/images/video.jpg" alt="" />
                   <i className="fa-solid fa-circle-play"></i>
@@ -1506,7 +1705,12 @@ export default function Header() {
 
               <div className="col-lg-6 col-sm-12">
                 <div className="text">
-                  <h3>Sign in to your account</h3>
+                  <h3>
+                    Sign in to your account
+                    {loginOtp && (
+                      <span style={{ color: "red" }}> - {loginOtp}</span>
+                    )}
+                  </h3>
 
                   <p>
                     View your reports and upcoming health checkups at one place.
@@ -1663,42 +1867,21 @@ export default function Header() {
             </div>
             <h6>Select Location</h6>
             <ul>
-              <li className="select-city">
-                <div className="img">
-                  <img src="/assets/images/kolkata.png" alt="" />
-                </div>
-                <h6>Kolkata</h6>
-              </li>
-              <li>
-                <div className="img">
-                  <img src="/assets/images/siliguri.png" alt="" />
-                </div>
-                <h6>Siliguri</h6>
-              </li>
-              <li>
-                <div className="img">
-                  <img src="/assets/images/patna.png" alt="" />
-                </div>
-                <h6>Patna</h6>
-              </li>
-              <li>
-                <div className="img">
-                  <img src="/assets/images/asansol.png" alt="" />
-                </div>
-                <h6>Asansol</h6>
-              </li>
-              <li>
-                <div className="img">
-                  <img src="/assets/images/assam.png" alt="" />
-                </div>
-                <h6>Assam</h6>
-              </li>
-              <li>
-                <div className="img">
-                  <img src="/assets/images/baharampur.png" alt="" />
-                </div>
-                <h6>Baharampur</h6>
-              </li>
+              {LOCATION_CITIES.map((city) => (
+                <li
+                  key={city.name}
+                  className={
+                    selectedStateName === city.stateName ? "select-city" : ""
+                  }
+                  onClick={() => handleCitySelect(city)}
+                >
+                  <div className="img">
+                    <img src={city.image} alt={city.name} />
+                  </div>
+
+                  <h6>{city.name}</h6>
+                </li>
+              ))}
             </ul>
           </div>
         </div>
