@@ -240,6 +240,8 @@ textarea:focus,select:focus,.form-control:focus,.form-select:focus,input:focus {
 
 /* Common Slick Slider Start */
 .cmn_margin{ margin:0 10px; }
+.cmn_padding{ padding:0 10px; }
+
 .is_slick_dot{ margin-bottom:50px !important; }
 .is_slick_dot .slick-list{ margin:0 -10px !important; } 
 .is_slick_dot .test-box{ margin:0 10px; }
@@ -427,9 +429,18 @@ textarea:focus,select:focus,.form-control:focus,.form-select:focus,input:focus {
   textarea,select,.form-control,.form-select,input{ font-size:14px; }
   .container{ width:100%; max-width:100%; }
   .cmn-right-align{ margin-right:0; }
+  .cmn_margin{ margin:0 6px; }
+  .cmn_padding{ padding:0 6px; }
+  .is_slick_dot .slick-list{ margin:0 -6px !important; } 
   .is-exp-btn{ display: flex; justify-content: center; }
-
-
+  .cmn_btn {
+    padding: 15px 15px;
+    font-size: 14px;
+  }
+  .sec_btn {
+    padding: 15px 15px;
+    font-size: 14px;
+  }
 
 }
 

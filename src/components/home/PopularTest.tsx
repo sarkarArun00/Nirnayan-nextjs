@@ -25,7 +25,6 @@ function PopularTest() {
                 breakpoint: 768,
                 settings: {
                     slidesToShow: 1,
-                    centerPadding: '0px 15% 0px 0px', // Adjust peek for smaller screens
                 },
             },
         ],
@@ -42,13 +41,54 @@ function PopularTest() {
         setSelectedOrgan(organ);
     };
     //organs array
-    
+
+    // Why Choose mobile Slider Start
+    const settings = {
+        dots: true,
+        arrows: false,
+        infinite: true,
+        autoplay: true,
+        speed: 500,
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        centerMode: true,
+        centerPadding: '30px',
+    };
+
+    const gridData = [
+        {
+            icon: '/assets/images/ch-icon.svg',
+            chIcon: '/assets/images/ch-icon01.png',
+            number: '5000+',
+            label: 'Collection',
+        },
+        {
+            icon: '/assets/images/ch-icon1.svg',
+            chIcon: '/assets/images/ch-icon02.png',
+            number: '100+',
+            label: 'Doctors',
+        },
+        {
+            icon: '/assets/images/ch-icon2.svg',
+            chIcon: '/assets/images/ch-icon03.png',
+            number: '400+',
+            label: 'Logistic Strengths',
+        },
+        {
+            icon: '/assets/images/ch-icon3.svg',
+            chIcon: '/assets/images/ch-icon04.png',
+            number: '4000+',
+            label: 'Lab Tests & Packages',
+        },
+    ];
+    // Why Choose mobile Slider End
+
     return (
         <div className={styles.pop_main}>
             <div className={styles.why_us}>
                 <div className="container">
                     <div className="row">
-                        <div className="col-lg-5 col-md-12 col-sm-12">
+                        <div className="col-xl-5 col-lg-12 col-md-12 col-sm-12">
                             <div className={styles.text_block}>
                                 <h2>Why Choose <span>Nirnayan</span></h2>
                                 <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras dapibus ullamcorper mi, non
@@ -59,39 +99,44 @@ function PopularTest() {
                                 </ul>
                             </div>
                         </div>
-                        <div className="col-lg-7 col-md-12 col-sm-12">
-                            <div className={styles.ch_grid}>
-                                <div className={styles.box}>
-                                    <div className={styles.inn}>
-                                        <img className={styles.icon} src="/assets/images/ch-icon.svg" alt="" />
-                                        <img className={styles.ch_icon} src="/assets/images/ch-icon01.png" alt="" />
-                                        <h2>5000+</h2>
-                                        <p>Collection</p>
+                        <div className="col-xl-7 col-lg-12 col-md-12 col-sm-12">
+                            <div className={`d-none d-md-grid ${styles.ch_grid}`}>
+                                {gridData.map((item, index) => (
+                                    <div className={styles.box}>
+                                        <div className={styles.inn}>
+                                            <img className={styles.icon} src={item.icon} alt="" />
+                                            <img className={styles.ch_icon} src={item.chIcon} alt="" />
+                                            <h2>{item.number}</h2>
+                                            <p>{item.label}</p>
+                                        </div>
                                     </div>
-                                </div>
-                                <div className={styles.box}>
-                                    <div className={styles.inn}>
-                                        <img className={styles.icon} src="/assets/images/ch-icon1.svg" alt="" />
-                                        <img className={styles.ch_icon} src="/assets/images/ch-icon02.png" alt="" />
-                                        <h2>100+</h2>
-                                        <p>Doctors</p>
-                                    </div>
-                                </div>
-                                <div className={styles.box}>
-                                    <div className={styles.inn}>
-                                        <img className={styles.icon} src="/assets/images/ch-icon2.svg" alt="" />
-                                        <img className={styles.ch_icon} src="/assets/images/ch-icon03.png" alt="" />
-                                        <h2>400+</h2>
-                                        <p>Logistic Strengths</p>
-                                    </div>
-                                </div>
-                                <div className={styles.box}>
-                                    <div className={styles.inn}>
-                                        <img className={styles.icon} src="/assets/images/ch-icon3.svg" alt="" />
-                                        <img className={styles.ch_icon} src="/assets/images/ch-icon04.png" alt="" />
-                                        <h2>4000+</h2>
-                                        <p>Lab Tests & Packages</p>
-                                    </div>
+                                ))}
+                            </div>
+                            <div className={`d-block d-md-none ${styles.ch_grids}`}>
+                                <div className="cmn-right-align">
+                                    <Slider {...settings} className="is_slick_dot">
+                                        {gridData.map((item, index) => (
+                                            <div key={index} className="cmn_padding">
+                                                <div className={`${styles.box} ${index === 2 || index === 3 ? styles.specialBox : ""
+                                                    }`}>
+                                                    <div className={styles.inn}>
+                                                        <img
+                                                            className={styles.icon}
+                                                            src={item.icon}
+                                                            alt=""
+                                                        />
+                                                        <img
+                                                            className={styles.ch_icon}
+                                                            src={item.chIcon}
+                                                            alt=""
+                                                        />
+                                                        <h2>{item.number}</h2>
+                                                        <p>{item.label}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </Slider>
                                 </div>
                             </div>
                         </div>
