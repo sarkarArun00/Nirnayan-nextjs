@@ -949,7 +949,7 @@ export default function Header() {
             <div className={styles.navigation}>
               <ul>
                 <li>
-                  <Link href="#">
+                  <Link href="/test-detail">
                     <img src="/assets/images/blood.svg" alt="Test Icon" /> Test
                   </Link>
                 </li>
