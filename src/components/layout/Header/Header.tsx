@@ -882,9 +882,15 @@ export default function Header() {
       >
         <div className={styles["top-wrap"]}>
           <img src="/assets/images/bell.svg" alt="Notification Bell" />
-          <p>
-            Easy online booking for lab tests, diagnostics and complete health
-            checkups at home
+          <p className="d-none d-lg-block">
+            Easy online booking for lab tests, diagnostics and complete health checkups at home
+            <a href="#">
+              Book Test{" "}
+              <img src="/assets/images/right-arrow.svg" alt="Right Arrow" />
+            </a>
+          </p>
+          <p className="d-block d-lg-none">
+            Booking for lab tests, diagnostics
             <a href="#">
               Book Test{" "}
               <img src="/assets/images/right-arrow.svg" alt="Right Arrow" />
@@ -1164,36 +1170,37 @@ export default function Header() {
                           <span className={styles.accordionIcon}>
                             <i
                               className={`fa-solid ${isOpen
-                                ? "fa-chevron-up"
-                                : "fa-chevron-down"
+                                  ? "fa-chevron-up"
+                                  : "fa-chevron-down"
                                 }`}
                             />
                           </span>
                         </button>
 
-                        {isOpen && (
-                          <ul className={styles.mobileLinkList}>
-                            {item.content.map((linkItem, i) => (
-                              <li
-                                key={i}
-                                className={styles.mobileLinkRow}
+                        <ul
+                          className={`${styles.linkList} ${isOpen ? styles.open : ""
+                            }`}
+                        >
+                          {item.content.map((linkItem, i) => (
+                            <li
+                              key={i}
+                              className={styles.mobileLinkRow}
+                            >
+                              <a
+                                href={linkItem.link}
+                                className={styles.mobileNavLink}
                               >
-                                <a
-                                  href={linkItem.link}
-                                  className={styles.mobileNavLink}
-                                >
-                                  {linkItem.label}
-                                </a>
+                                {linkItem.label}
+                              </a>
 
-                                {linkItem.badge && (
-                                  <span className={styles.badge}>
-                                    {linkItem.badge}
-                                  </span>
-                                )}
-                              </li>
-                            ))}
-                          </ul>
-                        )}
+                              {linkItem.badge && (
+                                <span className={styles.badge}>
+                                  {linkItem.badge}
+                                </span>
+                              )}
+                            </li>
+                          ))}
+                        </ul>
                       </div>
                     );
                   })}
