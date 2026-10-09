@@ -50,6 +50,7 @@ textarea.form-control{ height:100px; border-radius:20px; padding:20px 30px; resi
 textarea:focus,select:focus,.form-control:focus,.form-select:focus,input:focus { border-color: var(--up-theme) !important; box-shadow:none !important; }
 
 .invalid{ border-color:#f33b3b !important; }
+.is-discount{ font-size:12px; line-height:1.2; font-weight:500; color:var(--up-black); background:linear-gradient(90deg, #FAC801 0%, #FFFFFF 50%, #FAC801 100%); border-radius:25px; padding:5px 8px; }
 
 ::-webkit-scrollbar{ width:4px !important; height:4px !important; }
 ::-webkit-scrollbar-track{ background:transparent !important; }
