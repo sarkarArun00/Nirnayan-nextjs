@@ -137,94 +137,96 @@ export default function HeroSection() {
 
   return (
     <>
-      <div className={`banner_wrap ${styles.banner}`}>
-        {/* ===========================
-            BANNER SLIDER
-        ============================ */}
+      <div className="container">
+        <div className={`banner_wrap ${styles.banner}`}>
+          {/* ===========================
+              BANNER SLIDER
+          ============================ */}
 
-        <div className={styles.bann_slide}>
-          {bannerLoading ? (
-            /* LOADING FALLBACK */
+          <div className={styles.bann_slide}>
+            {bannerLoading ? (
+              /* LOADING FALLBACK */
 
-            <div className={styles.item}>
-              <img src="/assets/images/banner1.jpg" alt="Nirnayan Healthcare" />
-            </div>
-          ) : bannerData.length > 0 ? (
-            /* API BANNERS */
+              <div className={styles.item}>
+                <img src="/assets/images/banner1.jpg" alt="Nirnayan Healthcare" />
+              </div>
+            ) : bannerData.length > 0 ? (
+              /* API BANNERS */
 
-            <Slider {...settings}>
-              {bannerData.map((banner) => (
-                <div key={banner.id} className={styles.item}>
-                  <a
-                    href={banner.pageLink || "#"}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    <picture>
-                      {/* MOBILE BANNER */}
+              <Slider {...settings}>
+                {bannerData.map((banner) => (
+                  <div key={banner.id} className={styles.item}>
+                    <a
+                      href={banner.pageLink || "#"}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <picture>
+                        {/* MOBILE BANNER */}
 
-                      {banner.attachment.mobile && (
-                        <source
-                          media="(max-width: 767px)"
-                          srcSet={getImageUrl(banner.attachment.mobile)}
+                        {banner.attachment.mobile && (
+                          <source
+                            media="(max-width: 767px)"
+                            srcSet={getImageUrl(banner.attachment.mobile)}
+                          />
+                        )}
+
+                        {/* DESKTOP BANNER */}
+
+                        <img
+                          src={getImageUrl(banner.attachment.website)}
+                          alt={banner.advertisementTitle || "Nirnayan Healthcare"}
                         />
-                      )}
+                      </picture>
+                    </a>
+                  </div>
+                ))}
+              </Slider>
+            ) : (
+              /* API EMPTY FALLBACK */
 
-                      {/* DESKTOP BANNER */}
-
-                      <img
-                        src={getImageUrl(banner.attachment.website)}
-                        alt={banner.advertisementTitle || "Nirnayan Healthcare"}
-                      />
-                    </picture>
-                  </a>
-                </div>
-              ))}
-            </Slider>
-          ) : (
-            /* API EMPTY FALLBACK */
-
-            <div className={styles.item}>
-              <img src="/assets/images/banner1.jpg" alt="Nirnayan Healthcare" />
-            </div>
-          )}
-        </div>
-
-        {/* ===========================
-            BANNER ACTION
-        ============================ */}
-
-        <div className={styles.banner_action}>
-          <div className={styles.test_search}>
-            <div className="d-flex align-items-center flex-grow-1">
-              <i className="fa-solid fa-magnifying-glass search-icon"></i>
-
-              <span className={styles.search_text}>Search for</span>
-            </div>
-
-            <div className={styles.shortcut}>Ctrl+K</div>
-
-            <div className={styles.divider}></div>
-
-            <i
-              className={`fa-solid fa-microphone mic-icon ${styles["mk-icon"]}`}
-            ></i>
+              <div className={styles.item}>
+                <img src="/assets/images/banner1.jpg" alt="Nirnayan Healthcare" />
+              </div>
+            )}
           </div>
 
-          <div className={styles.rt_side}>
-            <button type="button" className={styles.upload_btn}>
-              Upload Prescription
-              <img src="/assets/images/uppres.svg" alt="" />
-            </button>
+          {/* ===========================
+              BANNER ACTION
+          ============================ */}
 
-            <button type="button" className={styles.report_btn}>
-              Download Report
-              <img src="/assets/images/download.svg" alt="" />
-            </button>
+          <div className={styles.banner_action}>
+            <div className={styles.test_search}>
+              <div className="d-flex align-items-center flex-grow-1">
+                <i className="fa-solid fa-magnifying-glass search-icon"></i>
 
-            <a href="#" className={styles.wp_btn}>
-              <i className="fa-brands fa-whatsapp"></i>
-            </a>
+                <span className={styles.search_text}>Search for</span>
+              </div>
+
+              <div className={styles.shortcut}>Ctrl+K</div>
+
+              <div className={styles.divider}></div>
+
+              <i
+                className={`fa-solid fa-microphone mic-icon ${styles["mk-icon"]}`}
+              ></i>
+            </div>
+
+            <div className={styles.rt_side}>
+              <button type="button" className={styles.upload_btn}>
+                Upload Prescription
+                <img src="/assets/images/uppres.svg" alt="" />
+              </button>
+
+              <button type="button" className={styles.report_btn}>
+                Download Report
+                <img src="/assets/images/download.svg" alt="" />
+              </button>
+
+              <a href="#" className={styles.wp_btn}>
+                <i className="fa-brands fa-whatsapp"></i>
+              </a>
+            </div>
           </div>
         </div>
       </div>
