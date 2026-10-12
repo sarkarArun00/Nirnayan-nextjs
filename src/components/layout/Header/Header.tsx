@@ -1049,7 +1049,7 @@ export default function Header() {
 
   return (
     <>
-      <div
+      <header
         ref={headerRef}
         className={`${styles["main-header"]} ${bannerTouched ? styles["banner-touched"] : ""}`}
       >
@@ -1414,7 +1414,7 @@ export default function Header() {
             </div>
           </div>
         </div>
-      </div>
+      </header>
 
       {/* Sign Up Modal Start */}
       {isSignIn && (

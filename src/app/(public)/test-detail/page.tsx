@@ -1,6 +1,13 @@
-import React from "react";
+"use client";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import "./TestDetail.css";
+import Faq from "@/components/home/Faq";
+import BookWith from "@/components/home/BookWith";
+import Testimonial from "@/components/home/Testimonial";
+import Blog from "@/components/home/Blog";
+import PopularPackage from "@/components/home/PopularPackage";
+import PopularTest from "@/components/home/PopularTest";
 
 type RatingProps = {
     rating?: number | string | null;
@@ -47,6 +54,76 @@ export default function TestDetail({ rating = 4.5 }: RatingProps) {
     const value = Number.isFinite(parsed)
         ? Math.min(5, Math.max(0, parsed))
         : 0;
+    // Sticky 
+    useEffect(() => {
+        const section = document.querySelector(".our-section");
+
+        if (!section) return;
+
+        const checkPosition = () => {
+            const sectionTop = section.getBoundingClientRect().top;
+            const header = document.querySelector("header");
+            const headerBottom = header
+                ? header.getBoundingClientRect().bottom
+                : 80;
+
+            const isActive = sectionTop <= headerBottom;
+
+            document.body.classList.toggle("active", isActive);
+
+            const stickyBar = document.querySelector(".sticky-bar");
+
+            if (stickyBar) {
+                const stickyBottom = stickyBar.getBoundingClientRect().bottom;
+                const activationPoint = stickyBottom + 10;
+
+                const sectionIds = [
+                    "overview",
+                    "city-pricing",
+                    "related-test",
+                    "related-pkg",
+                    "blog",
+                    "feedback",
+                ];
+
+                let activeSection = "";
+
+                for (const id of sectionIds) {
+                    const currentSection = document.getElementById(id);
+
+                    if (
+                        currentSection &&
+                        currentSection.getBoundingClientRect().top <= activationPoint
+                    ) {
+                        activeSection = id;
+                    } else if (currentSection) {
+                        break;
+                    }
+                }
+
+                document
+                    .querySelectorAll(".sticky-bar ul li")
+                    .forEach((li) => {
+                        li.classList.toggle(
+                            "active",
+                            li.getAttribute("data-section") === activeSection
+                        );
+                    });
+            }
+        };
+
+        window.addEventListener("scroll", checkPosition, { passive: true });
+        window.addEventListener("resize", checkPosition);
+
+        checkPosition();
+
+        return () => {
+            window.removeEventListener("scroll", checkPosition);
+            window.removeEventListener("resize", checkPosition);
+            document.body.classList.remove("active");
+        };
+    }, []);
+    // Sticky 
 
     return (
         <div className="main-block">
@@ -74,7 +151,7 @@ export default function TestDetail({ rating = 4.5 }: RatingProps) {
                                         </div>
                                     </div>
                                 </div>
-                                <h2>Complete Blood Count (CBC)</h2>
+                                <h3>Complete Blood Count (CBC)</h3>
                             </div>
                         </div>
 
@@ -89,15 +166,16 @@ export default function TestDetail({ rating = 4.5 }: RatingProps) {
                         </div>
                     </div>
                     <ul>
-                        <li className="active"><Link href="#">Overview</Link></li>
-                        <li><Link href="#">City Wise Pricing</Link></li>
-                        <li><Link href="#">Related Test</Link></li>
-                        <li><Link href="#">Related Package</Link></li>
-                        <li><Link href="#">Blog</Link></li>
-                        <li><Link href="#">Feedback</Link></li>
+                        <li data-section="overview"><Link href="#overview">Overview</Link></li>
+                        <li data-section="city-pricing"><Link href="#city-pricing">City Wise Pricing</Link></li>
+                        <li data-section="related-test"><Link href="#related-test">Related Test</Link></li>
+                        <li data-section="related-pkg"><Link href="#related-pkg">Related Package</Link></li>
+                        <li data-section="blog"><Link href="#blog">Blog</Link></li>
+                        <li data-section="feedback"><Link href="#feedback">Feedback</Link></li>
                     </ul>
                 </div>
             </div>
+
             <div className="amb">
                 <div className="container">
                     <p>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).</p>
@@ -106,24 +184,32 @@ export default function TestDetail({ rating = 4.5 }: RatingProps) {
                     <p>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).</p>
                 </div>
             </div>
-            <div className="overview" style={{ height: "200px" }}>
-                <h2>a</h2>
-            </div>
-            <div className="city-pricing" style={{ height: "200px" }}>
-                <h2>b</h2>
-            </div>
-            <div className="related-test" style={{ height: "200px" }}>
-                <h2>c</h2>
-            </div>
-            <div className="related-pkg" style={{ height: "200px" }}>
-                <h2>d</h2>
-            </div>
-            <div className="blog" style={{ height: "200px" }}>
-                <h2>e</h2>
-            </div>
-            <div className="feedback" style={{ height: "200px" }}>
-                <h2>end</h2>
-            </div>
+
+            <section id="our-section" className="our-section">
+                <div id="overview" className="overview">
+                    <h2>overview</h2>
+                </div>
+                <div id="city-pricing" className="city-pricing">
+                    <h2>city-pricing</h2>
+                </div>
+                <div id="related-test" className="related-test">
+                    <PopularTest />
+                </div>
+                <div id="related-pkg" className="related-pkg">
+                    <PopularPackage />
+                </div>
+                <div id="blog" className="blog">
+                    <Blog />
+                </div>
+                <div id="feedback" className="feedback">
+                    <Testimonial />
+                </div>
+                <div className="test-book">
+                    <BookWith />
+                </div>
+                <Faq />
+            </section>
+
         </div>
     );
 }

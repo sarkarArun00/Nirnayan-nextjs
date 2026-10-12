@@ -157,25 +157,6 @@ function OurLocation() {
                     </div>
                 </div>
             </div>
-
-            <div className={styles.download_wrap}>
-                <div className="container">
-                    <div className={styles.inn}>
-                        <div className={styles.text_block}>
-                            <h3>Trusted by the</h3>
-                            <h2>100 million's users</h2>
-                            <h4>Top Rated Healthcare App</h4>
-                            <div className={styles.app_store_btn}>
-                                <button><img src="/assets/images/play-store.png" alt="" /></button>
-                                <button><img src="/assets/images/app-store.png" alt="" /></button>
-                            </div>
-                        </div>
-                        <div className={styles.img_block}>
-                            <img src="/assets/images/download-img.png" alt="" />
-                        </div>
-                    </div>
-                </div>
-            </div>
         </>
     )
 }

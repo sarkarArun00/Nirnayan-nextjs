@@ -47,3 +47,6 @@
 .review_bottom .review_user span{ color:var(--up-gray); font-size:12px; }
 .review_bottom .rating{ display:inline-flex; align-items:center; gap:4px; padding:4px 8px; border-radius:5px; background:var(--up-theme); color:var(--up-white); font-size:12px; font-weight:600; }
 .review_bottom .rating i{ font-size: 11px; }
+
+.offer_banner{ padding:0; margin:0; }
+.offer_banner img{ width:100%; }

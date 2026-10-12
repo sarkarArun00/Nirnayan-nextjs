@@ -7,6 +7,24 @@
 .questaions button{ flex-shrink:0; }
 .questaions img{ position:absolute; right:0; bottom:0; pointer-events:none; z-index:-1; }
 
+/* Download Section Start */
+.download_wrap{ padding:0 0 var(--cmngap-btm); }
+.download_wrap .inn{ display:flex; gap:0 110px; background:url(/assets/images/download-bg.jpg) right top / cover; border-radius:25px; padding:60px 60px 0; }
+.download_wrap .text_block{ max-width:450px; }
+.download_wrap .text_block h3{ font-weight:500; color:var(--up-white); margin-bottom:15px; }
+.download_wrap .text_block h2{ font-size:48px; font-weight:600; color:transparent; background:linear-gradient(180deg, #FFFFFF 0%, #FAC801 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; margin-bottom:10px; }
+.download_wrap .text_block h4{ font-weight:400; color:var(--up-white); margin-bottom:45px; }
+.download_wrap .text_block .app_store_btn{ display:flex; gap:0 10px; }
+.download_wrap .text_block .app_store_btn button{ border:0; background:none; padding:0; }
+/* Download Section Start */
+
+@media screen and (max-width:1199px){
+  .find_us .btm_block{ width:100%; }
+}
+@media screen and (max-width:767px){
+
+}
+
 @media screen and (max-width:575px){
     .questaions{ flex-wrap:wrap; flex-direction:column; padding:35px; margin-top:25px; }
     .questaions .text_block{ flex:1; width:100%; text-align:center; padding-right:0; margin-bottom:25px; }

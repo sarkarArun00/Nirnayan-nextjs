@@ -69,12 +69,6 @@ function BookWith() {
 
     return (
         <>
-            <div className={styles.offer_banner}>
-                <div className="container">
-                    <img src="/assets/images/offer-banner.png" alt="" />
-                </div>
-            </div>
-
             <div className={styles.with_us}>
                 <div className="container">
                     <div className="top-title">
