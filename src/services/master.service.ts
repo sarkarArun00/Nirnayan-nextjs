@@ -138,3 +138,25 @@ export async function getAllState() {
 
     return response.json();
 }
+
+export async function getAllGroups() {
+    const url = `${getBaseUrl()}global/investigation/group/getAll?activeOnly=true`;
+
+    console.log("STATE API URL:", url);
+
+    const response = await fetch(url, {
+        method: "GET",
+        headers: {
+            Accept: "application/json",
+        },
+        cache: "no-store",
+    });
+
+    if (!response.ok) {
+        throw new Error(
+            `State API failed with status ${response.status}`
+        );
+    }
+
+    return response.json();
+}

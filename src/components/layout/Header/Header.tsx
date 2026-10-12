@@ -162,7 +162,91 @@ export default function Header() {
   const [locationSearch, setLocationSearch] = useState("");
 
 
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [mobileOpenIndex, setMobileOpenIndex] = useState<number | null>(null);
+  const [isOpens, setIsOpens] = useState(false);
+
+  const menuData = [
+    {
+      id: "company",
+      label: "Company",
+      content: [
+        { label: "About Us", link: "/about" },
+        { label: "Our Team", link: "/team" },
+        { label: "Journey", link: "/journey" },
+        { label: "Careers With Us", link: "/careers", badge: "Hiring" },
+        { label: "Contact Us", link: "/contact" },
+      ],
+    },
+    {
+      id: "laboratory",
+      label: "Laboratory",
+      content: [
+        { label: "Lab Tests", link: "/tests" },
+        { label: "Diagnostic Tools", link: "/diagnostics" },
+        { label: "Quality Standards", link: "/quality" },
+      ],
+    },
+    {
+      id: "quick-link",
+      label: "Quick Link",
+      content: [
+        { label: "Book Appointment", link: "/book" },
+        { label: "Download Reports", link: "/reports" },
+        { label: "FAQs", link: "/faqs" },
+      ],
+    },
+    {
+      id: "patients",
+      label: "Patients",
+      content: [
+        { label: "Patient Portal", link: "/portal" },
+        { label: "Insurance Info", link: "/insurance" },
+        { label: "Preparation Guide", link: "/prep" },
+      ],
+    },
+  ];
+
+  const healthFeedMessages = [
+    "Your health deserves attention. Explore our health checkups.",
+    "Book your next lab test with a few simple clicks.",
+    "Explore lab tests and complete health checkup packages.",
+    "Healthcare starts with a conversation. Ask about your testing needs.",
+    "Check the preparation instructions before your lab test.",
+    "Keep your prescription and booking details ready.",
+    "Bring previous reports to help your doctor understand your history.",
+    "Explore home sample collection for your next lab test.",
+    "Plan your health checkup around your daily routine.",
+    "Learn how to access your lab reports online.",
+    "Have questions about a test? Get guidance before booking.",
+    "Discuss your test results with your healthcare professional.",
+    "Make time for your health, even on your busiest days.",
+    "Find information about tests before your appointment.",
+    "Keep your health records organized and easy to access.",
+    "Explore checkup options for you and your family.",
+    "Ask your doctor which screenings are appropriate for you.",
+    "Tell your healthcare professional about medicines you take.",
+    "Check whether your selected test requires fasting.",
+    "Understand your booking details before sample collection.",
+    "A little preparation can make your appointment feel easier.",
+    "Take the next step in your healthcare journey. Explore our tests.",
+    "Know your test. Know your preparation. Arrive with confidence.",
+    "Your questions matter. Ask for help understanding your report.",
+    "Put your health on your calendar. Plan your next appointment.",
+  ];
   
+
+  const [activeFeedIndex, setActiveFeedIndex] = useState(0);
+
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      setActiveFeedIndex(
+        (previousIndex) => (previousIndex + 1) % healthFeedMessages.length,
+      );
+    }, 5000);
+
+    return () => window.clearInterval(interval);
+  }, []);
 
   const handleChangeSignUpMobile = () => {
     // Allow user to edit the mobile number again
@@ -995,50 +1079,7 @@ export default function Header() {
 
   // Login End
   // For More Menu Start
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [mobileOpenIndex, setMobileOpenIndex] = useState<number | null>(null);
-  const [isOpens, setIsOpens] = useState(false);
-
-  const menuData = [
-    {
-      id: 'company',
-      label: 'Company',
-      content: [
-        { label: 'About Us', link: '/about' },
-        { label: 'Our Team', link: '/team' },
-        { label: 'Journey', link: '/journey' },
-        { label: 'Careers With Us', link: '/careers', badge: 'Hiring' },
-        { label: 'Contact Us', link: '/contact' },
-      ],
-    },
-    {
-      id: 'laboratory',
-      label: 'Laboratory',
-      content: [
-        { label: 'Lab Tests', link: '/tests' },
-        { label: 'Diagnostic Tools', link: '/diagnostics' },
-        { label: 'Quality Standards', link: '/quality' },
-      ],
-    },
-    {
-      id: 'quick-link',
-      label: 'Quick Link',
-      content: [
-        { label: 'Book Appointment', link: '/book' },
-        { label: 'Download Reports', link: '/reports' },
-        { label: 'FAQs', link: '/faqs' },
-      ],
-    },
-    {
-      id: 'patients',
-      label: 'Patients',
-      content: [
-        { label: 'Patient Portal', link: '/portal' },
-        { label: 'Insurance Info', link: '/insurance' },
-        { label: 'Preparation Guide', link: '/prep' },
-      ],
-    },
-  ];
+  
 
   const toggleAccordion = (index: number) => {
     setMobileOpenIndex((previous) =>
@@ -1055,16 +1096,17 @@ export default function Header() {
       >
         <div className={styles["top-wrap"]}>
           <img src="/assets/images/bell.svg" alt="Notification Bell" />
+
           <p className="d-none d-lg-block">
-            Easy online booking for lab tests, diagnostics and complete health
-            checkups at home
+            <span>{healthFeedMessages[activeFeedIndex]}</span>{" "}
             <a href="#">
               Book Test{" "}
               <img src="/assets/images/right-arrow.svg" alt="Right Arrow" />
             </a>
           </p>
+
           <p className="d-block d-lg-none">
-            Booking for lab tests, diagnostics
+            <span>{healthFeedMessages[activeFeedIndex]}</span>{" "}
             <a href="#">
               Book Test{" "}
               <img src="/assets/images/right-arrow.svg" alt="Right Arrow" />
