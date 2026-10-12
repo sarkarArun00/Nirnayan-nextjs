@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import Slider from "react-slick";
 import "./TestDetail.css";
 import Faq from "@/components/home/Faq";
 import BookWith from "@/components/home/BookWith";
@@ -57,22 +58,16 @@ export default function TestDetail({ rating = 4.5 }: RatingProps) {
     // Sticky 
     useEffect(() => {
         const section = document.querySelector(".our-section");
-
         if (!section) return;
-
         const checkPosition = () => {
             const sectionTop = section.getBoundingClientRect().top;
             const header = document.querySelector("header");
             const headerBottom = header
                 ? header.getBoundingClientRect().bottom
                 : 80;
-
             const isActive = sectionTop <= headerBottom;
-
             document.body.classList.toggle("active", isActive);
-
             const stickyBar = document.querySelector(".sticky-bar");
-
             if (stickyBar) {
                 const stickyBottom = stickyBar.getBoundingClientRect().bottom;
                 const activationPoint = stickyBottom + 10;
@@ -85,12 +80,9 @@ export default function TestDetail({ rating = 4.5 }: RatingProps) {
                     "blog",
                     "feedback",
                 ];
-
                 let activeSection = "";
-
                 for (const id of sectionIds) {
                     const currentSection = document.getElementById(id);
-
                     if (
                         currentSection &&
                         currentSection.getBoundingClientRect().top <= activationPoint
@@ -100,7 +92,6 @@ export default function TestDetail({ rating = 4.5 }: RatingProps) {
                         break;
                     }
                 }
-
                 document
                     .querySelectorAll(".sticky-bar ul li")
                     .forEach((li) => {
@@ -111,12 +102,9 @@ export default function TestDetail({ rating = 4.5 }: RatingProps) {
                     });
             }
         };
-
         window.addEventListener("scroll", checkPosition, { passive: true });
         window.addEventListener("resize", checkPosition);
-
         checkPosition();
-
         return () => {
             window.removeEventListener("scroll", checkPosition);
             window.removeEventListener("resize", checkPosition);
@@ -124,6 +112,17 @@ export default function TestDetail({ rating = 4.5 }: RatingProps) {
         };
     }, []);
     // Sticky 
+
+    const wpSlider = {
+        dots: true,
+        arrows: false,
+        infinite: true,
+        speed: 500,
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        autoplay: true,
+        autoplaySpeed: 3000,
+    };
 
     return (
         <div className="main-block">
@@ -195,6 +194,8 @@ export default function TestDetail({ rating = 4.5 }: RatingProps) {
                         <div className="col-lg-8">
                             <div className="tst-bann">
                                 <img className="hexa-bg" src="/assets/images/hexa-bg.png" alt="" />
+                                <img className="yellow-bg" src="/assets/images/yeallow-bg.png" alt="" />
+
                                 <div className="text-block">
                                     <div className="popular-badge position-relative top-0 end-0 d-inline-flex">
                                         <img src="/assets/images/fire.svg" alt="" /><h6>Most Popular</h6>
@@ -247,12 +248,85 @@ export default function TestDetail({ rating = 4.5 }: RatingProps) {
                                     <h6 className="is-ava"><img src="/assets/images/verify.svg" alt="" /> Available in Home & Lab</h6>
                                 </div>
                                 <div className="img-block">
-
+                                    <img src="/assets/images/blood-samp.svg" alt="" />
                                 </div>
                             </div>
                         </div>
                         <div className="col-lg-4">
+                            <div className="product-view">
+                                <h4>Complete Blood Count (CBC)</h4>
+                                <p>Available in Home & Lab</p>
+                                <div className="inn">
+                                    <div className="price">
+                                        <span>₹299 <del>₹446</del></span>
+                                        <h6>Quick Summary</h6>
+                                    </div>
+                                    <button className="cmn_btn">Add to Cart</button>
+                                </div>
+                            </div>
 
+                            <Slider {...wpSlider} className="wp-slider is_slick_dot is-dtl-page">
+                                <div className="item">
+                                    <div className="text-block">
+                                        <div className="lt">
+                                            <img src="/assets/images/dtl-icon2.svg" alt="" />
+                                        </div>
+                                        <div className="rt">
+                                            <div className="inn">
+                                                <h4>WhatsApp to Book Tests</h4>
+                                                <p>explore Lab Tests, and schedule home <br />sample collection through WhatsApp.</p>
+                                            </div>
+                                            <button className="arrow-btn">
+                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                    strokeWidth="2">
+                                                    <line x1="7" y1="17" x2="17" y2="7"></line>
+                                                    <polyline points="7 7 17 7 17 17"></polyline>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="item">
+                                    <div className="text-block">
+                                        <div className="lt">
+                                            <img src="/assets/images/dtl-icon3.svg" alt="" />
+                                        </div>
+                                        <div className="rt">
+                                            <div className="inn">
+                                                <h4>Call Us</h4>
+                                                <p>Speak directly with our customer care <br />team.</p>
+                                            </div>
+                                            <button className="arrow-btn">
+                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                    strokeWidth="2">
+                                                    <line x1="7" y1="17" x2="17" y2="7"></line>
+                                                    <polyline points="7 7 17 7 17 17"></polyline>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="item">
+                                    <div className="text-block">
+                                        <div className="lt">
+                                            <img src="/assets/images/dtl-icon1.svg" alt="" />
+                                        </div>
+                                        <div className="rt">
+                                            <div className="inn">
+                                                <h4>Request a Callback</h4>
+                                                <p>Share your number and we'll call you back <br />shortly.</p>
+                                            </div>
+                                            <button className="arrow-btn">
+                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                    strokeWidth="2">
+                                                    <line x1="7" y1="17" x2="17" y2="7"></line>
+                                                    <polyline points="7 7 17 7 17 17"></polyline>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </Slider>
                         </div>
                     </div>
                 </div>

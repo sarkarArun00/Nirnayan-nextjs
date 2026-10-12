@@ -37,9 +37,9 @@ p{ font-family: "Google Sans Flex", sans-serif; font-size:15px; line-height:1.2;
 .view_all{ font-size:16px; line-height:1.2; font-weight:600; color:var(--up-black); border:1px solid var(--up-black); background:var(--up-white); display:inline-block; border-radius:30px; padding:13px 30px; transition:all 0.4s ease; }
 .view_all:hover{ color:var(--up-secondiary); border-color:var(--up-secondiary); }
 
-.arrow-btn{ width:48px; height:48px; border:1px solid var(--up-white); background:var(--up-white); display:flex; align-items:center; justify-content:center; border-radius:50%; padding:0; transition:all 0.4s ease; }
-.arrow-btn:hover{ color:var(--up-white); border-color:var(--up-white); background-color:var(--up-theme); }
-
+.arrow-btn{ width:48px; height:48px; border:1px solid var(--up-white); color:var(--up-white); background:transparent; display:flex; align-items:center; justify-content:center; border-radius:50%; padding:0; transition:all 0.4s ease; }
+.arrow-btn img{ fill:#fff; }
+.arrow-btn:hover{ color:var(--up-black); border-color:var(--up-white); background-color:var(--up-white); }
 ::placeholder{ color:#D2D2D2 !important; opacity:1; }
 ::-webkit-input-placeholder{ color:#D2D2D2 !important; opacity:1; }
 ::-moz-placeholder{ color:#D2D2D2 !important; opacity:1; }
@@ -256,6 +256,9 @@ textarea:focus,select:focus,.form-control:focus,.form-select:focus,input:focus {
 
 .cmn-right-align{ margin-right: calc(((100vw - 1620px) / 2) * -1); } 
 .cmn-right-align .slick-list{ padding-left:0 !important; }
+
+.is-dtl-page .slick-dots { bottom:10px; }
+
 /* Common Slick Slider End */
 
 /* Common Modal Start */
