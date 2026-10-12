@@ -176,24 +176,117 @@ export default function TestDetail({ rating = 4.5 }: RatingProps) {
                 </div>
             </div>
 
-            <div className="amb">
+            <div className="test-dtl">
                 <div className="container">
-                    <p>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).</p>
-                    <p>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).</p>
-                    <p>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).</p>
-                    <p>It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).</p>
+                    <nav aria-label="breadcrumb">
+                        <ol className="breadcrumb">
+                            <li className="breadcrumb-item">
+                                <Link href="/">Home</Link>
+                            </li>
+                            <li className="breadcrumb-item">
+                                <Link href="/tests">Tests</Link>
+                            </li>
+                            <li className="breadcrumb-item active" aria-current="page">
+                                Diabetes Screening (HbA1C & Fasting Sugar)
+                            </li>
+                        </ol>
+                    </nav>
+                    <div className="row">
+                        <div className="col-lg-8">
+                            <div className="tst-bann">
+                                <img className="hexa-bg" src="/assets/images/hexa-bg.png" alt="" />
+                                <div className="text-block">
+                                    <div className="popular-badge position-relative top-0 end-0 d-inline-flex">
+                                        <img src="/assets/images/fire.svg" alt="" /><h6>Most Popular</h6>
+                                    </div>
+                                    <h2>Complete Blood Count (CBC)</h2>
+                                    <p>A routine test that measures the components of your blood, including red
+                                        blood cells, wh... <button>Read More</button></p>
+                                    <ul>
+                                        <li>Also referred as</li>
+                                        <li>kft</li>
+                                        <li>kidney function test</li>
+                                        <li>renal profile</li>
+                                        <li>kidney test</li>
+                                        <li>6+ more</li>
+                                    </ul>
+                                    <div className="deliver">
+                                        <div className="box">
+                                            <div className="icon">
+                                                <img src="/assets/images/test-dtl1.svg" alt="" />
+                                            </div>
+                                            <div className="text">
+                                                <h6>Sample Type <span>Blood</span></h6>
+                                            </div>
+                                        </div>
+                                        <div className="box">
+                                            <div className="icon">
+                                                <img src="/assets/images/test-dtl2.svg" alt="" />
+                                            </div>
+                                            <div className="text">
+                                                <h6>Report within <span>Same Day</span></h6>
+                                            </div>
+                                        </div>
+                                        <div className="box">
+                                            <div className="icon">
+                                                <img src="/assets/images/test-dtl3.svg" alt="" />
+                                            </div>
+                                            <div className="text">
+                                                <h6>Gender <span>Man & Woman</span></h6>
+                                            </div>
+                                        </div>
+                                        <div className="box">
+                                            <div className="icon">
+                                                <img src="/assets/images/test-dtl2.svg" alt="" />
+                                            </div>
+                                            <div className="text">
+                                                <h6>Fasting <span>8-10 hrs.</span></h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <h6 className="is-ava"><img src="/assets/images/verify.svg" alt="" /> Available in Home & Lab</h6>
+                                </div>
+                                <div className="img-block">
+
+                                </div>
+                            </div>
+                        </div>
+                        <div className="col-lg-4">
+
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <section id="our-section" className="our-section">
-                <div id="overview" className="overview">
-                    <h2>overview</h2>
-                </div>
-                <div id="city-pricing" className="city-pricing">
-                    <h2>city-pricing</h2>
+                <div className="container">
+                    <div className="row">
+                        <div className="col-lg-8">
+                            <div id="overview" className="overview">
+                                <h2>overview</h2>
+                            </div>
+                            <div id="city-pricing" className="city-pricing">
+                                <h2>city-pricing</h2>
+                            </div>
+                        </div>
+                        <div className="col-lg-4">
+                            <div className="side-img">
+                                <img src="/assets/images/sidebar-img.png" alt="" />
+                            </div>
+                            <div className="privacy">
+                                <h3>Privacy Policy</h3>
+                                <ul>
+                                    <li>We do not accept cash payments</li>
+                                    <li>All modes of online payment are accepted</li>
+                                    <li>Refunds will be credited back to the source of payment within 5-7 working days of order cancellation.</li>
+                                    <li>All modes of online payment are accepted</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 <div id="related-test" className="related-test">
-                    <PopularTest />
+                    <PopularTest section={2} />
                 </div>
                 <div id="related-pkg" className="related-pkg">
                     <PopularPackage />

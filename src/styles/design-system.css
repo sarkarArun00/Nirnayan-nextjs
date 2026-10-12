@@ -330,6 +330,17 @@ textarea:focus,select:focus,.form-control:focus,.form-select:focus,input:focus {
 
 
 /* Inner Page Css Start From Here */
+ol.breadcrumb{ padding:0 0 30px; margin:0; }
+ol.breadcrumb li{ font-size:15px; line-height:1.2; color:var(--up-gray); }
+.breadcrumb-item + .breadcrumb-item:before{ content: "›"; }
+ol.breadcrumb li a{ color:var(--up-gray); transition:all 0.4s; }
+ol.breadcrumb li a:hover{ color:var(--up-theme); }
+ol.breadcrumb li.active{ color:var(--up-black); }
+
+
+
+
+
 /* Inner Page Css Start From Here */
 
 
