@@ -123,6 +123,45 @@ export default function TestDetail({ rating = 4.5 }: RatingProps) {
         autoplay: true,
         autoplaySpeed: 3000,
     };
+    const [isExpanded, setIsExpanded] = useState(false);
+    const fullText = `A routine test that measures the components of your blood, including red blood cells, white blood cells, and platelets. It is often used to check your overall health and detect a wide range`;
+    const characterLimit = 90;
+
+    const toggleReadMore = () => {
+        setIsExpanded((prev) => !prev);
+    };
+
+    const [activeTab, setActiveTab] = useState(0);
+    const settings = {
+        dots: true,
+        arrows: false,
+        infinite: true,
+        speed: 500,
+        slidesToShow: 3,
+        slidesToScroll: 1,
+        autoplay: false,
+        autoplaySpeed: 3000,
+        responsive: [
+            {
+                breakpoint: 1024,
+                settings: {
+                    slidesToShow: 3,
+                },
+            },
+            {
+                breakpoint: 768,
+                settings: {
+                    slidesToShow: 2,
+                },
+            },
+            {
+                breakpoint: 480,
+                settings: {
+                    slidesToShow: 1,
+                },
+            },
+        ],
+    };
 
     return (
         <div className="main-block">
@@ -201,8 +240,15 @@ export default function TestDetail({ rating = 4.5 }: RatingProps) {
                                         <img src="/assets/images/fire.svg" alt="" /><h6>Most Popular</h6>
                                     </div>
                                     <h2>Complete Blood Count (CBC)</h2>
-                                    <p>A routine test that measures the components of your blood, including red
-                                        blood cells, wh... <button>Read More</button></p>
+                                    <p>
+                                        {isExpanded ? fullText : `${fullText.substring(0, characterLimit)}... `}
+                                        <button
+                                            onClick={toggleReadMore}
+                                            aria-expanded={isExpanded}
+                                        >
+                                            {isExpanded ? 'Read Less' : 'Read More'}
+                                        </button>
+                                    </p>
                                     <ul>
                                         <li>Also referred as</li>
                                         <li>kft</li>
@@ -254,6 +300,12 @@ export default function TestDetail({ rating = 4.5 }: RatingProps) {
                         </div>
                         <div className="col-lg-4">
                             <div className="product-view">
+                                <div className="test-rating-stars" role="img" aria-label={`${value} out of 5 stars`}>
+                                    {Array.from({ length: 5 }, (_, i) => (
+                                        <Star key={i} fill={Math.min(1, Math.max(0, value - i)) * 100} />
+                                    ))}
+                                </div>
+                                <span className="discount-badge">25% <br />OFF</span>
                                 <h4>Complete Blood Count (CBC)</h4>
                                 <p>Available in Home & Lab</p>
                                 <div className="inn">
@@ -337,13 +389,410 @@ export default function TestDetail({ rating = 4.5 }: RatingProps) {
                     <div className="row">
                         <div className="col-lg-8">
                             <div id="overview" className="overview">
-                                <h2>overview</h2>
+                                <div className="test-tabs">
+                                    <div className="tab-list">
+                                        <button className={activeTab === 0 ? "active" : ""} onClick={() => setActiveTab(0)}>
+                                            Tests Overview
+                                        </button>
+
+                                        <button className={activeTab === 1 ? "active" : ""} onClick={() => setActiveTab(1)}>
+                                            Why this test
+                                        </button>
+
+                                        <button className={activeTab === 2 ? "active" : ""} onClick={() => setActiveTab(2)}>
+                                            What’s Include
+                                        </button>
+
+                                        <button className={activeTab === 3 ? "active" : ""} onClick={() => setActiveTab(3)}>
+                                            How does home sample collection work?
+                                        </button>
+
+                                        <button className={activeTab === 4 ? "active" : ""} onClick={() => setActiveTab(4)}>
+                                            FAQ
+                                        </button>
+                                    </div>
+
+                                    <div className="tab-content">
+                                        {activeTab === 0 && (
+                                            <div>
+                                                <h3>Tests Overview</h3>
+                                                <p>Add your test overview details here.</p>
+                                            </div>
+                                        )}
+
+                                        {activeTab === 1 && (
+                                            <div>
+                                                <h3>Why this test</h3>
+                                                <p>Add the reasons and benefits of this test here.</p>
+                                            </div>
+                                        )}
+
+                                        {activeTab === 2 && (
+                                            <div className="include">
+                                                <h3>26 Test Parameters</h3>
+                                                <p>CBC (Complete Blood Count) includes 26 parameters</p>
+
+                                                <div className="accordion p-0" id="faqAccordion">
+                                                    <div className="accordion-item">
+                                                        <h2 className="accordion-header" id="headingOne">
+                                                            <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
+                                                                aria-expanded="true" aria-controls="collapseOne">
+                                                                <div className="ac-flex">
+                                                                    <div className="icon">
+                                                                        <img src="/assets/images/heart.png" alt="" />
+                                                                    </div>
+                                                                    <span>RBC Count</span>
+                                                                </div>
+                                                            </button>
+                                                        </h2>
+                                                        <div id="collapseOne" className="accordion-collapse collapse" aria-labelledby="headingOne"
+                                                            data-bs-parent="#faqAccordion">
+                                                            <div className="accordion-body">
+                                                                <p>
+                                                                    You need to log in to <strong>www.nirnayanhealthcare.com</strong> and click on the option of “Patient” and you will get the information about that and also you can filter test and packages according to you.
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="accordion-item">
+                                                        <h2 className="accordion-header" id="headingTwo">
+                                                            <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                                                data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                                                <div className="ac-flex">
+                                                                    <div className="icon">
+                                                                        <img src="/assets/images/heart.png" alt="" />
+                                                                    </div>
+                                                                    <span>Absolute Basophils Count, Blood</span>
+                                                                </div>
+                                                            </button>
+
+                                                        </h2>
+
+                                                        <div id="collapseTwo" className="accordion-collapse collapse" aria-labelledby="headingTwo"
+                                                            data-bs-parent="#faqAccordion">
+                                                            <div className="accordion-body">
+                                                                <p>
+                                                                    You can find all test and package information from the
+                                                                    Patient section of our website.
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="accordion-item">
+                                                        <h2 className="accordion-header" id="headingThree">
+                                                            <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                                                data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                                                <div className="ac-flex">
+                                                                    <div className="icon">
+                                                                        <img src="/assets/images/heart.png" alt="" />
+                                                                    </div>
+                                                                    <span>Eosinophils</span>
+                                                                </div>
+                                                            </button>
+                                                        </h2>
+
+                                                        <div id="collapseThree" className="accordion-collapse collapse" aria-labelledby="headingThree"
+                                                            data-bs-parent="#faqAccordion">
+                                                            <div className="accordion-body">
+                                                                <p>
+                                                                    You can contact our support team for more information.
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="accordion-item">
+                                                        <h2 className="accordion-header" id="headingFour">
+                                                            <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                                                data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                                                                <div className="ac-flex">
+                                                                    <div className="icon">
+                                                                        <img src="/assets/images/heart.png" alt="" />
+                                                                    </div>
+                                                                    <span>MPV Mean Platelet Volume</span>
+                                                                </div>
+                                                            </button>
+                                                        </h2>
+
+                                                        <div id="collapseFour" className="accordion-collapse collapse" aria-labelledby="headingFour"
+                                                            data-bs-parent="#faqAccordion">
+                                                            <div className="accordion-body">
+                                                                <p>
+                                                                    Please contact us for additional information.
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="text-center pt-3">
+                                                    <button className="cmn_btn">View All 26 Parameters</button>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {activeTab === 3 && (
+                                            <div>
+                                                <h3>How Home Sample Collection Work: Step 2 Step Guide</h3>
+                                                <p>A CBC (Complete Blood Count) is a simple blood test that evaluates your overall health by measuring the levels.</p>
+                                                <Slider {...settings} className="is_slick_dot is-step">
+                                                    <div className="item">
+                                                        <div className="box cmn_margin">
+                                                            <div className="img-block">
+                                                                <div className="num"><span>01</span></div>
+                                                                <img src="/assets/images/step-img1.png" alt="" />
+                                                                <div className="text-block">
+                                                                    <h3>Choose Date & Time</h3>
+                                                                    <p>CBC (Complete Blood Count) includes 26 parameters</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="item">
+                                                        <div className="box cmn_margin">
+                                                            <div className="img-block">
+                                                                <div className="num"><span>02</span></div>
+                                                                <img src="/assets/images/step-img2.png" alt="" />
+                                                                <div className="text-block">
+                                                                    <h3>Our Phlebotomy Visit</h3>
+                                                                    <p>CBC (Complete Blood Count) includes 26 parameters</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="item">
+                                                        <div className="box cmn_margin">
+                                                            <div className="img-block">
+                                                                <div className="num"><span>03</span></div>
+                                                                <img src="/assets/images/step-img3.png" alt="" />
+                                                                <div className="text-block">
+                                                                    <h3>Sample Collection</h3>
+                                                                    <p>CBC (Complete Blood Count) includes 26 parameters</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="item">
+                                                        <div className="box cmn_margin">
+                                                            <div className="img-block">
+                                                                <div className="num"><span>04</span></div>
+                                                                <img src="/assets/images/step-img4.png" alt="" />
+                                                                <div className="text-block">
+                                                                    <h3>Lab Testing</h3>
+                                                                    <p>CBC (Complete Blood Count) includes 26 parameters</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="item">
+                                                        <div className="box cmn_margin">
+                                                            <div className="img-block">
+                                                                <div className="num"><span>05</span></div>
+                                                                <img src="/assets/images/step-img5.png" alt="" />
+                                                                <div className="text-block">
+                                                                    <h3>Get Your Report</h3>
+                                                                    <p>CBC (Complete Blood Count) includes 26 parameters</p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </Slider>
+                                            </div>
+                                        )}
+
+                                        {activeTab === 4 && (
+                                            <div className="accordion p-0" id="faqAccordion">
+                                                <div className="accordion-item">
+                                                    <h2 className="accordion-header" id="headingOne">
+                                                        <button className="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
+                                                            aria-expanded="true" aria-controls="collapseOne">
+                                                            How Can I Find Information On Tests And Packages?
+                                                        </button>
+                                                    </h2>
+                                                    <div id="collapseOne" className="accordion-collapse collapse show" aria-labelledby="headingOne"
+                                                        data-bs-parent="#faqAccordion">
+                                                        <div className="accordion-body">
+                                                            <p>
+                                                                You need to log in to <strong>www.nirnayanhealthcare.com</strong> and click on the option of “Patient” and you will get the information about that and also you can filter test and packages according to you.
+                                                            </p>
+                                                            <a href="#">Contact Us</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="accordion-item">
+                                                    <h2 className="accordion-header" id="headingTwo">
+                                                        <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                                            data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                                            How Can I Find Information On Tests And Packages?
+                                                        </button>
+
+                                                    </h2>
+
+                                                    <div id="collapseTwo" className="accordion-collapse collapse" aria-labelledby="headingTwo"
+                                                        data-bs-parent="#faqAccordion">
+                                                        <div className="accordion-body">
+                                                            <p>
+                                                                You can find all test and package information from the
+                                                                Patient section of our website.
+                                                            </p>
+                                                            <a href="#">Contact Us</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="accordion-item">
+                                                    <h2 className="accordion-header" id="headingThree">
+                                                        <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                                            data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                                            How Can I Find Information On Tests And Packages?
+                                                        </button>
+                                                    </h2>
+
+                                                    <div id="collapseThree" className="accordion-collapse collapse" aria-labelledby="headingThree"
+                                                        data-bs-parent="#faqAccordion">
+                                                        <div className="accordion-body">
+                                                            <p>
+                                                                You can contact our support team for more information.
+                                                            </p>
+                                                            <a href="#">Contact Us</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="accordion-item">
+                                                    <h2 className="accordion-header" id="headingFour">
+                                                        <button className="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                                            data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                                                            How Can I Find Information On Tests And Packages?
+                                                        </button>
+                                                    </h2>
+
+                                                    <div id="collapseFour" className="accordion-collapse collapse" aria-labelledby="headingFour"
+                                                        data-bs-parent="#faqAccordion">
+                                                        <div className="accordion-body">
+                                                            <p>
+                                                                Please contact us for additional information.
+                                                            </p>
+                                                            <a href="#">Contact Us</a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
                             </div>
                             <div id="city-pricing" className="city-pricing">
-                                <h2>city-pricing</h2>
+                                <h3>Complete Blood Count (CBC) Test Available In Other Cities</h3>
+                                <div className="city-box">
+                                    <div className="city-box-inn">
+                                        <h5>Price In</h5>
+                                    </div>
+                                    <div className="city-box-inn">
+                                        <h5>Siliguri</h5>
+                                    </div>
+                                    <div className="city-box-inn">
+                                        <h5>₹ 500.00</h5>
+                                        <button>
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                strokeWidth="2">
+                                                <line x1="7" y1="17" x2="17" y2="7"></line>
+                                                <polyline points="7 7 17 7 17 17"></polyline>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div className="city-box">
+                                    <div className="city-box-inn">
+                                        <h5>Price In</h5>
+                                    </div>
+                                    <div className="city-box-inn">
+                                        <h5>Bardhaman</h5>
+                                    </div>
+                                    <div className="city-box-inn">
+                                        <h5>₹ 500.00</h5>
+                                        <button>
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                strokeWidth="2">
+                                                <line x1="7" y1="17" x2="17" y2="7"></line>
+                                                <polyline points="7 7 17 7 17 17"></polyline>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div className="city-box">
+                                    <div className="city-box-inn">
+                                        <h5>Price In</h5>
+                                    </div>
+                                    <div className="city-box-inn">
+                                        <h5>Birbhum</h5>
+                                    </div>
+                                    <div className="city-box-inn">
+                                        <h5>₹ 500.00</h5>
+                                        <button>
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                strokeWidth="2">
+                                                <line x1="7" y1="17" x2="17" y2="7"></line>
+                                                <polyline points="7 7 17 7 17 17"></polyline>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div className="city-box">
+                                    <div className="city-box-inn">
+                                        <h5>Price In</h5>
+                                    </div>
+                                    <div className="city-box-inn">
+                                        <h5>Kolkata</h5>
+                                    </div>
+                                    <div className="city-box-inn">
+                                        <h5>₹ 500.00</h5>
+                                        <button>
+                                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                strokeWidth="2">
+                                                <line x1="7" y1="17" x2="17" y2="7"></line>
+                                                <polyline points="7 7 17 7 17 17"></polyline>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div className="col-lg-4">
+                            <div className="most-book">
+                                <h3>Most Frequently Book Test</h3>
+                                <div className="test-list">
+                                    <div className="test-card active">
+                                        <span className="test-name">Complete Blood Count (CBC)</span>
+                                        <div className="test-action">
+                                            <div className="price-group">
+                                                <span className="current-price">₹299 <del>₹446</del></span>
+                                            </div>
+                                            <button className="cart-btn">
+                                                <i className="fa-solid fa-cart-shopping"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div className="test-card">
+                                        <span className="test-name">Complete Blood Count (CBC)</span>
+                                        <div className="test-action">
+                                            <div className="price-group">
+                                                <span className="current-price">₹299 <del>₹446</del></span>
+                                            </div>
+                                            <button className="cart-btn">
+                                                <i className="fa-solid fa-cart-shopping"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div className="test-card">
+                                        <span className="test-name">Complete Blood Count (CBC)</span>
+                                        <div className="test-action">
+                                            <div className="price-group">
+                                                <span className="current-price">₹299 <del>₹446</del></span>
+                                            </div>
+                                            <button className="cart-btn">
+                                                <i className="fa-solid fa-cart-shopping"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                             <div className="side-img">
                                 <img src="/assets/images/sidebar-img.png" alt="" />
                             </div>
