@@ -143,24 +143,24 @@ function PopularTest({ section = "all" }: PopularTestProps) {
     loadTests(filterType, item);
     };
     
-    const getFilterItems = (): FilterItem[] => {
-      switch (filterType) {
-        case "organ":
-          return organs;
+  const getFilterItems = (): FilterItem[] => {
+    switch (filterType) {
+      case "organ":
+        return organs;
 
-        case "condition":
-          return conditions;
+      case "condition":
+        return conditions;
 
-        case "department":
-          return departments;
+      case "department":
+        return departments;
 
-        case "mostpopular":
-          return organs; // temporary until you have Most Popular API data
+      case "mostpopular":
+        return [];
 
-        default:
-          return organs;
-      }
-    };
+      default:
+        return [];
+    }
+  };
 
     const filterItems = getFilterItems();
 
@@ -227,7 +227,7 @@ function PopularTest({ section = "all" }: PopularTestProps) {
           return;
         }
 
-        console.log("Selected State ID:", stateId);
+        // console.log("Selected State ID:", stateId);
 
         const payload:any = {
           group: [] as number[],
@@ -266,11 +266,11 @@ function PopularTest({ section = "all" }: PopularTestProps) {
           payload.group_by = "department";
         }
 
-        console.log("Test API Payload:", payload);
+        // console.log("Test API Payload:", payload);
 
         const response = await getPopularPackagesPost(payload);
 
-        console.log("Test API Response:", response);
+        // console.log("Test API Response:", response);
 
         if (response?.data && Array.isArray(response.data)) {
           setTestList(response.data);
@@ -297,16 +297,16 @@ function PopularTest({ section = "all" }: PopularTestProps) {
 
           const response = await getOrganConditionsDepartment();
 
-          console.log("Organ Condition Department Response:", response);
+          // console.log("Organ Condition Department Response:", response);
 
           if (response?.success && response?.status === 1 && response?.data) {
             const organList: FilterItem[] = response.data.organs.map((item) => {
-            console.log(
-                "ORGAN IMAGE:",
-                item.group_name,
-                item.icon,
-                getImageUrl(item.icon),
-            );
+            // console.log(
+            //     "ORGAN IMAGE:",
+            //     item.group_name,
+            //     item.icon,
+            //     getImageUrl(item.icon),
+            // );
 
             return {
                 id: item.id,
@@ -343,7 +343,7 @@ function PopularTest({ section = "all" }: PopularTestProps) {
               setSelectedOrgan(organList[0]);
             }
 
-            console.log("Organs:", organList);
+            // console.log("Organs:", organList);
 
             // console.log("Conditions:", conditionList);
 
@@ -384,7 +384,7 @@ function PopularTest({ section = "all" }: PopularTestProps) {
 
     const finalUrl = `${cleanBase}${cleanPath}`;
 
-    console.log("IMAGE FINAL URL:", finalUrl);
+    // console.log("IMAGE FINAL URL:", finalUrl);
 
     return finalUrl;
     };
@@ -423,7 +423,7 @@ function PopularTest({ section = "all" }: PopularTestProps) {
                   <div className="col-xl-7 col-lg-12 col-md-12 col-sm-12">
                     <div className={`d-none d-md-grid ${styles.ch_grid}`}>
                       {gridData.map((item, index) => (
-                        <div className={styles.box}>
+                        <div key={index} className={styles.box}>
                           <div className={styles.inn}>
                             <img
                               className={styles.icon}
@@ -471,39 +471,40 @@ function PopularTest({ section = "all" }: PopularTestProps) {
                   <div className="organ-tabs-wrapper">
                     <div className="org-left">
                       <div className="organ-tabs">
-                        {filterItems.map((item) => (
-                          <button
-                            key={`${filterType}-${item.id}`}
-                            type="button"
-                            className={`organ-tab ${
-                              selectedOrgan?.id === item.id ? "active" : ""
-                            }`}
-                            onClick={() => selectOrgan(item)}
-                          >
-                            <span className="icon">
-                              <img
-                                src={
-                                  item.icon
-                                    ? getImageUrl(item.icon)
-                                    : "/assets/images/report.svg"
-                                }
-                                alt={item.name}
-                                onError={(e) => {
-                                  console.log(
-                                    "FAILED IMAGE URL:",
-                                    e.currentTarget.src,
-                                  );
+                        {filterType !== "mostpopular" &&
+                          filterItems.map((item) => (
+                            <button
+                              key={`${filterType}-${item.id}`}
+                              type="button"
+                              className={`organ-tab ${
+                                selectedOrgan?.id === item.id ? "active" : ""
+                              }`}
+                              onClick={() => selectOrgan(item)}
+                            >
+                              <span className="icon">
+                                <img
+                                  src={
+                                    item.icon
+                                      ? getImageUrl(item.icon)
+                                      : "/assets/images/report.svg"
+                                  }
+                                  alt={item.name}
+                                  onError={(e) => {
+                                    console.log(
+                                      "FAILED IMAGE URL:",
+                                      e.currentTarget.src,
+                                    );
 
-                                  e.currentTarget.onerror = null;
-                                  e.currentTarget.src =
-                                    "/assets/images/report.svg";
-                                }}
-                              />
-                            </span>
+                                    e.currentTarget.onerror = null;
+                                    e.currentTarget.src =
+                                      "/assets/images/report.svg";
+                                  }}
+                                />
+                              </span>
 
-                            <span className="text">{item.name}</span>
-                          </button>
-                        ))}
+                              <span className="text">{item.name}</span>
+                            </button>
+                          ))}
                       </div>
                     </div>
 

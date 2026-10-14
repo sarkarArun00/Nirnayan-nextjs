@@ -142,7 +142,7 @@ export type PopularInvestigationPayload = {
     speciality: number[];
     department: number[];
     state_id: number;
-    product_type: "test";
+    product_type: "test" | "package";
     popular_investigations: boolean;
     group_by: "" | "organ" | "speciality" | "department";
     page: number;
@@ -190,7 +190,7 @@ export function signUp(
 export async function getAllState() {
     const url = `${getBaseUrl()}global/address/state`;
 
-    console.log("STATE API URL:", url);
+    // console.log("STATE API URL:", url);
 
     const response = await fetch(url, {
         method: "GET",
@@ -212,7 +212,7 @@ export async function getAllState() {
 export async function getAllGroups() {
     const url = `${getBaseUrl()}global/investigation/group/getAll?activeOnly=true`;
 
-    console.log("STATE API URL:", url);
+    // console.log("STATE API URL:", url);
 
     const response = await fetch(url, {
         method: "GET",
