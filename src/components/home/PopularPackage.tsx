@@ -7,6 +7,7 @@ import {
   getOrganConditionsDepartment,
   getPopularPackagesPost,
 } from "@/services/master.service";
+import { usePatientSelection } from "@/components/common/PatientSelectionModal/PatientSelectionProvider";
 
 type FilterItem = {
   id: number;
@@ -81,7 +82,9 @@ function PopularPackage() {
   const [selectedOrgan, setSelectedOrgan] = useState<FilterItem | null>(null);
 
   const [filterType, setFilterType] =
-    useState<PackageFilterType>("mostpopular");
+      useState<PackageFilterType>("mostpopular");
+    
+      const { openPatientModal } = usePatientSelection();
 
   const selectOrgan = (item: FilterItem) => {
     setSelectedOrgan(item);
@@ -480,7 +483,21 @@ function PopularPackage() {
                           </div>
                         </div>
 
-                        <button type="button" className="cmn_btn">
+                        {/* <button type="button" className="cmn_btn">
+                          Book Now
+                        </button> */}
+                        <button
+                          type="button"
+                          className="cmn_btn"
+                          onClick={() =>
+                            openPatientModal({
+                              id: item.id,
+                              name: item.test_name,
+                              productType: "package",
+                              price: item.finalAmount || item.mrpAmount,
+                            })
+                          }
+                        >
                           Book Now
                         </button>
                       </div>

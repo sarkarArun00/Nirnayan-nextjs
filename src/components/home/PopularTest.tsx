@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import styles from "./PopularTest.module.css";
 import Slider from "react-slick";
+import { usePatientSelection } from "@/components/common/PatientSelectionModal/PatientSelectionProvider";
 
 
 import {
@@ -87,6 +88,8 @@ function PopularTest({ section = "all" }: PopularTestProps) {
   const [testList, setTestList] = useState<PopularTestItem[]>([]);
 
   const [testLoading, setTestLoading] = useState(false);
+
+  const { openPatientModal } = usePatientSelection();
 
   //organs array
 
@@ -403,8 +406,8 @@ function PopularTest({ section = "all" }: PopularTestProps) {
                     </h2>
                     <p>
                       Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                      Cras dapibus ullamcorper mi, non vestibulum magna
-                      dapibus vitae. Nulla id efficitur neque
+                      Cras dapibus ullamcorper mi, non vestibulum magna dapibus
+                      vitae. Nulla id efficitur neque
                     </p>
                     <ul>
                       <li>
@@ -425,11 +428,7 @@ function PopularTest({ section = "all" }: PopularTestProps) {
                     {gridData.map((item, index) => (
                       <div key={index} className={styles.box}>
                         <div className={styles.inn}>
-                          <img
-                            className={styles.icon}
-                            src={item.icon}
-                            alt=""
-                          />
+                          <img className={styles.icon} src={item.icon} alt="" />
                           <img
                             className={styles.ch_icon}
                             src={item.chIcon}
@@ -456,8 +455,8 @@ function PopularTest({ section = "all" }: PopularTestProps) {
                     Our popular <span className="gradient-text">tests</span>
                   </h2>
                   <p>
-                    Contact us for routine tests to specialized blood tests
-                    and make your tomorrow healthy
+                    Contact us for routine tests to specialized blood tests and
+                    make your tomorrow healthy
                   </p>
                 </div>
                 <button className="expand-btn">
@@ -476,8 +475,9 @@ function PopularTest({ section = "all" }: PopularTestProps) {
                           <button
                             key={`${filterType}-${item.id}`}
                             type="button"
-                            className={`organ-tab ${selectedOrgan?.id === item.id ? "active" : ""
-                              }`}
+                            className={`organ-tab ${
+                              selectedOrgan?.id === item.id ? "active" : ""
+                            }`}
                             onClick={() => selectOrgan(item)}
                           >
                             <span className="icon">
@@ -551,17 +551,13 @@ function PopularTest({ section = "all" }: PopularTestProps) {
                               <h2>{test.test_name}</h2>
 
                               <p>
-                                {test.description ||
-                                  "No description available"}
+                                {test.description || "No description available"}
                               </p>
 
                               {/* Report TAT */}
                               <div className="info">
                                 <div className="left">
-                                  <img
-                                    src="/assets/images/report.svg"
-                                    alt=""
-                                  />
+                                  <img src="/assets/images/report.svg" alt="" />
 
                                   <h6>Reports in</h6>
                                 </div>
@@ -576,10 +572,7 @@ function PopularTest({ section = "all" }: PopularTestProps) {
                               {/* Availability */}
                               <div className="info">
                                 <div className="left">
-                                  <img
-                                    src="/assets/images/ava.svg"
-                                    alt=""
-                                  />
+                                  <img src="/assets/images/ava.svg" alt="" />
 
                                   <h6>Available in</h6>
                                 </div>
@@ -605,7 +598,21 @@ function PopularTest({ section = "all" }: PopularTestProps) {
                                 </span>
                               </div>
 
-                              <button type="button" className="cmn_btn">
+                              {/* <button type="button" className="cmn_btn">
+                                Add to Cart
+                              </button> */}
+                              <button
+                                type="button"
+                                className="cmn_btn"
+                                onClick={() =>
+                                  openPatientModal({
+                                    id: test.id,
+                                    name: test.test_name,
+                                    productType: "test",
+                                    price: test.mrpAmount,
+                                  })
+                                }
+                              >
                                 Add to Cart
                               </button>
                             </div>

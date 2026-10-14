@@ -22,6 +22,7 @@ import { getAllState } from "@/services/master.service"
 
 
 
+
 declare global {
   interface Window {
     googleTranslateElementInit?: () => void;
@@ -166,6 +167,8 @@ export default function Header() {
   const [mobileOpenIndex, setMobileOpenIndex] = useState<number | null>(null);
   const [isOpens, setIsOpens] = useState(false);
 
+  const [cartCount, setCartCount] = useState(0);
+
   const menuData = [
     {
       id: "company",
@@ -237,6 +240,48 @@ export default function Header() {
   
 
   const [activeFeedIndex, setActiveFeedIndex] = useState(0);
+
+  const updateCartCount = () => {
+    try {
+      const savedCart = localStorage.getItem("nirnayan_temp_cart");
+
+      if (!savedCart) {
+        setCartCount(0);
+        return;
+      }
+
+      const cart = JSON.parse(savedCart);
+
+      const totalItems = cart.reduce((total: number, group: any) => {
+        return total + (group?.items?.length || 0);
+      }, 0);
+
+      setCartCount(totalItems);
+
+      console.log("Header Cart Count:", totalItems);
+    } catch (error) {
+      console.error("Cart count error:", error);
+
+      setCartCount(0);
+    }
+  };
+
+  useEffect(() => {
+    // Load count first time
+    updateCartCount();
+
+    // Update in same browser tab
+    window.addEventListener("cartUpdated", updateCartCount);
+
+    // Update if localStorage changes from another tab
+    window.addEventListener("storage", updateCartCount);
+
+    return () => {
+      window.removeEventListener("cartUpdated", updateCartCount);
+
+      window.removeEventListener("storage", updateCartCount);
+    };
+  }, []);
 
   useEffect(() => {
     const interval = window.setInterval(() => {
@@ -1220,9 +1265,13 @@ export default function Header() {
 
             {!sessionLoading && loginSession && (
               <div className={styles["cart-wrap"]}>
-                <Link href="#">
+                <Link href="/cart">
                   <i className="fa-solid fa-cart-shopping"></i>
-                  <span className={styles["number"]}>0</span>
+                  <span className={styles["number"]}>
+                    {cartCount > 0 && (
+                      <span className={styles.cartCount}>{cartCount}</span>
+                    )}
+                  </span>
                 </Link>
               </div>
             )}
