@@ -141,8 +141,6 @@ function PopularTest({ section = "all" }: PopularTestProps) {
   const selectOrgan = (item: FilterItem) => {
     setSelectedOrgan(item);
 
-    console.log("Selected Item:", item);
-
     loadTests(filterType, item);
   };
 

@@ -1267,10 +1267,9 @@ export default function Header() {
               <div className={styles["cart-wrap"]}>
                 <Link href="/cart">
                   <i className="fa-solid fa-cart-shopping"></i>
+
                   <span className={styles["number"]}>
-                    {cartCount > 0 && (
-                      <span className={styles.cartCount}>{cartCount}</span>
-                    )}
+                    <span className={styles.cartCount}>{cartCount}</span>
                   </span>
                 </Link>
               </div>
@@ -1318,10 +1317,13 @@ export default function Header() {
                   >
                     {loginSession ? (
                       <>
-                        <button>
-                          <img src="/assets/images/profile.svg" alt="" /> My
-                          Profile
-                        </button>
+                        <Link
+                          href="/profile"
+                          onClick={() => setIsAccountMenuOpen(false)}
+                        >
+                          <img src="/assets/images/profile.svg" alt="" />
+                          My Profile
+                        </Link>
                         <button>
                           <img src="/assets/images/orders.svg" alt="" /> My
                           Order

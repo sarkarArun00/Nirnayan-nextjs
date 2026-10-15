@@ -1,0 +1,433 @@
+.profilePage {
+    min-height: 100vh;
+    padding: 35px 0 60px;
+    background: #f7faf8;
+}
+
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 22px;
+    font-size: 13px;
+    color: #7d7d7d;
+}
+
+.breadcrumb a {
+    color: #0aa65c;
+    text-decoration: none;
+}
+
+.pageHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+}
+
+.pageHeader h1 {
+    margin: 0 0 5px;
+    font-size: 30px;
+    font-weight: 700;
+    color: #171717;
+}
+
+.pageHeader p {
+    margin: 0;
+    font-size: 14px;
+    color: #787878;
+}
+
+.profileCard {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    padding: 22px;
+    margin-bottom: 20px;
+    background: #ffffff;
+    border: 1px solid #e5ece8;
+    border-radius: 18px;
+}
+
+.profileAvatar {
+    width: 64px;
+    height: 64px;
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #e8fff3;
+    color: #079753;
+
+    font-size: 25px;
+    font-weight: 700;
+}
+
+.profileInfo h2 {
+    margin: 0 0 8px;
+    font-size: 20px;
+    font-weight: 700;
+    color: #181818;
+}
+
+.profileMeta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 18px;
+}
+
+.profileMeta span {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+
+    color: #747474;
+    font-size: 13px;
+}
+
+.profileMeta i {
+    color: #0ba95e;
+}
+
+.sectionCard {
+    padding: 22px;
+    margin-bottom: 20px;
+
+    background: #ffffff;
+
+    border: 1px solid #e5ece8;
+    border-radius: 18px;
+}
+
+.sectionHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+
+    margin-bottom: 18px;
+}
+
+.sectionHeader h3 {
+    margin: 0 0 4px;
+    font-size: 18px;
+    font-weight: 700;
+    color: #171717;
+}
+
+.sectionHeader p {
+    margin: 0;
+    color: #858585;
+    font-size: 12px;
+}
+
+.count {
+    min-width: 30px;
+    height: 30px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 50%;
+
+    background: #eafff4;
+    color: #079753;
+
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.defaultInfo {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+
+    padding: 14px 16px;
+    margin-bottom: 16px;
+
+    border: 1px solid #b8e9ce;
+    border-radius: 12px;
+
+    background: #f4fff9;
+}
+
+.defaultInfo>div {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.defaultIcon {
+    width: 30px;
+    height: 30px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    background: #0bad60;
+    color: #ffffff;
+
+    font-size: 13px;
+}
+
+.defaultInfo strong {
+    display: block;
+    margin-bottom: 2px;
+
+    color: #171717;
+    font-size: 13px;
+}
+
+.defaultInfo p {
+    margin: 0;
+    color: #757575;
+    font-size: 11px;
+}
+
+.defaultInfo button {
+    flex-shrink: 0;
+
+    border: 0;
+    background: transparent;
+
+    color: #d84141;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.patientList {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.patientCard {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+
+    padding: 14px;
+
+    border: 1px solid #e7e7e7;
+    border-radius: 14px;
+
+    transition: 0.2s ease;
+}
+
+.patientCard:hover {
+    border-color: #a8dabb;
+}
+
+.defaultCard {
+    border-color: #13ae64;
+    background: #fbfffd;
+}
+
+.patientLeft {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.patientAvatar {
+    width: 44px;
+    height: 44px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    background: #edf8f2;
+    color: #089752;
+
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.patientName {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.patientName h4 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #171717;
+}
+
+.patientName span {
+    padding: 3px 8px;
+
+    border-radius: 20px;
+
+    background: #e4faee;
+    color: #079552;
+
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.patientDetails p {
+    margin: 4px 0 0;
+    color: #808080;
+    font-size: 11px;
+}
+
+.patientDetails small {
+    display: block;
+    margin-top: 3px;
+
+    color: #909090;
+    font-size: 10px;
+}
+
+.patientActions {
+    flex-shrink: 0;
+}
+
+.defaultBtn,
+.removeDefaultBtn {
+    min-height: 36px;
+
+    padding: 0 14px;
+
+    border-radius: 20px;
+
+    font-size: 11px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.defaultBtn {
+    border: 1px solid #0aa75d;
+    background: #ffffff;
+    color: #099752;
+}
+
+.defaultBtn:hover {
+    background: #0aa75d;
+    color: #ffffff;
+}
+
+.removeDefaultBtn {
+    border: 1px solid #e4b6b6;
+    background: #fffafa;
+    color: #d13d3d;
+}
+
+.addAddressBtn {
+    min-height: 38px;
+    padding: 0 16px;
+
+    border: 1px solid #0aa75d;
+    border-radius: 22px;
+
+    background: #ffffff;
+    color: #099752;
+
+    font-size: 12px;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.emptyState,
+.loadingBox {
+    padding: 32px 15px;
+    text-align: center;
+}
+
+.emptyState h3,
+.emptyState h4 {
+    margin-bottom: 6px;
+    color: #222222;
+}
+
+.emptyState p {
+    margin: 0;
+    color: #858585;
+    font-size: 12px;
+}
+
+.addressIcon {
+    width: 46px;
+    height: 46px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: 0 auto 10px;
+
+    border-radius: 50%;
+
+    background: #eafff4;
+    color: #0aa75d;
+}
+
+@media (max-width: 767px) {
+    .profilePage {
+        padding: 25px 0 40px;
+    }
+
+    .pageHeader h1 {
+        font-size: 24px;
+    }
+
+    .profileCard {
+        align-items: flex-start;
+    }
+
+    .profileMeta {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+
+    .sectionHeader {
+        align-items: flex-start;
+    }
+
+    .patientCard {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .patientActions {
+        width: 100%;
+    }
+
+    .defaultBtn,
+    .removeDefaultBtn {
+        width: 100%;
+    }
+
+    .defaultInfo {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}

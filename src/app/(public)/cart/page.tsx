@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import styles from "./page.module.css";
 
 type CartProduct = {
   id: number;
@@ -29,6 +30,79 @@ const CART_KEY = "nirnayan_temp_cart";
 export default function CartPage() {
   const [cart, setCart] = useState<CartGroup[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const [removeTarget, setRemoveTarget] = useState<{
+    patientId: number | string;
+    item: CartProduct;
+  } | null>(null);
+
+
+  const updateCartStorage = (updatedCart: CartGroup[]) => {
+    setCart(updatedCart);
+
+    localStorage.setItem(CART_KEY, JSON.stringify(updatedCart));
+
+    window.dispatchEvent(new Event("cartUpdated"));
+  };
+
+
+  const handleRemoveItem = (patientId: number | string, item: CartProduct) => {
+    const patientGroup = cart.find(
+      (group) => String(group.patient.id) === String(patientId),
+    );
+
+    if (!patientGroup) {
+      return;
+    }
+
+    // More than one item:
+    // remove selected item directly
+    if (patientGroup.items.length > 1) {
+      const updatedCart = cart.map((group) => {
+        if (String(group.patient.id) !== String(patientId)) {
+          return group;
+        }
+
+        return {
+          ...group,
+
+          items: group.items.filter(
+            (cartItem) =>
+              !(
+                cartItem.id === item.id &&
+                cartItem.productType === item.productType
+              ),
+          ),
+        };
+      });
+
+      updateCartStorage(updatedCart);
+
+      return;
+    }
+
+    // Last item:
+    // show confirmation modal
+    setRemoveTarget({
+      patientId,
+      item,
+    });
+  };
+
+
+  const confirmRemoveLastItem = () => {
+    if (!removeTarget) {
+      return;
+    }
+
+    const updatedCart = cart.filter(
+      (group) => String(group.patient.id) !== String(removeTarget.patientId),
+    );
+
+    updateCartStorage(updatedCart);
+
+    setRemoveTarget(null);
+  };
 
   useEffect(() => {
     try {
@@ -63,6 +137,12 @@ export default function CartPage() {
     return <div className="container py-5">Loading cart...</div>;
   }
 
+  const removePatient = removeTarget
+    ? cart.find(
+        (group) => String(group.patient.id) === String(removeTarget.patientId),
+      )
+    : null;
+  
   return (
     <section
       style={{
@@ -224,6 +304,15 @@ export default function CartPage() {
                       >
                         ₹{Number(item.price || 0).toFixed(2)}
                       </strong>
+
+                      <button
+                        type="button"
+                        onClick={() => handleRemoveItem(group.patient.id, item)}
+                        className={styles.removeItemBtn}
+                        aria-label={`Remove ${item.name}`}
+                      >
+                        <i className="fa-solid fa-trash"></i>
+                      </button>
                     </div>
                   ))}
                 </div>
@@ -318,6 +407,80 @@ export default function CartPage() {
           </div>
         )}
       </div>
+
+      {removeTarget && removePatient && (
+        <div
+          className={styles.removeModalBackdrop}
+          onClick={() => setRemoveTarget(null)}
+        >
+          <div
+            className={styles.removeModal}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Delete Icon */}
+            <div className={styles.deleteIcon}>
+              <i className="fa-solid fa-trash-can"></i>
+            </div>
+
+            <h2>Are You Sure?</h2>
+
+            <p className={styles.removeMessage}>
+              Are you sure you want to{" "}
+              <strong>
+                remove patient and all the tests associated with them
+              </strong>{" "}
+              from the cart?
+            </p>
+
+            {/* Patient */}
+            <div className={styles.removePatientCard}>
+              <div className={styles.removePatientLeft}>
+                <div className={styles.removeAvatar}>
+                  {removePatient.patient.name?.charAt(0).toUpperCase()}
+                </div>
+
+                <div>
+                  <h4>{removePatient.patient.name}</h4>
+
+                  <p>
+                    {removePatient.patient.age
+                      ? `${removePatient.patient.age} Y · `
+                      : ""}
+
+                    {removePatient.patient.gender}
+                  </p>
+                </div>
+              </div>
+
+              <span className={styles.testCountBadge}>
+                {removePatient.items.length}{" "}
+                {removePatient.items.length === 1 ? "Test" : "Tests"}
+              </span>
+            </div>
+
+            {/* Buttons */}
+            <div className={styles.removeActions}>
+              <button
+                type="button"
+                className={styles.removeConfirmBtn}
+                onClick={confirmRemoveLastItem}
+              >
+                Remove
+              </button>
+
+              <button
+                type="button"
+                className={styles.continueBtn}
+                onClick={() => setRemoveTarget(null)}
+              >
+                Continue
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
+
+  
 }
