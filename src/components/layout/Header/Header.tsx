@@ -237,7 +237,7 @@ export default function Header() {
     "Your questions matter. Ask for help understanding your report.",
     "Put your health on your calendar. Plan your next appointment.",
   ];
-  
+
 
   const [activeFeedIndex, setActiveFeedIndex] = useState(0);
 
@@ -432,9 +432,9 @@ export default function Header() {
     setLocationSearch("");
   };
 
-   /* ================================
-       GET BANNERS
-    ================================= */
+  /* ================================
+      GET BANNERS
+   ================================= */
   useEffect(() => {
     const loadStates = async () => {
       try {
@@ -503,7 +503,7 @@ export default function Header() {
       localStorage.removeItem(LOCATION_STORAGE_KEY);
     }
   }, []);
-  
+
   const toggleLang = () => {
     setLangOpen((prev) => !prev);
   };
@@ -653,6 +653,14 @@ export default function Header() {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
+
+  useEffect(() => {
+    const handleSearch = () => setIsSearch(true);
+    window.addEventListener("searchModal", handleSearch);
+    return () => {
+      window.removeEventListener("searchModal", handleSearch);
+    };
+  }, []);
   // Ctrl + K Search Function
 
   // const handleGetOtp = async () => {
@@ -720,7 +728,7 @@ export default function Header() {
     try {
       setLoading(true);
 
-      const response:any = await requestLoginOtp(mobile);
+      const response: any = await requestLoginOtp(mobile);
       console.log("Request OTP Response:", response);
       const result = response as LoginResponse | null;
       setLoginOtp(response?.otpDets.otp);
@@ -1124,7 +1132,7 @@ export default function Header() {
 
   // Login End
   // For More Menu Start
-  
+
 
   const toggleAccordion = (index: number) => {
     setMobileOpenIndex((previous) =>
@@ -1195,7 +1203,15 @@ export default function Header() {
 
               <div className={styles["test-search"]}>
                 <div className={styles.divider}></div>
-                <div className="d-flex align-items-center flex-grow-1">
+                <div className="d-flex align-items-center flex-grow-1" onClick={() => setIsSearch(true)}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      setIsSearch(true);
+                    }
+                  }}>
                   <span className={styles["search-text"]}>Search for</span>
                 </div>
                 <div className="d-flex align-items-center">
@@ -1452,9 +1468,8 @@ export default function Header() {
                       <div key={item.id} className={styles.accordionItem}>
                         <button
                           type="button"
-                          className={`${styles.accordionHeader} ${
-                            isOpen ? styles.activeHeader : ""
-                          }`}
+                          className={`${styles.accordionHeader} ${isOpen ? styles.activeHeader : ""
+                            }`}
                           onClick={() => toggleAccordion(index)}
                           aria-expanded={isOpen}
                         >
@@ -1462,17 +1477,15 @@ export default function Header() {
 
                           <span className={styles.accordionIcon}>
                             <i
-                              className={`fa-solid ${
-                                isOpen ? "fa-chevron-up" : "fa-chevron-down"
-                              }`}
+                              className={`fa-solid ${isOpen ? "fa-chevron-up" : "fa-chevron-down"
+                                }`}
                             />
                           </span>
                         </button>
 
                         <ul
-                          className={`${styles.linkList} ${
-                            isOpen ? styles.open : ""
-                          }`}
+                          className={`${styles.linkList} ${isOpen ? styles.open : ""
+                            }`}
                         >
                           {item.content.map((linkItem, i) => (
                             <li key={i} className={styles.mobileLinkRow}>

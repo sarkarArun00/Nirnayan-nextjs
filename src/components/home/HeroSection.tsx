@@ -197,7 +197,7 @@ export default function HeroSection() {
 
           <div className={styles.banner_action}>
             <div className={styles.test_search}>
-              <div className="d-flex align-items-center flex-grow-1">
+              <div className="d-flex align-items-center flex-grow-1" onClick={() => window.dispatchEvent(new Event("searchModal"))}>
                 <i className="fa-solid fa-magnifying-glass search-icon"></i>
 
                 <span className={styles.search_text}>Search for</span>
