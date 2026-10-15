@@ -35,10 +35,17 @@ type TempPatient = {
 };
 
 
-type TempCartGroup = {
-  patient: TempPatient;
-  items: CartProduct[];
+
+type TempCartItem = {
+  id: number;
+  productType: "test" | "package";
 };
+
+type TempCartGroup = {
+  patientId: number | string;
+  items: TempCartItem[];
+};
+
 
 const TEMP_CART_KEY = "nirnayan_temp_cart";
 
@@ -129,50 +136,84 @@ export function PatientSelectionProvider({ children }: Props) {
 
       return;
     }
-    if (!cartProduct) {
-      console.warn("No product selected");
-      return;
-    }
 
     try {
       const savedCart = localStorage.getItem(TEMP_CART_KEY);
 
-      const cart: TempCartGroup[] = savedCart ? JSON.parse(savedCart) : [];
+      let cart: TempCartGroup[] = [];
+
+      if (savedCart) {
+        const parsed = JSON.parse(savedCart);
+
+        /*
+         * Support old temporary cart format too:
+         *
+         * {
+         *   patient: {...},
+         *   items: [{ id, name, price, productType }]
+         * }
+         *
+         * Convert automatically to new structure.
+         */
+        if (Array.isArray(parsed)) {
+          cart = parsed
+            .map((group: any) => ({
+              patientId: group.patientId ?? group.patient?.id,
+
+              items: Array.isArray(group.items)
+                ? group.items
+                    .filter((item: any) => item?.id && item?.productType)
+                    .map((item: any) => ({
+                      id: Number(item.id),
+
+                      productType: item.productType,
+                    }))
+                : [],
+            }))
+            .filter(
+              (group: TempCartGroup) =>
+                group.patientId !== undefined && group.patientId !== null,
+            );
+        }
+      }
 
       let patientGroup = cart.find(
-        (group) => String(group.patient.id) === String(patient.id),
+        (group) => String(group.patientId) === String(patient.id),
       );
 
-      // Patient not in cart yet
+      // Patient doesn't exist in cart
       if (!patientGroup) {
         patientGroup = {
-          patient,
+          patientId: patient.id,
+
           items: [],
         };
 
         cart.push(patientGroup);
       }
 
-      // Prevent same product duplicate
+      // Only reference data gets stored
+      const newCartItem: TempCartItem = {
+        id: cartProduct.id,
+
+        productType: cartProduct.productType,
+      };
+
       const alreadyExists = patientGroup.items.some(
         (item) =>
-          item.id === cartProduct.id &&
-          item.productType === cartProduct.productType,
+          item.id === newCartItem.id &&
+          item.productType === newCartItem.productType,
       );
 
       if (!alreadyExists) {
-        patientGroup.items.push(cartProduct);
+        patientGroup.items.push(newCartItem);
       }
 
       localStorage.setItem(TEMP_CART_KEY, JSON.stringify(cart));
 
+      console.log("Updated Cart References:", cart);
+
       window.dispatchEvent(new Event("cartUpdated"));
-
-      console.log("Temporary Cart:", cart);
-
-      console.log("Patient:", patient);
-
-      console.log("Product:", selectedProduct);
 
       closePatientModal();
 

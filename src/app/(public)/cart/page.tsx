@@ -20,21 +20,28 @@ type CartPatient = {
   isNew: boolean;
 };
 
+
+type CartItemRef = {
+  id: number;
+  productType: "test" | "package";
+};
+
 type CartGroup = {
-  patient: CartPatient;
-  items: CartProduct[];
+  patientId: number | string;
+  items: CartItemRef[];
 };
 
 const CART_KEY = "nirnayan_temp_cart";
 
 export default function CartPage() {
-  const [cart, setCart] = useState<CartGroup[]>([]);
-  const [loading, setLoading] = useState(true);
 
-  const [removeTarget, setRemoveTarget] = useState<{
-    patientId: number | string;
-    item: CartProduct;
-  } | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [cart, setCart] = useState<CartGroup[]>([]);
+
+const [removeTarget, setRemoveTarget] = useState<{
+  patientId: number | string;
+  item: CartItemRef;
+} | null>(null);
 
 
   const updateCartStorage = (updatedCart: CartGroup[]) => {
@@ -46,20 +53,18 @@ export default function CartPage() {
   };
 
 
-  const handleRemoveItem = (patientId: number | string, item: CartProduct) => {
+  const handleRemoveItem = (patientId: number | string, item: CartItemRef) => {
     const patientGroup = cart.find(
-      (group) => String(group.patient.id) === String(patientId),
+      (group) => String(group.patientId) === String(patientId),
     );
 
     if (!patientGroup) {
       return;
     }
 
-    // More than one item:
-    // remove selected item directly
     if (patientGroup.items.length > 1) {
       const updatedCart = cart.map((group) => {
-        if (String(group.patient.id) !== String(patientId)) {
+        if (String(group.patientId) !== String(patientId)) {
           return group;
         }
 
@@ -81,8 +86,6 @@ export default function CartPage() {
       return;
     }
 
-    // Last item:
-    // show confirmation modal
     setRemoveTarget({
       patientId,
       item,
@@ -90,19 +93,19 @@ export default function CartPage() {
   };
 
 
-  const confirmRemoveLastItem = () => {
-    if (!removeTarget) {
-      return;
-    }
+const confirmRemoveLastItem = () => {
+  if (!removeTarget) {
+    return;
+  }
 
-    const updatedCart = cart.filter(
-      (group) => String(group.patient.id) !== String(removeTarget.patientId),
-    );
+  const updatedCart = cart.filter(
+    (group) => String(group.patientId) !== String(removeTarget.patientId),
+  );
 
-    updateCartStorage(updatedCart);
+  updateCartStorage(updatedCart);
 
-    setRemoveTarget(null);
-  };
+  setRemoveTarget(null);
+};
 
   useEffect(() => {
     try {
@@ -122,16 +125,9 @@ export default function CartPage() {
     }
   }, []);
 
-  const getTotal = () => {
-    return cart.reduce((total, group) => {
-      const patientTotal = group.items.reduce(
-        (sum, item) => sum + Number(item.price || 0),
-        0,
-      );
-
-      return total + patientTotal;
-    }, 0);
-  };
+const getTotalItems = () => {
+  return cart.reduce((total, group) => total + group.items.length, 0);
+};
 
   if (loading) {
     return <div className="container py-5">Loading cart...</div>;
@@ -139,7 +135,7 @@ export default function CartPage() {
 
   const removePatient = removeTarget
     ? cart.find(
-        (group) => String(group.patient.id) === String(removeTarget.patientId),
+        (group) => String(group.patientId) === String(removeTarget.patientId),
       )
     : null;
   
@@ -195,121 +191,41 @@ export default function CartPage() {
             {/* LEFT SIDE */}
             <div className="col-lg-8">
               {cart.map((group) => (
-                <div
-                  key={group.patient.id}
-                  style={{
-                    background: "#fff",
-                    borderRadius: "16px",
-                    padding: "20px",
-                    marginBottom: "20px",
-                    border: "1px solid #e8e8e8",
-                  }}
-                >
-                  {/* Patient */}
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      paddingBottom: "15px",
-                      marginBottom: "15px",
-                      borderBottom: "1px solid #eee",
-                    }}
-                  >
+                <div key={group.patientId} className={styles.patientCart}>
+                  <div className={styles.patientHeader}>
                     <div>
-                      <h3
-                        style={{
-                          fontSize: "18px",
-                          marginBottom: "4px",
-                        }}
-                      >
-                        {group.patient.name}
-                      </h3>
+                      <h3>Patient #{group.patientId}</h3>
 
-                      <p
-                        style={{
-                          margin: 0,
-                          fontSize: "13px",
-                          color: "#777",
-                        }}
-                      >
-                        {group.patient.gender}
-
-                        {group.patient.age
-                          ? ` · ${group.patient.age} Years`
-                          : ""}
-
-                        {group.patient.bloodGroup
-                          ? ` · ${group.patient.bloodGroup}`
-                          : ""}
+                      <p>
+                        {group.items.length}{" "}
+                        {group.items.length === 1 ? "item" : "items"}
                       </p>
                     </div>
-
-                    <span
-                      style={{
-                        background: "#ecfff5",
-                        color: "#079653",
-                        padding: "6px 12px",
-                        borderRadius: "20px",
-                        fontSize: "12px",
-                        fontWeight: 600,
-                      }}
-                    >
-                      Patient
-                    </span>
                   </div>
 
-                  {/* Products */}
                   {group.items.map((item) => (
                     <div
                       key={`${item.productType}-${item.id}`}
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        gap: "15px",
-                        padding: "15px 0",
-                        borderBottom: "1px solid #f0f0f0",
-                      }}
+                      className={styles.cartItem}
                     >
                       <div>
-                        <span
-                          style={{
-                            display: "inline-block",
-                            marginBottom: "5px",
-                            color: "#08a95e",
-                            fontSize: "11px",
-                            fontWeight: 600,
-                            textTransform: "uppercase",
-                          }}
-                        >
-                          {item.productType}
+                        <span>
+                          {item.productType === "test" ? "Test" : "Package"}
                         </span>
 
-                        <h4
-                          style={{
-                            margin: 0,
-                            fontSize: "15px",
-                            fontWeight: 600,
-                          }}
-                        >
-                          {item.name}
+                        <h4>
+                          {item.productType === "test"
+                            ? `Test #${item.id}`
+                            : `Package #${item.id}`}
                         </h4>
-                      </div>
 
-                      <strong
-                        style={{
-                          fontSize: "17px",
-                        }}
-                      >
-                        ₹{Number(item.price || 0).toFixed(2)}
-                      </strong>
+                        <small>Latest details will be loaded from server</small>
+                      </div>
 
                       <button
                         type="button"
-                        onClick={() => handleRemoveItem(group.patient.id, item)}
                         className={styles.removeItemBtn}
-                        aria-label={`Remove ${item.name}`}
+                        onClick={() => handleRemoveItem(group.patientId, item)}
                       >
                         <i className="fa-solid fa-trash"></i>
                       </button>
@@ -330,7 +246,7 @@ export default function CartPage() {
                   position: "sticky",
                   top: "110px",
                 }}
-              >
+                >
                 <h3
                   style={{
                     fontSize: "19px",
@@ -388,7 +304,7 @@ export default function CartPage() {
                       color: "#079653",
                     }}
                   >
-                    ₹{getTotal().toFixed(2)}
+                    ₹{getTotalItems()}
                   </strong>
                 </div>
 
@@ -435,26 +351,18 @@ export default function CartPage() {
             {/* Patient */}
             <div className={styles.removePatientCard}>
               <div className={styles.removePatientLeft}>
-                <div className={styles.removeAvatar}>
-                  {removePatient.patient.name?.charAt(0).toUpperCase()}
-                </div>
+                <div className={styles.removeAvatar}>P</div>
 
                 <div>
-                  <h4>{removePatient.patient.name}</h4>
+                  <h4>Patient #{removePatient.patientId}</h4>
 
-                  <p>
-                    {removePatient.patient.age
-                      ? `${removePatient.patient.age} Y · `
-                      : ""}
-
-                    {removePatient.patient.gender}
-                  </p>
+                  <p>Patient details will be loaded from server</p>
                 </div>
               </div>
 
               <span className={styles.testCountBadge}>
                 {removePatient.items.length}{" "}
-                {removePatient.items.length === 1 ? "Test" : "Tests"}
+                {removePatient.items.length === 1 ? "Item" : "Items"}
               </span>
             </div>
 
