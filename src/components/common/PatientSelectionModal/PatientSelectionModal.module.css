@@ -4,7 +4,6 @@
 .header h4{ font-weight:600; color:var(--up-black); margin-bottom:10px; }
 .header p{ font-weight:400; color:var(--up-gray); margin-bottom:0; }
 
-
 .typeGrid{ display:grid; grid-template-columns:repeat(2, 1fr); gap:12px; }
 .typeCard{ min-height:110px; border:1px solid #D9F3E5; border-radius:15px; background:#FBFFFD; padding:20px; display:flex; flex-direction:column; align-items:center; justify-content:center; cursor:pointer; transition:0.2s ease; }
 .typeCard:hover, .typeCard.active{ border-color:var(--up-theme); background:#FBFFFD; }
