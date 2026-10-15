@@ -32,7 +32,7 @@ h5{ font-family: "Google Sans Flex", sans-serif; font-size:18px; line-height:1; 
 h6{ font-family: "Google Sans Flex", sans-serif; font-size:15px; line-height:1; margin-bottom:20px; }
 p{ font-family: "Google Sans Flex", sans-serif; font-size:15px; line-height:1.2; margin:0 0 20px; }
 
-.cmn_btn{ position: relative; font-size:16px; line-height:1.2; font-weight: 600; color:var(--up-white); border:1px solid transparent; border-radius:30px; display: inline-block; background:linear-gradient(var(--up-theme), var(--up-theme)) padding-box, linear-gradient(95.91deg, #01C05E 9.26%, #C2FFE0 99.32%) border-box; box-shadow:0px 3px 12.5px 0px #00000059,0px 7px 6px 0px #D9F3E540 inset; transition:all 0.4s ease; padding:15px 25px; margin:1px; }
+.cmn_btn{ position: relative; font-size:16px; line-height:1.2; font-weight: 600; color:var(--up-white); border:1px solid transparent; border-radius:30px; display: inline-block; background:linear-gradient(var(--up-theme), var(--up-theme)) padding-box, linear-gradient(95.91deg, #01C05E 9.26%, #C2FFE0 99.32%) border-box; box-shadow:0px 7px 6px 0px #D9F3E540 inset; transition:all 0.4s ease; padding:15px 25px; margin:1px; }
 .cmn_btn:hover{ color:var(--up-white); }
 
 .sec_btn{ position:relative; font-size:16px; line-height:1.2; font-weight:600; color:var(--up-black); display:inline-block; background:linear-gradient(95.91deg, #01C05E 9.26%, #C2FFE0 99.32%); border-radius:30px; transition:all 0.4s ease; padding:15px 25px; z-index:0; }
@@ -51,6 +51,9 @@ p{ font-family: "Google Sans Flex", sans-serif; font-size:15px; line-height:1.2;
 textarea,select,.form-control,.form-select,input{ font-family: "Google Sans Flex", sans-serif; font-size:15px; outline:none; color:var(--up-black); font-weight:400; border:1px solid var(--up-black); border-radius:50px; background-color:var(--up-white); box-shadow:none !important; height:48px !important; transition:all 0.4s; padding:12px 20px; }
 textarea.form-control{ height:100px; border-radius:20px; padding:20px 30px; resize:none; font-size:15px; }
 textarea:focus,select:focus,.form-control:focus,.form-select:focus,input:focus { border-color: var(--up-theme) !important; box-shadow:none !important; }
+
+label{ font-size:12px; line-height:1; font-weight:400; color:var(--up-black); display:block; margin-bottom:12px; }
+label span{ color:#FF0000; }
 
 .invalid{ border-color:#f33b3b !important; }
 .is-discount{ font-size:12px; line-height:1.2; font-weight:500; color:var(--up-black); background:linear-gradient(90deg, #FAC801 0%, #FFFFFF 50%, #FAC801 100%); border-radius:25px; padding:5px 8px; }
@@ -212,13 +215,13 @@ textarea:focus,select:focus,.form-control:focus,.form-select:focus,input:focus {
 .test-box .btm-pnl span.price del{ font-size:13px; color:var(--up-gray); }
 .test-box .btm-pnl span.discount{ font-size:12px; line-height:1.2; font-weight:500; color:var(--up-black); background:linear-gradient(90deg, #FAC801 0%, #FFFFFF 50%, #FAC801 100%); border-radius:25px; padding:5px 8px; }
 /* Pack Card */
-.pack-card{ background:radial-gradient(50% 50% at 50% 50%, #FFFFFF 65%, #D9F3E5 100%); border-radius:15px; padding:15px; }
+.pack-card{ background:radial-gradient(50% 50% at 50% 50%, #FFFFFF 65%, #D9F3E5 100%); border-radius:25px; padding:15px; }
 .pack-card .image-section{ position:relative; margin-bottom:25px; }
-.pack-card .image-section .img{ position:relative; height:170px; overflow:hidden; border-radius:25px; }
+.pack-card .image-section .img{ position:relative; height:200px; overflow:hidden; border-radius:20px; }
 .pack-card .image-section .img img{ transition:all 0.4s; }
 .pack-card:hover .image-section .img img{ transform:scale(1.1); }
 .pack-card .image-section .img .img-lbl{ font-size:12px; font-weight:500; color:var(--up-white); text-transform:uppercase; position:absolute; width:100%; left:0; bottom:0; background:linear-gradient(90deg, #000, transparent); padding:6px 24px; }
-.popular-badge{ position:absolute; right:6px; top:6px; display:flex; align-items:center; gap:0 6px; border:1px solid var(--up-white); background:linear-gradient(90deg, #FAC801 0%, #FF0000 100%); border-radius:30px; padding:8px 12px; }
+.popular-badge{ position:absolute; right:10px; top:10px; display:flex; align-items:center; gap:0 6px; border:1px solid var(--up-white); background:linear-gradient(90deg, #FAC801 0%, #FF0000 100%); border-radius:30px; padding:8px 12px; }
 .popular-badge h6{ font-size:13px; color:var(--up-white); font-weight:500; margin:0; }
 .pack-card .image-section .icon{ position:absolute; right:7px; bottom:-24px; width:48px; height:48px; border:1px solid var(--up-white); background:rgba(255,255,255,0.2); border-radius:50%; display:flex; align-items:center; justify-content:center; }
 .pack-card h2.title{ font-size:20px; line-height:1.2; font-weight:600; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; text-overflow:ellipsis; margin-bottom:15px; }
@@ -270,10 +273,17 @@ textarea:focus,select:focus,.form-control:focus,.form-select:focus,input:focus {
 /* Common Slick Slider End */
 
 /* Common Modal Start */
-.cmn-backdrop{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.6); z-index:9; opacity:0; visibility:hidden; transition: opacity 0.3s ease, visibility 0.3s ease; }
-.cmn-backdrop .inn{ padding:30px; border-radius:35px; background:var(--up-white); width:650px; max-width:100%; max-height:650px; overflow:hidden; opacity:0;transform:translateY(20px) scale(0.95); transition:opacity 0.35s ease, transform 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
+.cmn-backdrop{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.6); z-index:9999; opacity:0; visibility:hidden; transition: opacity 0.3s ease, visibility 0.3s ease; overflow-y:scroll; }
+.cmn-backdrop .inn{ position:relative; padding:30px; border-radius:35px; background:var(--up-white); width:650px; max-width:100%; max-height:650px; overflow:hidden; opacity:0;transform:translateY(20px) scale(0.95); transition:opacity 0.35s ease, transform 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
 .cmn-backdrop.active{ opacity:1; visibility:visible; }
 .cmn-backdrop.active .inn{ opacity:1; transform:translateY(0) scale(1); }
+
+.content-area{ overflow-y:scroll; max-height:calc(480px - 70px); padding-right:5px; }
+.cmn-backdrop .inn.is-wide{ width:1200px; }
+.cmn-backdrop .inn.is-wide-lg{ width:800px; }
+.cmn-backdrop .inn.is-wide-sm{ width:600px; }
+.cmn-backdrop .inn.is-wide-xs{ width:500px; }
+
 /* Common Modal End */
 
 /* HomePage Accordian Css Start */
