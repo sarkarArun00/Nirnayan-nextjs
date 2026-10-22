@@ -76,12 +76,34 @@ function OurLocation() {
         ],
     };
 
+    const logoSlideConfig = {
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        dots: true,
+        arrows: false,
+        infinite: true,
+        autoplay: true,
+        speed: 500,
+        cssEase: 'ease',
+    };
+    
     return (
         <>
             <div className={styles.find_us}>
                 <div className="container">
                     <div className={styles.top_block}>
                         <h2>Uniting Forces for Growth</h2>
+                        <Slider {...logoSlideConfig} className={`is_slick_dot ${styles.carousel}`}>
+                            <div className="item w-100 text-center">
+                                <img className='m-auto' src="/assets/images/med-logo.png" alt="" />
+                            </div>
+                            <div className="item w-100 text-center">
+                                <img className='m-auto' src="/assets/images/exi-logo.png" alt="" />
+                            </div>
+                            <div className="item w-100 text-center">
+                                <img className='m-auto' src="/assets/images/health-logo.png" alt="" />
+                            </div>
+                        </Slider>
                         <ul className='d-none d-md-flex'>
                             <li><img src="/assets/images/med-logo.png" alt="" /></li>
                             <li><img src="/assets/images/exi-logo.png" alt="" /></li>
