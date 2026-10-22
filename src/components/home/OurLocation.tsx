@@ -93,7 +93,7 @@ function OurLocation() {
                 <div className="container">
                     <div className={styles.top_block}>
                         <h2>Uniting Forces for Growth</h2>
-                        <Slider {...logoSlideConfig} className={`is_slick_dot ${styles.carousel}`}>
+                        <Slider {...logoSlideConfig} className={`is_slick_dot d-block d-md-none ${styles.carousel}`}>
                             <div className="item w-100 text-center">
                                 <img className='m-auto' src="/assets/images/med-logo.png" alt="" />
                             </div>
