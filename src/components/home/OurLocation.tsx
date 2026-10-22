@@ -70,8 +70,8 @@ function OurLocation() {
                 settings: { slidesToShow: 2 },
             },
             {
-                breakpoint: 640,
-                settings: { slidesToShow: 1 },
+                breakpoint: 767,
+                settings: { slidesToShow: 1, centerPadding: '30px', },
             },
         ],
     };
@@ -93,13 +93,21 @@ function OurLocation() {
                     </div>
                     <div className={styles.btm_block}>
                         <div className="row align-items-center">
-                            <div className="col-lg-6 col-md-6 col-sm-12">
+                            <div className="col-xl-6 col-lg-12 col-md-12 col-sm-12">
+                                <div className={`d-block d-xl-none text-center ${styles.title_text}`}>
+                                    <h2>
+                                        Find Nirnayan{' '}
+                                        <span className={cityAnimating ? styles.citySlideUp : ''}>
+                                            {activeLocation?.city}
+                                        </span>
+                                    </h2>
+                                </div>
                                 <div className={styles.img_block}>
                                     <img src="/assets/images/route.png" alt="" />
                                 </div>
                             </div>
-                            <div className="col-lg-6 col-md-6 col-sm-12">
-                                <div className={styles.title_text}>
+                            <div className="col-xl-6 col-lg-12 col-md-12 col-sm-12">
+                                <div className={`d-none d-xl-block ${styles.title_text}`}>
                                     <h2>
                                         Find Nirnayan{' '}
                                         <span className={cityAnimating ? styles.citySlideUp : ''}>

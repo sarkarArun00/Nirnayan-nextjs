@@ -83,7 +83,7 @@ label span{ color:#FF0000; }
 .homeheader{ position:sticky; top:0; z-index:99; }
 
 /* Login Modal Start*/
-.is-logged{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.5); z-index:9; overflow-y:scroll; opacity:0; visibility:hidden; transition: opacity 0.3s ease, visibility 0.3s ease; z-index:99; padding:15px; }
+.is-logged{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.5); z-index:9; overflow-y:scroll; opacity:0; visibility:hidden; transition: opacity 0.3s ease, visibility 0.3s ease; z-index:9999; padding:15px; }
 .is-logged.active{ opacity:1; visibility:visible; }
 .is-logged .signup_popup_close{ display:none; }
 .is-logged .inn{ padding:30px; border-radius:35px; background:var(--up-white); box-shadow:0px 0px 12px 0px #00000040; width:860px; max-width:100%; overflow:hidden; opacity:0;transform:translateY(20px) scale(0.95); transition:opacity 0.35s ease, transform 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
@@ -112,7 +112,7 @@ label span{ color:#FF0000; }
 /* Login Modal End*/
 
 /* Location Modal */
-.location-modal-backdrop{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.6); z-index:9; overflow-y:scroll; opacity:0; visibility:hidden; transition: opacity 0.3s ease, visibility 0.3s ease; }
+.location-modal-backdrop{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.6); z-index:9999; overflow-y:scroll; opacity:0; visibility:hidden; transition: opacity 0.3s ease, visibility 0.3s ease; }
 .location-modal-backdrop.active{ opacity:1; visibility:visible; }
 .location-modal-backdrop .inn{ padding:30px; border-radius:35px; background:var(--up-white); box-shadow:0px 0px 12px 0px #00000040; width:830px; max-width:100%; overflow:hidden; opacity:0;transform:translateY(20px) scale(0.95); transition:opacity 0.35s ease, transform 0.35s cubic-bezier(0.22, 1, 0.36, 1); }
 .location-modal-backdrop.active .inn{ opacity:1; transform:translateY(0) scale(1); }
@@ -131,7 +131,7 @@ label span{ color:#FF0000; }
 /* Location Modal */
 
 /* Search Modal 2.0 Start */
-.modal_backdrop{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.5); z-index:99; }
+.modal_backdrop{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.5); z-index:9999; }
 .lab-search-panel{ padding:30px; border-radius:35px; background:var(--up-white); width:570px; max-width:100%; max-height:600px; overflow:hidden; }
 .lab-search-panel .lab-search-field{ position:relative; margin-bottom:25px; }
 .lab-search-panel .lab-search-field .form-control{ height:48px; border:1px solid var(--up-black); border-radius:25px; padding:0 80px 0 55px }
@@ -314,12 +314,6 @@ label span{ color:#FF0000; }
 .is_footer.accordion-box .accordion-item .accordion-body .address-card a:hover img{ filter:brightness(0) invert(1); }
 /* HomePage Accordian Css End */
 
-/* Health Css Start */
-/* .health_slider .slick-track{ display:flex !important; align-items:center; }
-.health_slider .slick-slide{ flex:1 1 0% !important; width:auto !important; box-sizing:border-box; }
-.health_slider .slick-slide.slick-current{ flex:1.2 1 0% !important; } */
-/* Health Css End */
-
 /* Awards Css Start */
 .accolades .slick-list:after{ position:absolute; content:''; left:0; top:0; width:100px; height:100%; background-image: linear-gradient(to right, #fff , transparent); z-index:1; }
 .accolades .slick-list:before{ position:absolute; content:''; right:0; top:0; width:100px; height:100%; background-image: linear-gradient(to right, transparent , #fff); z-index:1; }
@@ -347,8 +341,6 @@ label span{ color:#FF0000; }
 #faqAccordion .accordion-item .accordion-body p strong{ color:var(--up-theme); font-weight:600; }
 #faqAccordion .accordion-item .accordion-body a{ color:var(--up-theme); font-weight:600; text-decoration:underline; }
 /* Home Faq Css End */
-
-
 
 /* Inner Page Css Start From Here */
 ol.breadcrumb{ padding:0 0 30px; margin:0; }
@@ -473,6 +465,10 @@ ol.breadcrumb li.active{ color:var(--up-black); }
   .sec_btn {
     padding: 15px 15px;
     font-size: 14px;
+  }
+  .arrow-btn {
+    width: 38px;
+    height: 38px;
   }
 
 }
