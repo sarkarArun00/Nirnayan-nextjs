@@ -438,6 +438,28 @@ function PopularTest({ section = "all" }: PopularTestProps) {
                       </div>
                     ))}
                   </div>
+                  <div className={`d-block d-md-none ${styles.ch_grids}`}>
+                    <div className="cmn-right-align">
+                      <Slider {...settings} className="is_slick_dot">
+                        {gridData.map((item, index) => (
+                          <div key={index} className="cmn_padding">
+                            <div
+                              className={`${styles.box} ${index % 2 === 0 ? styles.oddBox : styles.evenBox
+                                } ${index === 2 || index === 3 ? styles.specialBox : ""
+                                }`}
+                            >
+                              <div className={styles.inn}>
+                                <img className={styles.icon} src={item.icon} alt="" />
+                                <img className={styles.ch_icon} src={item.chIcon} alt="" />
+                                <h2>{item.number}</h2>
+                                <p>{item.label}</p>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </Slider>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -473,9 +495,8 @@ function PopularTest({ section = "all" }: PopularTestProps) {
                           <button
                             key={`${filterType}-${item.id}`}
                             type="button"
-                            className={`organ-tab ${
-                              selectedOrgan?.id === item.id ? "active" : ""
-                            }`}
+                            className={`organ-tab ${selectedOrgan?.id === item.id ? "active" : ""
+                              }`}
                             onClick={() => selectOrgan(item)}
                           >
                             <span className="icon">
