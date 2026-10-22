@@ -45,6 +45,15 @@ function Awards() {
         slidesToScroll: 1,
         centerMode: true,
         centerPadding: '26%',
+        responsive: [
+            {
+                breakpoint: 991,
+                settings: {
+                    centerPadding: "0",
+                },
+            },
+        ]
+
     };
 
     return (

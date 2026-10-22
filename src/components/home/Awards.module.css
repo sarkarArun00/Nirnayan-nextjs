@@ -26,8 +26,8 @@
 
 /* Lab Video Start */
 .path_lab{ position:relative; background:#000; overflow:hidden; padding:100px 0; margin:0; }
-.path_lab video{ position:absolute; left:0; top:0; width:100%; height:100%; object-fit:cover; z-index:1; }
-.path_lab:after{ position:absolute; content:""; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:2; }
+.path_lab video{ position:absolute; left:0; top:0; width:100%; height:100%; object-fit:cover; z-index:1; pointer-events:none; }
+.path_lab:after{ position:absolute; content:""; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:2; pointer-events:none; }
 .visiable{ z-index:3; position:relative; }
 .path_lab h2{ font-size:48px; line-height:1.2; font-weight:600; color:var(--up-white); margin-bottom:50px; }
 /* .path_lab h2 span{ color:var(--up-theme); } */
@@ -43,3 +43,36 @@
 .path_lab .exp_block .feature_card .feature_text h5{ line-height:1.2; font-weight:500; color:var(--up-white); margin:0; }
 .path_lab .exp_block .feature_card .feature_text h5 span{ display:block; }
 /* Lab Video End */
+
+@media screen and (max-width:1199px){
+    .accolades .award_item .img_block{ width:150px; height:150px; border-radius:15px; }
+    .accolades .award_item .img_block img{ width:110px; height:110px; }
+}
+
+@media screen and (max-width:991px){
+    .help_box .banner_wrap{ padding:0 40px 0 40px; }
+    .path_lab .textSection{ width:100%; margin:0 auto 30px; }
+    .path_lab .textSection span{ font-size:20px; }
+    .path_lab h2{ font-size:30px; margin-bottom:30px; }
+    .path_lab .exp_block{ padding:25px 0 5px; }
+    .path_lab .exp_block .feature_card{ margin-bottom:20px; }
+
+    .accolades .award_item{ padding:12px; margin:0; }
+
+}
+
+@media screen and (max-width:767px){
+    .path_lab{ padding:50px 0; }
+    .path_lab h2{ font-size:24px; }
+
+    .help_box{ padding:0px 0 var(--cmngap-btm); margin-bottom:30px; }
+    .help_box .banner_wrap{ flex-direction:column; background:url('/assets/images/mob-wp-banner.jpg') no-repeat center center / cover; padding:25px 40px 0; }
+    .help_box .banner_wrap .img_block{ flex-shrink:0; margin-top:0; }
+    .help_box .banner_wrap .text_block{ flex:1; margin-bottom:25px; text-align:center; }
+    .help_box .banner_wrap .text_block .flex_block{ flex-direction:column; gap:20px; }
+
+    .accolades .award_item{ flex-direction:column; }
+    .accolades .award_item .img_block{ width:100%; height:200px; }
+    .accolades .award_item .text_block{ flex:1; width:100%; text-align:center; padding:20px 00; }
+    
+}   

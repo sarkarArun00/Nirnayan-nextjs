@@ -391,13 +391,14 @@ ol.breadcrumb li.active{ color:var(--up-black); }
 
 }
 
-@media screen and (max-width:991px){
+/* @media screen and (max-width:991px){
   .cmn-right-align{ margin-right: calc(((100vw - 720px) / 2) * -1); }
-}
+} */
 
 @media screen and (max-width:991px){
   .cmn-right-align{ margin-right: calc(((100vw - 720px) / 2) * -1); }
-
+  .accolades .slick-list:after{ display:none; }
+  .accolades .slick-list:before{ display:none; }
 
 
   h2{ font-size:30px; }
