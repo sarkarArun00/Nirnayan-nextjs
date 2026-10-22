@@ -460,11 +460,11 @@ ol.breadcrumb li.active{ color:var(--up-black); }
   .is_slick_dot .slick-list{ margin:0 -6px !important; } 
   .is-exp-btn{ display: flex; justify-content: center; }
   .cmn_btn {
-    padding: 15px 15px;
+    padding: 15px 20px;
     font-size: 14px;
   }
   .sec_btn {
-    padding: 15px 15px;
+    padding: 15px 20px;
     font-size: 14px;
   }
   .arrow-btn {
