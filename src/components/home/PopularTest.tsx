@@ -567,7 +567,7 @@ function PopularTest({ section = "all" }: PopularTestProps) {
 
                           <div className="wh-block">
                             <div className="inn-pnl">
-                              <h2>{test.test_name}</h2>
+                              <h2><span>{test.test_name}</span></h2>
 
                               <p>
                                 {test.description || "No description available"}

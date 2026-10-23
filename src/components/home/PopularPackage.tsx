@@ -82,9 +82,9 @@ function PopularPackage() {
   const [selectedOrgan, setSelectedOrgan] = useState<FilterItem | null>(null);
 
   const [filterType, setFilterType] =
-      useState<PackageFilterType>("mostpopular");
-    
-      const { openPatientModal } = usePatientSelection();
+    useState<PackageFilterType>("mostpopular");
+
+  const { openPatientModal } = usePatientSelection();
 
   const selectOrgan = (item: FilterItem) => {
     setSelectedOrgan(item);
@@ -340,9 +340,8 @@ function PopularPackage() {
                     <button
                       key={`${filterType}-${item.id}`}
                       type="button"
-                      className={`organ-tab ${
-                        selectedOrgan?.id === item.id ? "active" : ""
-                      }`}
+                      className={`organ-tab ${selectedOrgan?.id === item.id ? "active" : ""
+                        }`}
                       onClick={() => selectOrgan(item)}
                     >
                       <span className="icon">
@@ -416,15 +415,27 @@ function PopularPackage() {
                       </div>
 
                       {/* Package name */}
-                      <h2 className="title">{item.test_name}</h2>
+                      <h2 className="title"><span>{item.test_name}</span></h2>
 
                       {/* Description */}
-                      {item.description && (
+                      {/* {item.description && (
                         <p className="package-description">
                           {item.description}
                         </p>
-                      )}
-
+                      )} */}
+                      <div className="contains-row">
+                        <h6>Contains</h6>
+                        <div className="test-count">
+                          <img src="/assets/images/laboratory.svg" alt="" />
+                          <p>90 Tests</p>
+                        </div>
+                      </div>
+                      <div className="tags">
+                        <span className="tag">CBC</span>
+                        <span className="tag">Liver</span>
+                        <span className="tag">Kidney</span>
+                        <span className="tag">+6 More</span>
+                      </div>
                       {/* Information */}
                       <div className="info-section">
                         {/* Home Collection */}
@@ -475,12 +486,15 @@ function PopularPackage() {
 
                             {item.offerAmount &&
                               Number(item.finalAmount) <
-                                Number(item.mrpAmount) && (
+                              Number(item.mrpAmount) && (
                                 <h6 className="old-price">
                                   ₹{Number(item.mrpAmount).toFixed(2)}
                                 </h6>
                               )}
                           </div>
+                          <span className="discount">
+                            Save 10%
+                          </span>
                         </div>
 
                         {/* <button type="button" className="cmn_btn">
