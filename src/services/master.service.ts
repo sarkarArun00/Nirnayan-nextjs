@@ -231,6 +231,28 @@ export async function getAllGroups() {
     return response.json();
 }
 
+export async function getAllSpeciality() {
+    const url = `${getBaseUrl()}global/investigation/speciality/getAll?activeOnly=true`;
+
+    // console.log("STATE API URL:", url);
+
+    const response = await fetch(url, {
+        method: "GET",
+        headers: {
+            Accept: "application/json",
+        },
+        cache: "no-store",
+    });
+
+    if (!response.ok) {
+        throw new Error(
+            `State API failed with status ${response.status}`
+        );
+    }
+
+    return response.json();
+}
+
 
 export async function getOrganConditionsDepartment(): Promise<OrganConditionDepartmentResponse> {
     const response = await fetch(
@@ -279,4 +301,104 @@ export async function getPopularPackagesPost(
     }
 
     return response.json();
+}
+
+export type WordPressBlog = {
+    id: number;
+    date: string;
+    slug: string;
+    link: string;
+
+    title: {
+        rendered: string;
+    };
+
+    excerpt: {
+        rendered: string;
+        protected: boolean;
+    };
+
+    featured_media: number;
+
+    featuredImage?: string;
+};
+
+type WordPressMedia = {
+    id: number;
+    source_url: string;
+};
+
+const WORDPRESS_BASE_URL =
+    "https://blog.nirnayanhealthcare.com/wp-json/wp/v2";
+
+export async function getAllWordPressBlogs(
+    pageCount: number
+): Promise<WordPressBlog[]> {
+    const response = await fetch(
+        `${WORDPRESS_BASE_URL}/posts?per_page=${pageCount}&_embed`,
+        {
+            method: "GET",
+            headers: {
+                Accept: "application/json",
+            },
+            cache: "no-store",
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error(
+            `WordPress blog API failed with status ${response.status}`
+        );
+    }
+
+    const posts: WordPressBlog[] =
+        await response.json();
+
+    const blogsWithImages =
+        await Promise.all(
+            posts.map(async (post) => {
+                if (!post.featured_media) {
+                    return {
+                        ...post,
+                        featuredImage:
+                            "/assets/images/blog1.png",
+                    };
+                }
+
+                try {
+                    const mediaResponse =
+                        await fetch(
+                            `${WORDPRESS_BASE_URL}/media/${post.featured_media}`,
+                            {
+                                cache: "no-store",
+                            }
+                        );
+
+                    if (!mediaResponse.ok) {
+                        return {
+                            ...post,
+                            featuredImage:
+                                "/assets/images/blog1.png",
+                        };
+                    }
+
+                    const media: WordPressMedia =
+                        await mediaResponse.json();
+
+                    return {
+                        ...post,
+                        featuredImage:
+                            media.source_url,
+                    };
+                } catch {
+                    return {
+                        ...post,
+                        featuredImage:
+                            "/assets/images/blog1.png",
+                    };
+                }
+            })
+        );
+
+    return blogsWithImages;
 }
