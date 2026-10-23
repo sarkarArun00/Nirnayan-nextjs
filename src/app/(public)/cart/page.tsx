@@ -2,6 +2,11 @@
 
 import { useEffect, useState } from "react";
 import styles from "./page.module.css";
+import {
+  getCartByUser,
+  CartItem,
+  removeFromCart,
+} from "@/services/cart.service";
 
 type CartProduct = {
   id: number;
@@ -31,6 +36,12 @@ type CartGroup = {
   items: CartItemRef[];
 };
 
+type PatientCartGroup = {
+  patientId: number;
+  patient_name: string;
+  items: CartItem[];
+};
+
 const CART_KEY = "nirnayan_temp_cart";
 
 export default function CartPage() {
@@ -38,10 +49,14 @@ export default function CartPage() {
   const [loading, setLoading] = useState(true);
   const [cart, setCart] = useState<CartGroup[]>([]);
 
-const [removeTarget, setRemoveTarget] = useState<{
-  patientId: number | string;
-  item: CartItemRef;
-} | null>(null);
+  const [cartGroups, setCartGroups] = useState<PatientCartGroup[]>([]);
+
+  const [loadingCart, setLoadingCart] = useState(false);
+
+  const [removeTarget, setRemoveTarget] = useState<{
+    patientId: number | string;
+    item: CartItemRef;
+  } | null>(null);
 
 
   const updateCartStorage = (updatedCart: CartGroup[]) => {
@@ -52,6 +67,65 @@ const [removeTarget, setRemoveTarget] = useState<{
     window.dispatchEvent(new Event("cartUpdated"));
   };
 
+  const loadCart = async () => {
+    try {
+      setLoadingCart(true);
+
+      const response = await getCartByUser();
+
+      if (response?.status === 1 && Array.isArray(response.data)) {
+        const grouped = response.data.reduce<PatientCartGroup[]>(
+          (groups, item) => {
+            let patientGroup = groups.find(
+              (group) => group.patientId === item.patientId,
+            );
+
+            if (!patientGroup) {
+              patientGroup = {
+                patientId: item.patientId,
+
+                patient_name: item.patient_name,
+
+                items: [],
+              };
+
+              groups.push(patientGroup);
+            }
+
+            patientGroup.items.push(item);
+
+            return groups;
+          },
+          [],
+        );
+
+        setCartGroups(grouped);
+      } else {
+        setCartGroups([]);
+      }
+    } catch (error) {
+      console.error("Get Cart Error:", error);
+
+      setCartGroups([]);
+    } finally {
+      setLoadingCart(false);
+    }
+  };
+
+  useEffect(() => {
+    void loadCart();
+  }, []);
+
+  const getTotal = () => {
+    return cartGroups.reduce((total, group) => {
+      const patientTotal = group.items.reduce(
+        (sum, item) => sum + Number(item.finalAmount || item.mrpAmount || 0),
+        0,
+      );
+
+      return total + patientTotal;
+    }, 0);
+  };
 
   const handleRemoveItem = (patientId: number | string, item: CartItemRef) => {
     const patientGroup = cart.find(
@@ -93,19 +167,19 @@ const [removeTarget, setRemoveTarget] = useState<{
   };
 
 
-const confirmRemoveLastItem = () => {
-  if (!removeTarget) {
-    return;
-  }
+  const confirmRemoveLastItem = () => {
+    if (!removeTarget) {
+      return;
+    }
 
-  const updatedCart = cart.filter(
-    (group) => String(group.patientId) !== String(removeTarget.patientId),
-  );
+    const updatedCart = cart.filter(
+      (group) => String(group.patientId) !== String(removeTarget.patientId),
+    );
 
-  updateCartStorage(updatedCart);
+    updateCartStorage(updatedCart);
 
-  setRemoveTarget(null);
-};
+    setRemoveTarget(null);
+  };
 
   useEffect(() => {
     try {
@@ -125,11 +199,11 @@ const confirmRemoveLastItem = () => {
     }
   }, []);
 
-const getTotalItems = () => {
-  return cart.reduce((total, group) => total + group.items.length, 0);
-};
+  const getTotalItems = () => {
+    return cart.reduce((total, group) => total + group.items.length, 0);
+  };
 
-  if (loading) {
+  if (loadingCart) {
     return <div className="container py-5">Loading cart...</div>;
   }
 
@@ -173,7 +247,7 @@ const getTotalItems = () => {
           </p>
         </div>
 
-        {cart.length === 0 ? (
+        {cartGroups.length === 0 ? (
           <div
             style={{
               background: "#fff",
@@ -190,11 +264,11 @@ const getTotalItems = () => {
           <div className="row">
             {/* LEFT SIDE */}
             <div className="col-lg-8">
-              {cart.map((group) => (
+              {cartGroups.map((group) => (
                 <div key={group.patientId} className={styles.patientCart}>
                   <div className={styles.patientHeader}>
                     <div>
-                      <h3>Patient #{group.patientId}</h3>
+                      <h3>{group.patient_name}</h3>
 
                       <p>
                         {group.items.length}{" "}
@@ -204,31 +278,25 @@ const getTotalItems = () => {
                   </div>
 
                   {group.items.map((item) => (
-                    <div
-                      key={`${item.productType}-${item.id}`}
-                      className={styles.cartItem}
-                    >
+                    <div key={item.cartId} className={styles.cartItem}>
                       <div>
                         <span>
                           {item.productType === "test" ? "Test" : "Package"}
                         </span>
 
-                        <h4>
-                          {item.productType === "test"
-                            ? `Test #${item.id}`
-                            : `Package #${item.id}`}
-                        </h4>
+                        <h4>{item.test_name}</h4>
 
-                        <small>Latest details will be loaded from server</small>
+                        <small>{item.test_code}</small>
                       </div>
 
-                      <button
-                        type="button"
-                        className={styles.removeItemBtn}
-                        onClick={() => handleRemoveItem(group.patientId, item)}
-                      >
-                        <i className="fa-solid fa-trash"></i>
-                      </button>
+                      <div>
+                        <strong>
+                          ₹
+                          {Number(
+                            item.finalAmount || item.mrpAmount || 0,
+                          ).toFixed(2)}
+                        </strong>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -246,7 +314,7 @@ const getTotalItems = () => {
                   position: "sticky",
                   top: "110px",
                 }}
-                >
+              >
                 <h3
                   style={{
                     fontSize: "19px",
@@ -266,7 +334,7 @@ const getTotalItems = () => {
                 >
                   <span>Patients</span>
 
-                  <span>{cart.length}</span>
+                  <span>{cartGroups.length}</span>
                 </div>
 
                 <div
@@ -280,7 +348,7 @@ const getTotalItems = () => {
                   <span>Items</span>
 
                   <span>
-                    {cart.reduce(
+                    {cartGroups.reduce(
                       (count, group) => count + group.items.length,
                       0,
                     )}
@@ -304,7 +372,7 @@ const getTotalItems = () => {
                       color: "#079653",
                     }}
                   >
-                    ₹{getTotalItems()}
+                    ₹{getTotal().toFixed(2)}
                   </strong>
                 </div>
 

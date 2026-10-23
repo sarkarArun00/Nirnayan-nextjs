@@ -280,3 +280,450 @@
         font-size: 15px;
     }
 }
+
+.patientCart {
+    background: #ffffff;
+    border: 1px solid #e8ecea;
+    border-radius: 18px;
+    padding: 22px;
+    margin-bottom: 22px;
+    box-shadow: 0 5px 18px rgba(0, 0, 0, 0.04);
+}
+
+/* Patient Header */
+.patientHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+
+    border-bottom: 1px solid #edf0ee;
+}
+
+.patientHeader h3 {
+    margin: 0 0 5px;
+    font-size: 20px;
+    font-weight: 700;
+    color: #202623;
+}
+
+.patientHeader p {
+    margin: 0;
+    font-size: 14px;
+    color: #7a817d;
+}
+
+/* Cart Item */
+.cartItem {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 18px;
+
+    padding: 18px 0;
+
+    border-bottom: 1px solid #edf0ee;
+}
+
+.cartItem:last-child {
+    border-bottom: 0;
+    padding-bottom: 0;
+}
+
+.cartItem:first-of-type {
+    padding-top: 0;
+}
+
+.cartItem>div:first-child {
+    flex: 1;
+    min-width: 0;
+}
+
+/* Test / Package label */
+.cartItem>div:first-child>span {
+    display: inline-flex;
+
+    margin-bottom: 7px;
+    padding: 5px 10px;
+
+    border-radius: 20px;
+
+    background: #eafaf1;
+    color: #0b9c55;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+/* Test name */
+.cartItem h4 {
+    margin: 0 0 6px;
+
+    font-size: 17px;
+    line-height: 1.35;
+    font-weight: 650;
+
+    color: #202623;
+}
+
+/* Test Code */
+.cartItem small {
+    display: block;
+
+    color: #7f8783;
+
+    font-size: 13px;
+}
+
+/* Right Price */
+.cartItem>div:last-of-type {
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.cartItem strong {
+    color: #151918;
+
+    font-size: 17px;
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+/* Remove Test Button */
+.removeItemBtn {
+    width: 38px;
+    height: 38px;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border: 1px solid #f1d7d7;
+    border-radius: 50%;
+
+    background: #fff5f5;
+    color: #df4949;
+
+    font-size: 14px;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        color 0.2s ease,
+        border-color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.removeItemBtn:hover {
+    background: #e94d4d;
+    border-color: #e94d4d;
+    color: #ffffff;
+
+    transform: translateY(-1px);
+}
+
+
+/* ==================================
+   REMOVE LAST TEST MODAL
+================================== */
+
+.removeModalBackdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    background: rgba(23, 15, 15, 0.62);
+
+    backdrop-filter: blur(3px);
+}
+
+.removeModal {
+    width: 100%;
+    max-width: 580px;
+
+    padding: 44px;
+
+    border-radius: 32px;
+
+    background: #ffffff;
+
+    text-align: center;
+
+    box-shadow:
+        0 25px 70px rgba(0, 0, 0, 0.22);
+}
+
+.deleteIcon {
+    width: 95px;
+    height: 95px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: 0 auto 24px;
+
+    border-radius: 50%;
+
+    background: #ffe9e9;
+    color: #e84c4c;
+
+    font-size: 38px;
+}
+
+.removeModal h2 {
+    margin: 0 0 14px;
+
+    font-size: 30px;
+    font-weight: 700;
+
+    color: #111111;
+}
+
+.removeMessage {
+    max-width: 480px;
+
+    margin: 0 auto 30px;
+
+    color: #7b7b7b;
+
+    font-size: 16px;
+    line-height: 1.55;
+}
+
+.removeMessage strong {
+    color: #171717;
+    font-weight: 700;
+}
+
+/* Patient card inside popup */
+.removePatientCard {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 15px;
+
+    margin-bottom: 28px;
+    padding: 16px 18px;
+
+    border: 1px solid #eeeeee;
+    border-radius: 14px;
+
+    background: #ffffff;
+
+    text-align: left;
+
+    box-shadow:
+        0 7px 20px rgba(0, 0, 0, 0.06);
+}
+
+.removePatientLeft {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.removeAvatar {
+    width: 50px;
+    height: 50px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    background: #e8f3ff;
+    color: #1a2520;
+
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.removePatientCard h4 {
+    margin: 0 0 4px;
+
+    color: #181c1a;
+
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.removePatientCard p {
+    margin: 0;
+
+    color: #8a908c;
+
+    font-size: 13px;
+}
+
+.testCountBadge {
+    flex-shrink: 0;
+
+    padding: 9px 16px;
+
+    border-radius: 30px;
+
+    background: #e7fbf0;
+    color: #08a658;
+
+    font-size: 13px;
+    font-weight: 600;
+}
+
+/* Modal buttons */
+.removeActions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+
+    gap: 14px;
+}
+
+.removeConfirmBtn,
+.continueBtn {
+    height: 54px;
+
+    border-radius: 30px;
+
+    font-size: 16px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    transition: 0.2s ease;
+}
+
+.removeConfirmBtn {
+    border: 1.5px solid #06ad5b;
+
+    background: #ffffff;
+    color: #303531;
+}
+
+.removeConfirmBtn:hover {
+    background: #f0fff7;
+}
+
+.continueBtn {
+    border: 1px solid #0aac59;
+
+    background: #0daf5c;
+    color: #ffffff;
+
+    box-shadow:
+        0 7px 18px rgba(13, 175, 92, 0.22);
+}
+
+.continueBtn:hover {
+    background: #099c50;
+}
+
+
+/* ==================================
+   TABLET
+================================== */
+
+@media (max-width: 991px) {
+    .patientCart {
+        margin-bottom: 18px;
+    }
+}
+
+
+/* ==================================
+   MOBILE
+================================== */
+
+@media (max-width: 576px) {
+    .patientCart {
+        padding: 16px;
+        border-radius: 14px;
+    }
+
+    .patientHeader h3 {
+        font-size: 18px;
+    }
+
+    .cartItem {
+        align-items: flex-start;
+        gap: 12px;
+        padding: 16px 0;
+    }
+
+    .cartItem h4 {
+        font-size: 15px;
+    }
+
+    .cartItem strong {
+        font-size: 15px;
+    }
+
+    .removeItemBtn {
+        width: 34px;
+        height: 34px;
+    }
+
+    .removeModal {
+        padding: 30px 20px;
+        border-radius: 24px;
+    }
+
+    .deleteIcon {
+        width: 78px;
+        height: 78px;
+
+        font-size: 30px;
+    }
+
+    .removeModal h2 {
+        font-size: 24px;
+    }
+
+    .removeMessage {
+        font-size: 14px;
+    }
+
+    .removePatientCard {
+        padding: 13px;
+    }
+
+    .testCountBadge {
+        padding: 7px 10px;
+        font-size: 11px;
+    }
+
+    .removeActions {
+        grid-template-columns: 1fr;
+    }
+
+    .removeConfirmBtn,
+    .continueBtn {
+        height: 48px;
+        font-size: 14px;
+    }
+}

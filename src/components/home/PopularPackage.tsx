@@ -340,8 +340,9 @@ function PopularPackage() {
                     <button
                       key={`${filterType}-${item.id}`}
                       type="button"
-                      className={`organ-tab ${selectedOrgan?.id === item.id ? "active" : ""
-                        }`}
+                      className={`organ-tab ${
+                        selectedOrgan?.id === item.id ? "active" : ""
+                      }`}
                       onClick={() => selectOrgan(item)}
                     >
                       <span className="icon">
@@ -415,7 +416,9 @@ function PopularPackage() {
                       </div>
 
                       {/* Package name */}
-                      <h2 className="title"><span>{item.test_name}</span></h2>
+                      <h2 className="title">
+                        <span>{item.test_name}</span>
+                      </h2>
 
                       {/* Description */}
                       {/* {item.description && (
@@ -425,17 +428,44 @@ function PopularPackage() {
                       )} */}
                       <div className="contains-row">
                         <h6>Contains</h6>
+
                         <div className="test-count">
                           <img src="/assets/images/laboratory.svg" alt="" />
-                          <p>90 Tests</p>
+
+                          <p>
+                            {item.testCount || 0}{" "}
+                            {item.testCount === 1 ? "Test" : "Tests"}
+                          </p>
                         </div>
                       </div>
-                      <div className="tags">
+
+                      {/* Group Names */}
+                      {item.groupNames?.length > 0 && (
+                        <div className="tags">
+                          {item.groupNames
+                            .slice(0, 3)
+                            .map((groupName: string, index: number) => (
+                              <span
+                                className="tag"
+                                key={`${groupName}-${index}`}
+                              >
+                                {groupName}
+                              </span>
+                            ))}
+
+                          {item.groupNames.length > 3 && (
+                            <span className="tag">
+                              +{item.groupNames.length - 3} More
+                            </span>
+                          )}
+                        </div>
+                      )}
+                      {/* <div className="tags">
                         <span className="tag">CBC</span>
                         <span className="tag">Liver</span>
                         <span className="tag">Kidney</span>
                         <span className="tag">+6 More</span>
-                      </div>
+                      </div> */}
                       {/* Information */}
                       <div className="info-section">
                         {/* Home Collection */}
@@ -486,15 +516,13 @@ function PopularPackage() {
 
                             {item.offerAmount &&
                               Number(item.finalAmount) <
-                              Number(item.mrpAmount) && (
+                                Number(item.mrpAmount) && (
                                 <h6 className="old-price">
                                   ₹{Number(item.mrpAmount).toFixed(2)}
                                 </h6>
                               )}
                           </div>
-                          <span className="discount">
-                            Save 10%
-                          </span>
+                          <span className="discount">Save 10%</span>
                         </div>
 
                         {/* <button type="button" className="cmn_btn">

@@ -15,6 +15,7 @@ import {
   createPatient,
   CreatePatientPayload,
 } from "@/services/patient.service";
+import { saveToCart } from "@/services/cart.service";
 
 
 export type CartProduct = {
@@ -128,7 +129,10 @@ export function PatientSelectionProvider({ children }: Props) {
     }
   };
 
-  const saveToTempCart = (patient: TempPatient, product?: CartProduct) => {
+  const savePatientCart = async (
+    patient: TempPatient,
+    product?: CartProduct,
+  ) => {
     const cartProduct = product || selectedProduct;
 
     if (!cartProduct) {
@@ -138,80 +142,19 @@ export function PatientSelectionProvider({ children }: Props) {
     }
 
     try {
-      const savedCart = localStorage.getItem(TEMP_CART_KEY);
+      const response = await saveToCart({
+        patientId: Number(patient.id),
 
-      let cart: TempCartGroup[] = [];
+        items: [
+          {
+            investigationId: cartProduct.id,
 
-      if (savedCart) {
-        const parsed = JSON.parse(savedCart);
+            productType: cartProduct.productType,
+          },
+        ],
+      });
 
-        /*
-         * Support old temporary cart format too:
-         *
-         * {
-         *   patient: {...},
-         *   items: [{ id, name, price, productType }]
-         * }
-         *
-         * Convert automatically to new structure.
-         */
-        if (Array.isArray(parsed)) {
-          cart = parsed
-            .map((group: any) => ({
-              patientId: group.patientId ?? group.patient?.id,
-
-              items: Array.isArray(group.items)
-                ? group.items
-                    .filter((item: any) => item?.id && item?.productType)
-                    .map((item: any) => ({
-                      id: Number(item.id),
-
-                      productType: item.productType,
-                    }))
-                : [],
-            }))
-            .filter(
-              (group: TempCartGroup) =>
-                group.patientId !== undefined && group.patientId !== null,
-            );
-        }
-      }
-
-      let patientGroup = cart.find(
-        (group) => String(group.patientId) === String(patient.id),
-      );
-
-      // Patient doesn't exist in cart
-      if (!patientGroup) {
-        patientGroup = {
-          patientId: patient.id,
-
-          items: [],
-        };
-
-        cart.push(patientGroup);
-      }
-
-      // Only reference data gets stored
-      const newCartItem: TempCartItem = {
-        id: cartProduct.id,
-
-        productType: cartProduct.productType,
-      };
-
-      const alreadyExists = patientGroup.items.some(
-        (item) =>
-          item.id === newCartItem.id &&
-          item.productType === newCartItem.productType,
-      );
-
-      if (!alreadyExists) {
-        patientGroup.items.push(newCartItem);
-      }
-
-      localStorage.setItem(TEMP_CART_KEY, JSON.stringify(cart));
-
-      console.log("Updated Cart References:", cart);
+      console.log("Save Cart Response:", response);
 
       window.dispatchEvent(new Event("cartUpdated"));
 
@@ -219,7 +162,7 @@ export function PatientSelectionProvider({ children }: Props) {
 
       router.push("/cart");
     } catch (error) {
-      console.error("Temporary cart save error:", error);
+      console.error("Save To Cart Error:", error);
     }
   };
 
@@ -239,7 +182,7 @@ export function PatientSelectionProvider({ children }: Props) {
 
           console.log("Using Default Patient:", defaultPatient);
 
-          saveToTempCart(defaultPatient, product);
+          await savePatientCart(defaultPatient, product);
 
           return;
         }
@@ -381,7 +324,7 @@ export function PatientSelectionProvider({ children }: Props) {
       };
 
       console.log('resssss patient payload: ', payload)
-      return
+      // return
       const response = await createPatient(payload);
 
       if (response?.status !== 1 || !response?.success || !response?.data?.id) {
@@ -413,7 +356,7 @@ export function PatientSelectionProvider({ children }: Props) {
         saveDefaultPatient(createdPatient);
       }
 
-      saveToTempCart(createdPatient);
+      await savePatientCart(createdPatient);
     } catch (error) {
       console.error("Create Patient Error:", error);
     } finally {
@@ -884,7 +827,8 @@ export function PatientSelectionProvider({ children }: Props) {
                         saveDefaultPatient(selectedPatient);
                       }
 
-                      saveToTempCart(selectedPatient);
+                      // saveToTempCart(selectedPatient);
+                       savePatientCart(selectedPatient);
                     }}
                   >
                     Done
