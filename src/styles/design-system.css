@@ -18,6 +18,7 @@ img{ max-width:100%; height:auto; }
 	--up-black:#000000;
 	--up-gray:#808080;
   --up-gray2:#D9D9D9;
+  --up-gray3:#F2F2F2;
 	--cmngap-btm:65px;
   --cmn-radius:35px;
   --sec-radius:25px;
@@ -75,7 +76,7 @@ label span{ color:#FF0000; }
 
 /* Mobile Explore Button Start */
 .is-exp-btn{ margin-top:25px; display:none; }
-.exp-btn{ display:flex; align-items:center; gap:12px; height:48px; padding:0 32px; border:1px solid var(--up-black); border-radius:50px; background:var(--up-white); transition: all 0.4s; }
+.exp-btn{ display:flex; align-items:center; gap:12px; height:48px; padding:0 25px; border:1px solid var(--up-black); border-radius:50px; background:var(--up-white); transition: all 0.4s; }
 
 /* Mobile Explore Button Start */
 
