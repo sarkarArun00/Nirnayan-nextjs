@@ -1132,7 +1132,22 @@ export default function Header() {
 
   // Login End
   // For More Menu Start
+  const menuRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        menuRef.current &&
+        !menuRef.current.contains(event.target as Node)
+      ) {
+        setIsOpens(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   const toggleAccordion = (index: number) => {
     setMobileOpenIndex((previous) =>
@@ -1398,7 +1413,7 @@ export default function Header() {
           </button>
         </div>
 
-        <div className={`${styles.sub_menu} ${isOpens ? styles.show : ""}`}>
+        <div ref={menuRef} className={`${styles.sub_menu} ${isOpens ? styles.show : ""}`}>
           <button
             className={styles.close_btn}
             onClick={() => setIsOpens(false)}
