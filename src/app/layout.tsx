@@ -4,6 +4,7 @@ import BootstrapClient from "@/components/BootstrapClient";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import AlertProvider from "@/components/common/Alert/AlertProvider";
+import "leaflet/dist/leaflet.css";
 
 // import "./globals.css";
 import "@/styles/design-system.css";

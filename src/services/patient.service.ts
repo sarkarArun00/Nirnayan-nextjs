@@ -90,6 +90,7 @@ export type GetPatientPayload = {
     user_id: number;
 };
 
+
 export async function createPatient(
     payload: CreatePatientPayload
 ): Promise<CreatePatientResponse> {

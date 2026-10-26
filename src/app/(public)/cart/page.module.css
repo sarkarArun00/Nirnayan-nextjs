@@ -297,8 +297,8 @@
     justify-content: space-between;
     gap: 15px;
 
-    padding-bottom: 16px;
-    margin-bottom: 16px;
+    padding-bottom: 0px;
+    margin-bottom: 8px;
 
     border-bottom: 1px solid #edf0ee;
 }
@@ -326,7 +326,7 @@
 
     gap: 18px;
 
-    padding: 18px 0;
+    padding: 8px 0;
 
     border-bottom: 1px solid #edf0ee;
 }
@@ -726,4 +726,615 @@
         height: 48px;
         font-size: 14px;
     }
+}
+
+.bookingSection {
+    min-width: 0;
+    margin-top: 22px;
+    margin-bottom: 24px;
+    padding: 22px;
+    border: 1px solid #f0f2f1;
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 3px 8px rgb(0 0 0 / 6%);
+}
+
+.bookingHeader {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+.bookingHeading {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.bookingIcon {
+    margin-top: 3px;
+    color: #111;
+    font-size: 24px;
+}
+
+.bookingHeading h2 {
+    margin: 0 0 4px;
+    color: #111;
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.bookingHeading p {
+    margin: 0;
+    color: #858585;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.slotCount {
+    flex-shrink: 0;
+    padding: 6px 10px;
+    border-radius: 20px;
+    background: #eafff3;
+    color: #079653;
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+.dateNavigation {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 10px;
+    color: #555;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.dateNavigationActions {
+    display: flex;
+    gap: 6px;
+}
+
+.dateNavigationActions button {
+    display: inline-flex;
+    width: 30px;
+    height: 30px;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 1px solid #e3e7e4;
+    border-radius: 50%;
+    background: #fff;
+    color: #222;
+    cursor: pointer;
+}
+
+.dateNavigationActions button:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+.dateList {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 12px;
+    margin-bottom: 22px;
+}
+
+.dateButton {
+    display: flex;
+    min-width: 0;
+    min-height: 78px;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 8px 4px;
+    border: 1px solid #e0e2e1;
+    border-radius: 11px;
+    background: #fff;
+    color: #171717;
+    cursor: pointer;
+}
+
+.dateButton span {
+    font-size: 12px;
+    line-height: 1.3;
+}
+
+.dateButton strong {
+    font-size: 23px;
+    font-weight: 600;
+    line-height: 1.15;
+}
+
+.dateButton:hover,
+.timeSlotButton:not(:disabled):hover {
+    border-color: #0aaa58;
+}
+
+.dateButton.selectedDate,
+.timeSlotButton.selectedTimeSlot {
+    border-color: #0aaa58;
+    background: #edfff5;
+    color: #075f35;
+}
+
+.timeHeading {
+    margin-bottom: 10px;
+    color: #555;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.timeSlotList {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+}
+
+.timeSlotButton {
+    min-width: 0;
+    min-height: 44px;
+    padding: 10px 8px;
+    border: 1px solid #e0e2e1;
+    border-radius: 11px;
+    background: #fff;
+    color: #161616;
+    font-size: 12px;
+    font-weight: 500;
+    text-align: center;
+    cursor: pointer;
+}
+
+.timeSlotButton:disabled {
+    background: #f7f7f7;
+    color: #aaa;
+    cursor: not-allowed;
+}
+
+.bookingMessage {
+    margin: 0 0 12px;
+    color: #858585;
+    font-size: 12px;
+}
+
+.bookingError {
+    margin: 0;
+    color: #c73535;
+    font-size: 13px;
+}
+
+.dateButton:focus-visible,
+.timeSlotButton:focus-visible,
+.dateNavigationActions button:focus-visible {
+    outline: 2px solid #079653;
+    outline-offset: 3px;
+}
+
+@media (max-width: 575px) {
+    .bookingSection {
+        padding: 16px;
+    }
+
+    .bookingHeader {
+        flex-wrap: wrap;
+    }
+
+    .dateList {
+        grid-template-columns: repeat(7, 58px);
+        gap: 9px;
+        overflow-x: auto;
+        padding: 3px 3px 10px;
+    }
+
+    .timeSlotList {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 9px;
+    }
+
+    .timeSlotButton {
+        font-size: 11px;
+    }
+}
+
+.addressSection {
+    min-width: 0;
+    margin-bottom: 24px;
+    padding: 22px;
+    border: 1px solid #f0f2f1;
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: 0 3px 8px rgb(0 0 0 / 6%);
+}
+
+.addressSectionHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+.addressTitle {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+}
+
+.addressIcon {
+    margin-top: 3px;
+    color: #111;
+    font-size: 24px;
+}
+
+.addressTitle h2 {
+    margin: 0 0 4px;
+    color: #111;
+    font-size: 17px;
+    font-weight: 600;
+}
+
+.addressTitle p {
+    margin: 0;
+    color: #858585;
+    font-size: 12px;
+    line-height: 1.5;
+}
+
+.addressGrid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.addressCard {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    min-width: 0;
+    margin: 0;
+    padding: 15px 12px;
+    border: 1px solid #dceee5;
+    border-radius: 11px;
+    background: #fbfffd;
+}
+
+.addressChoice {
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1fr) 16px;
+    flex: 1;
+    align-items: start;
+    gap: 10px;
+    min-width: 0;
+    margin: 0;
+    cursor: pointer;
+}
+
+.addressActions {
+    position: relative;
+    flex-shrink: 0;
+}
+
+.addressActions summary {
+    display: flex;
+    width: 24px;
+    height: 28px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+    color: #333;
+    list-style: none;
+    cursor: pointer;
+}
+
+.addressActions summary::-webkit-details-marker {
+    display: none;
+}
+
+.addressActions[open] summary,
+.addressActions summary:hover {
+    background: #e9f7ef;
+}
+
+.addressActionsMenu {
+    position: absolute;
+    top: 32px;
+    right: 0;
+    z-index: 5;
+    width: 125px;
+    padding: 5px;
+    border: 1px solid #e5ece8;
+    border-radius: 9px;
+    background: #fff;
+    box-shadow: 0 5px 18px rgb(0 0 0 / 10%);
+}
+
+.addressActionsMenu button {
+    display: flex;
+    width: 100%;
+    align-items: center;
+    gap: 9px;
+    padding: 9px 10px;
+    border: 0;
+    border-radius: 5px;
+    background: transparent;
+    color: #333;
+    font: inherit;
+    font-size: 12px;
+    text-align: left;
+    cursor: pointer;
+}
+
+.addressActionsMenu button:hover {
+    background: #f3f8f5;
+}
+
+.addressActionsMenu button.addressDeleteAction {
+    color: #c73535;
+}
+
+.addressDeleteDialog {
+    width: min(420px, calc(100% - 32px));
+    max-height: calc(100dvh - 40px);
+    margin: auto;
+    padding: 26px;
+    overflow: auto;
+    border: 0;
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 20px 60px rgb(0 0 0 / 20%);
+}
+
+.addressDeleteDialog::backdrop {
+    background: rgb(0 0 0 / 45%);
+}
+
+.addressDeleteDialog h2 {
+    margin: 0 0 12px;
+    font-size: 21px;
+    font-weight: 600;
+}
+
+.addressDeleteDialog p {
+    margin: 0 0 20px;
+    color: #777;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.addressDeleteDialog p.addressDeleteError {
+    color: #c73535;
+}
+
+.addressDeleteButtons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.addressDeleteButtons button {
+    min-height: 40px;
+    padding: 9px 20px;
+    border: 1px solid #dfe5e1;
+    border-radius: 24px;
+    background: #fff;
+    color: #333;
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.addressDeleteButtons button.confirmAddressDelete {
+    border-color: #c73535;
+    background: #c73535;
+    color: #fff;
+}
+
+.addressDeleteButtons button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.addressActions summary:focus-visible,
+.addressActionsMenu button:focus-visible,
+.addressDeleteButtons button:focus-visible {
+    outline: 2px solid #079653;
+    outline-offset: 3px;
+}
+
+.addressCard:hover {
+    border-color: #0aaa58;
+}
+
+.addressCard.selectedAddress {
+    border-color: #0aaa58;
+    background: #f4fff8;
+}
+
+.addressCard:focus-within {
+    outline: 2px solid #079653;
+    outline-offset: 3px;
+}
+
+.addressAvatar {
+    display: inline-flex;
+    width: 34px;
+    height: 34px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: #e6f4ed;
+    color: #087a43;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.addressDetails {
+    min-width: 0;
+}
+
+.addressNameRow {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 5px;
+}
+
+.addressNameRow h3 {
+    margin: 0;
+    color: #161616;
+    font-size: 14px;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+}
+
+.addressType {
+    padding: 2px 7px;
+    border-radius: 5px;
+    background: #e9f7ef;
+    color: #078347;
+    font-size: 10px;
+    overflow-wrap: anywhere;
+}
+
+.addressText {
+    margin: 0 0 7px;
+    color: #858585;
+    font-size: 12px;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.addressContact {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: #222;
+    font-size: 12px;
+    overflow-wrap: anywhere;
+}
+
+.addressContact i {
+    font-size: 11px;
+}
+
+.addressRadio {
+    width: 16px;
+    height: 16px;
+    margin: 2px 0 0;
+    accent-color: #079653;
+    cursor: pointer;
+}
+
+.addressMessage {
+    margin: 0;
+    color: #858585;
+    font-size: 13px;
+}
+
+.addressError p {
+    margin: 0 0 10px;
+    color: #c73535;
+    font-size: 13px;
+}
+
+.addressRetryButton {
+    padding: 7px 14px;
+    border: 1px solid #079653;
+    border-radius: 8px;
+    background: #fff;
+    color: #079653;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+@media (max-width: 575px) {
+    .addressSection {
+        padding: 16px;
+    }
+
+    .addressSectionHeader {
+        flex-wrap: wrap;
+    }
+
+    .addressGrid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+.addAddressButton {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    min-height: 36px;
+    padding: 8px 15px;
+    border: 1px solid #333;
+    border-radius: 24px;
+    background: #fff;
+    color: #222;
+    font: inherit;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.addAddressButton:hover {
+    border-color: #079653;
+    color: #079653;
+}
+
+.addAddressButton:focus-visible {
+    outline: 2px solid #079653;
+    outline-offset: 3px;
+}
+
+.cartHeading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 25px;
+}
+
+.cartHeading h1 {
+    margin: 0 0 5px;
+    font-size: 30px;
+    font-weight: 700;
+}
+
+.cartHeading p {
+    margin: 0;
+    color: #777;
+}
+
+.addPatientButton {
+    flex-shrink: 0;
+    min-height: 40px;
+    padding: 9px 24px;
+    border: 1px solid #0aaa58;
+    border-radius: 24px;
+    background: #fff;
+    color: #222;
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgb(7 150 83 / 8%);
+}
+
+.addPatientButton:hover {
+    background: #edfff5;
+    color: #079653;
+}
+
+.addPatientButton:focus-visible {
+    outline: 2px solid #079653;
+    outline-offset: 3px;
 }

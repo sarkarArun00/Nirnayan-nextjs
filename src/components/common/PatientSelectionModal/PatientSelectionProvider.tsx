@@ -54,7 +54,7 @@ type PatientMode = "choose" | "new" | "existing";
 
 type PatientSelectionContextType = {
   openPatientModal: (product: CartProduct) => void;
-
+  openAddPatientModal: () => void;
   closePatientModal: () => void;
 };
 
@@ -70,7 +70,7 @@ export function PatientSelectionProvider({ children }: Props) {
   const [isOpen, setIsOpen] = useState(false);
 
   const [mode, setMode] = useState<PatientMode>("choose");
-
+const [isPatientOnlyMode, setIsPatientOnlyMode] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<CartProduct | null>(
     null,
   );
@@ -169,6 +169,7 @@ export function PatientSelectionProvider({ children }: Props) {
   const [creatingPatient, setCreatingPatient] = useState(false);
 
   const openPatientModal = async (product: CartProduct) => {
+    setIsPatientOnlyMode(false);
     try {
       const user = await getLoggedInUser();
 
@@ -225,7 +226,25 @@ export function PatientSelectionProvider({ children }: Props) {
     return "Other";
   };
 
+const openAddPatientModal = () => {
+  setIsPatientOnlyMode(true);
+  setSelectedProduct(null);
+  setSelectedPatientId(null);
+  setMakeDefaultPatient(false);
 
+  setNewPatient({
+    title: "",
+    patientName: "",
+    dob: "",
+    bloodGroup: "",
+    gender: "Male",
+    phoneNumber: "",
+    email: "",
+  });
+
+  setMode("new");
+  setIsOpen(true);
+};
 
   const getPatientImageUrl = (path: string) => {
     if (path.startsWith("http://") || path.startsWith("https://")) {
@@ -352,11 +371,16 @@ export function PatientSelectionProvider({ children }: Props) {
         isNew: true,
       };
 
-      if (makeDefaultPatient) {
-        saveDefaultPatient(createdPatient);
-      }
+    if (makeDefaultPatient) {
+      saveDefaultPatient(createdPatient);
+    }
 
-      await savePatientCart(createdPatient);
+    if (isPatientOnlyMode) {
+      closePatientModal();
+      return;
+    }
+
+    await savePatientCart(createdPatient);
     } catch (error) {
       console.error("Create Patient Error:", error);
     } finally {
@@ -400,13 +424,17 @@ export function PatientSelectionProvider({ children }: Props) {
     <PatientSelectionContext.Provider
       value={{
         openPatientModal,
+        openAddPatientModal,
         closePatientModal,
       }}
     >
       {children}
 
       {isOpen && (
-        <div className={`cmn-backdrop ${isOpen ? "active" : ""}`} onClick={closePatientModal}>
+        <div
+          className={`cmn-backdrop ${isOpen ? "active" : ""}`}
+          onClick={closePatientModal}
+        >
           <div className="inn" onClick={(e) => e.stopPropagation()}>
             {/* Close */}
             <button
@@ -426,37 +454,40 @@ export function PatientSelectionProvider({ children }: Props) {
             </div>
             <div className="content-area">
               {/* Selection Cards */}
-              <div className={styles.typeGrid}>
-                {/* New Patient */}
-                <button
-                  type="button"
-                  className={`${styles.typeCard} ${mode === "new" ? styles.active : ""
+              {!isPatientOnlyMode && (
+                <div className={styles.typeGrid}>
+                  {/* New Patient */}
+                  <button
+                    type="button"
+                    className={`${styles.typeCard} ${
+                      mode === "new" ? styles.active : ""
                     }`}
-                  onClick={() => setMode("new")}
-                >
-                  <img src="/assets/images/pt-icon2.svg" alt="" />
-                  <h6>Add New Patient</h6>
-                  <p>Register a new patient with their details</p>
-                </button>
+                    onClick={() => setMode("new")}
+                  >
+                    <img src="/assets/images/pt-icon2.svg" alt="" />
+                    <h6>Add New Patient</h6>
+                    <p>Register a new patient with their details</p>
+                  </button>
 
-                {/* Existing Patient */}
-                <button
-                  type="button"
-                  className={`${styles.typeCard} ${mode === "existing" ? styles.active : ""
+                  {/* Existing Patient */}
+                  <button
+                    type="button"
+                    className={`${styles.typeCard} ${
+                      mode === "existing" ? styles.active : ""
                     }`}
-                  onClick={() => {
-                    setMode("existing");
-                    setSelectedPatientId(null);
+                    onClick={() => {
+                      setMode("existing");
+                      setSelectedPatientId(null);
 
-                    void loadPatients();
-                  }}
-                >
-                  <img src="/assets/images/pt-icon1.svg" alt="" />
-                  <h6>Select Existing Patient</h6>
-                  <p>Find and select a patient already registered.</p>
-                </button>
-              </div>
-
+                      void loadPatients();
+                    }}
+                  >
+                    <img src="/assets/images/pt-icon1.svg" alt="" />
+                    <h6>Select Existing Patient</h6>
+                    <p>Find and select a patient already registered.</p>
+                  </button>
+                </div>
+              )}
               {/* ======================
           ADD NEW PATIENT
       ====================== */}
@@ -472,7 +503,8 @@ export function PatientSelectionProvider({ children }: Props) {
                           <span>*</span>
                         </label>
 
-                        <select className="form-control form-select"
+                        <select
+                          className="form-control form-select"
                           value={newPatient.title}
                           onChange={(e) =>
                             setNewPatient({
@@ -505,7 +537,8 @@ export function PatientSelectionProvider({ children }: Props) {
                           <span>*</span>
                         </label>
 
-                        <input className="form-control"
+                        <input
+                          className="form-control"
                           type="text"
                           placeholder="Your Name"
                           value={newPatient.patientName}
@@ -527,7 +560,8 @@ export function PatientSelectionProvider({ children }: Props) {
                           <span>*</span>
                         </label>
 
-                        <input className="form-control"
+                        <input
+                          className="form-control"
                           type="date"
                           value={newPatient.dob}
                           onChange={(e) =>
@@ -545,7 +579,8 @@ export function PatientSelectionProvider({ children }: Props) {
                       <div className={styles.formGroup}>
                         <label>Blood Group</label>
 
-                        <select className="form-control form-select"
+                        <select
+                          className="form-control form-select"
                           value={newPatient.bloodGroup}
                           onChange={(e) =>
                             setNewPatient({
@@ -582,7 +617,8 @@ export function PatientSelectionProvider({ children }: Props) {
                           <span>*</span>
                         </label>
 
-                        <input className="form-control"
+                        <input
+                          className="form-control"
                           type="tel"
                           placeholder="Enter mobile number"
                           maxLength={10}
@@ -603,7 +639,8 @@ export function PatientSelectionProvider({ children }: Props) {
                       <div className={styles.formGroup}>
                         <label>Email</label>
 
-                        <input className="form-control"
+                        <input
+                          className="form-control"
                           type="email"
                           placeholder="Enter email address"
                           value={newPatient.email}
@@ -628,7 +665,11 @@ export function PatientSelectionProvider({ children }: Props) {
                         <div className={styles.genderRow}>
                           <button
                             type="button"
-                            className={newPatient.gender === "Male" ? styles.genderActive : ""}
+                            className={
+                              newPatient.gender === "Male"
+                                ? styles.genderActive
+                                : ""
+                            }
                             onClick={() =>
                               setNewPatient({
                                 ...newPatient,
@@ -641,7 +682,11 @@ export function PatientSelectionProvider({ children }: Props) {
 
                           <button
                             type="button"
-                            className={newPatient.gender === "Female" ? styles.genderActive : ""}
+                            className={
+                              newPatient.gender === "Female"
+                                ? styles.genderActive
+                                : ""
+                            }
                             onClick={() =>
                               setNewPatient({
                                 ...newPatient,
@@ -654,7 +699,11 @@ export function PatientSelectionProvider({ children }: Props) {
 
                           <button
                             type="button"
-                            className={newPatient.gender === "Other" ? styles.genderActive : ""}
+                            className={
+                              newPatient.gender === "Other"
+                                ? styles.genderActive
+                                : ""
+                            }
                             onClick={() =>
                               setNewPatient({
                                 ...newPatient,
@@ -674,15 +723,17 @@ export function PatientSelectionProvider({ children }: Props) {
                           <input
                             type="checkbox"
                             checked={makeDefaultPatient}
-                            onChange={(e) => setMakeDefaultPatient(e.target.checked)}
+                            onChange={(e) =>
+                              setMakeDefaultPatient(e.target.checked)
+                            }
                           />
 
                           <span>Make this my default patient</span>
                         </label>
 
                         <small>
-                          Future tests and packages will be added directly for this
-                          patient.
+                          Future tests and packages will be added directly for
+                          this patient.
                         </small>
                       </div>
                     </div>
@@ -719,10 +770,11 @@ export function PatientSelectionProvider({ children }: Props) {
                         <button
                           type="button"
                           key={patient.id}
-                          className={`${styles.patientCard} ${selectedPatientId === patient.id
-                            ? styles.selectedPatient
-                            : ""
-                            }`}
+                          className={`${styles.patientCard} ${
+                            selectedPatientId === patient.id
+                              ? styles.selectedPatient
+                              : ""
+                          }`}
                           onClick={() => setSelectedPatientId(patient.id)}
                         >
                           <div className={styles.patientLeft}>
@@ -736,7 +788,9 @@ export function PatientSelectionProvider({ children }: Props) {
                                 />
                               ) : (
                                 <span>
-                                  {patient.patient_name?.charAt(0).toUpperCase()}
+                                  {patient.patient_name
+                                    ?.charAt(0)
+                                    .toUpperCase()}
                                 </span>
                               )}
                             </div>
@@ -752,16 +806,19 @@ export function PatientSelectionProvider({ children }: Props) {
                               </span>
 
                               {patient.blood_group && (
-                                <small>Blood Group: {patient.blood_group}</small>
+                                <small>
+                                  Blood Group: {patient.blood_group}
+                                </small>
                               )}
                             </div>
                           </div>
 
                           <span
-                            className={`${styles.checkbox} ${selectedPatientId === patient.id
-                              ? styles.checked
-                              : ""
-                              }`}
+                            className={`${styles.checkbox} ${
+                              selectedPatientId === patient.id
+                                ? styles.checked
+                                : ""
+                            }`}
                           >
                             {selectedPatientId === patient.id ? "✓" : ""}
                           </span>
@@ -779,7 +836,9 @@ export function PatientSelectionProvider({ children }: Props) {
                       <input
                         type="checkbox"
                         checked={makeDefaultPatient}
-                        onChange={(e) => setMakeDefaultPatient(e.target.checked)}
+                        onChange={(e) =>
+                          setMakeDefaultPatient(e.target.checked)
+                        }
                       />
 
                       <span>Make this my default patient</span>
@@ -811,7 +870,9 @@ export function PatientSelectionProvider({ children }: Props) {
 
                         gender: getGenderName(patient.gender),
 
-                        age: patient.dob ? calculateAge(patient.dob) : undefined,
+                        age: patient.dob
+                          ? calculateAge(patient.dob)
+                          : undefined,
 
                         dob: patient.dob || undefined,
 
@@ -828,7 +889,7 @@ export function PatientSelectionProvider({ children }: Props) {
                       }
 
                       // saveToTempCart(selectedPatient);
-                       savePatientCart(selectedPatient);
+                      savePatientCart(selectedPatient);
                     }}
                   >
                     Done

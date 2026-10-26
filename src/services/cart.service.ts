@@ -130,10 +130,62 @@ export type CartItem = {
     testNames?: string[];
 };
 
+export type BookingSlot = {
+    id: number;
+    slot_label: string;
+    start_time: string;
+    end_time: string;
+    threshold: number;
+    status: boolean;
+};
+
+export type GetAllSlotsResponse = {
+    status: number;
+    success: boolean;
+    message: string;
+    data: BookingSlot[];
+};
+
 export type GetCartResponse = {
     status: number;
     message: string;
     data: CartItem[];
+};
+
+export type PatientAddressPayload = {
+    addressName: string;
+    fullName: string;
+    contactNumber: string;
+    alt_contactNumber: string;
+    pinCode: number;
+    addressLine_1: string;
+    addressLine_2: string;
+    landMark: string;
+    latitude: number;
+    longitude: number;
+    status: boolean;
+};
+
+export type PatientAddress = PatientAddressPayload & {
+    id: number;
+    user_id: number;
+    delete_status: boolean | null;
+    createdAt: string;
+    updatedAt: string;
+};
+
+export type EditPatientAddressPayload = Omit<
+    PatientAddressPayload,
+    "alt_contactNumber"
+> & {
+    address_id: number;
+};
+
+export type GetPatientAddressesResponse = {
+    data: PatientAddress[];
+    status: number;
+    success: boolean;
+    message: string;
 };
 
 export async function getCartByUser(): Promise<GetCartResponse> {
@@ -209,4 +261,156 @@ export async function removeFromCart(
     }
 
     return result;
+}
+
+export async function getAllSlots(): Promise<GetAllSlotsResponse> {
+    const response = await fetch(
+        `${getBaseUrl()}global/slot/getAllSlots`,
+        {
+            method: "GET",
+            headers: {
+                Accept: "application/json",
+            },
+            cache: "no-store",
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Unable to fetch booking slots.");
+    }
+
+    const result: GetAllSlotsResponse = await response.json();
+
+    if (result.status !== 1 || !result.success) {
+        throw new Error(result.message || "Unable to fetch booking slots.");
+    }
+
+    return result;
+}
+
+async function requestPatientAddress(
+    endpoint: string,
+    method: "GET" | "POST",
+    payload?: object
+): Promise<unknown> {
+    const user = await getLoggedInUser();
+
+    if (!user?.id) {
+        throw new Error("User not logged in.");
+    }
+
+    const headers: Record<string, string> = {
+        Accept: "application/json",
+        user_id: String(user.id),
+    };
+
+    if (payload !== undefined) {
+        headers["Content-Type"] = "application/json";
+    }
+
+    const response = await fetch(
+        `${getBaseUrl()}b2c/patient-address/${endpoint}`,
+        {
+            method,
+            headers,
+            ...(payload !== undefined
+                ? { body: JSON.stringify(payload) }
+                : {}),
+            cache: "no-store",
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Address request failed. Please try again.");
+    }
+
+    const result: unknown = await response.json();
+
+    // Handle backend failures when these response fields are present.
+    if (typeof result === "object" && result !== null) {
+        const failedStatus =
+            "status" in result &&
+            typeof result.status === "number" &&
+            result.status !== 1;
+
+        const failedSuccess =
+            "success" in result && result.success === false;
+
+        if (failedStatus || failedSuccess) {
+            const message =
+                "message" in result && typeof result.message === "string"
+                    ? result.message
+                    : "Address request failed. Please try again.";
+
+            throw new Error(message);
+        }
+    }
+
+    return result;
+}
+
+export async function getAllPatientAddresses(): Promise<GetPatientAddressesResponse> {
+    const result = await requestPatientAddress(
+        "getAllPatientAddresses",
+        "GET"
+    );
+
+    if (
+        typeof result !== "object" ||
+        result === null ||
+        !("status" in result) ||
+        result.status !== 1 ||
+        !("success" in result) ||
+        result.success !== true ||
+        !("data" in result) ||
+        !Array.isArray(result.data)
+    ) {
+        throw new Error("Invalid patient address response.");
+    }
+
+    return result as GetPatientAddressesResponse;
+}
+
+export async function addPatientAddress(
+    payload: PatientAddressPayload
+): Promise<unknown> {
+    return requestPatientAddress(
+        "addPatientAddress",
+        "POST",
+        payload
+    );
+}
+
+export async function getPatientAddressById(
+    addressId: number
+): Promise<unknown> {
+    return requestPatientAddress(
+        "getPatientAddressById",
+        "POST",
+        {
+            address_id: addressId,
+        }
+    );
+}
+
+export async function editPatientAddress(
+    payload: EditPatientAddressPayload
+): Promise<unknown> {
+    return requestPatientAddress(
+        "editPatientAddress",
+        "POST",
+        payload
+    );
+}
+
+export async function deletePatientAddress(
+    addressId: number
+): Promise<unknown> {
+    return requestPatientAddress(
+        "deletePatientAddress",
+        "POST",
+        {
+            address_id: addressId,
+        }
+    );
 }

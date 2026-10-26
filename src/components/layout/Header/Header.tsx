@@ -17,6 +17,7 @@ import {
 import { useAlert } from "@/components/common/Alert/AlertProvider";
 import { usePathname } from "next/navigation";
 import { getAllState } from "@/services/master.service"
+import { getCartByUser } from "@/services/cart.service";
 
 
 
@@ -241,47 +242,40 @@ export default function Header() {
 
   const [activeFeedIndex, setActiveFeedIndex] = useState(0);
 
-  const updateCartCount = () => {
+  const updateCartCount = async () => {
     try {
-      const savedCart = localStorage.getItem("nirnayan_temp_cart");
+      const response = await getCartByUser();
 
-      if (!savedCart) {
+      if (response?.status === 1 && Array.isArray(response.data)) {
+        setCartCount(response.data.length);
+      } else {
         setCartCount(0);
-        return;
       }
-
-      const cart = JSON.parse(savedCart);
-
-      const totalItems = cart.reduce((total: number, group: any) => {
-        return total + (group?.items?.length || 0);
-      }, 0);
-
-      setCartCount(totalItems);
-
-      console.log("Header Cart Count:", totalItems);
     } catch (error) {
-      console.error("Cart count error:", error);
+      console.error("Cart count fetch error:", error);
 
       setCartCount(0);
     }
   };
 
-  useEffect(() => {
-    // Load count first time
-    updateCartCount();
+useEffect(() => {
+  if (!loginSession) {
+    setCartCount(0);
+    return;
+  }
 
-    // Update in same browser tab
-    window.addEventListener("cartUpdated", updateCartCount);
+  void updateCartCount();
 
-    // Update if localStorage changes from another tab
-    window.addEventListener("storage", updateCartCount);
+  const handleCartUpdated = () => {
+    void updateCartCount();
+  };
 
-    return () => {
-      window.removeEventListener("cartUpdated", updateCartCount);
+  window.addEventListener("cartUpdated", handleCartUpdated);
 
-      window.removeEventListener("storage", updateCartCount);
-    };
-  }, []);
+  return () => {
+    window.removeEventListener("cartUpdated", handleCartUpdated);
+  };
+}, [loginSession]);
 
   useEffect(() => {
     const interval = window.setInterval(() => {
