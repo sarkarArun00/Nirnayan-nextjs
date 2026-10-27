@@ -538,18 +538,18 @@ export default function CartPage() {
               ))}
 
               <section
-                className={styles.bookingSection}
+                className="booking-wrap"
                 aria-labelledby="booking-slot-heading"
               >
-                <div className={styles.bookingHeader}>
-                  <div className={styles.bookingHeading}>
+                <div className="booking-head">
+                  <div className="left-block">
                     <i
-                      className={`fa-solid fa-calendar-days ${styles.bookingIcon}`}
+                      className={`fa-solid fa-calendar-days ${styles.booking_icon}`}
                       aria-hidden="true"
                     />
 
-                    <div>
-                      <h2 id="booking-slot-heading">Book Your Slot</h2>
+                    <div className="text-block">
+                      <h4>Book Your Slot</h4>
                       <p>
                         Choose your preferred date and time for sample
                         collection.
@@ -558,17 +558,16 @@ export default function CartPage() {
                   </div>
 
                   {!loadingSlots && !slotError && slots.length > 0 && (
-                    <span className={styles.slotCount}>
+                    <span className="slot-count">
                       {slots.length} Time{" "}
                       {slots.length === 1 ? "Slot" : "Slots"}
                     </span>
                   )}
                 </div>
 
-                <div className={styles.dateNavigation}>
-                  <span>Select date</span>
-
-                  <div className={styles.dateNavigationActions}>
+                <div className="date-nav-head">
+                  {/* <span>Select date</span> */}
+                  <div className="date-nav">
                     <button
                       type="button"
                       aria-label="Previous seven days"
@@ -604,7 +603,7 @@ export default function CartPage() {
                 </div>
 
                 <div
-                  className={styles.dateList}
+                  className="date-list"
                   role="group"
                   aria-label="Collection date"
                 >
@@ -616,8 +615,9 @@ export default function CartPage() {
                       <button
                         key={dateValue}
                         type="button"
-                        className={`${styles.dateButton} ${isSelected ? styles.selectedDate : ""
-                          }`}
+                        // className={`${styles.dateButton} ${isSelected ? styles.selectedDate : ""
+                        //   }`}
+                        className={`dateButton ${isSelected ? "selectedDate" : ""}`}
                         aria-pressed={isSelected}
                         aria-label={date.toLocaleDateString("en-GB", {
                           weekday: "long",
@@ -648,7 +648,7 @@ export default function CartPage() {
                   })}
                 </div>
 
-                <div className={styles.timeHeading}>Select time</div>
+                {/* <div className={styles.timeHeading}>Select time</div> */}
 
                 {loadingSlots ? (
                   <p className={styles.bookingMessage} role="status">
@@ -665,13 +665,13 @@ export default function CartPage() {
                 ) : (
                   <>
                     {!selectedBookingDate && (
-                      <p className={styles.bookingMessage}>
+                      <p className="booking-msg">
                         Select a date to choose a time slot.
                       </p>
                     )}
 
                     <div
-                      className={styles.timeSlotList}
+                      className="slot-list"
                       role="group"
                       aria-label="Collection time"
                     >
@@ -686,10 +686,11 @@ export default function CartPage() {
                           <button
                             key={slot.id}
                             type="button"
-                            className={`${styles.timeSlotButton} ${isSelected && !isInactive
-                              ? styles.selectedTimeSlot
-                              : ""
-                              }`}
+                            // className={`${styles.timeSlotButton} ${isSelected && !isInactive
+                            //   ? styles.selectedTimeSlot
+                            //   : ""
+                            //   }`}
+                            className={`timeSlotButton ${isSelected && !isInactive ? "active" : ""}`}
                             disabled={!selectedBookingDate || isInactive}
                             aria-pressed={isSelected && !isInactive}
                             aria-label={`${slot.slot_label}, ${timeLabel}${isInactive ? ", unavailable" : ""
@@ -706,18 +707,14 @@ export default function CartPage() {
               </section>
 
               <section
-                className={styles.addressSection}
+                className="booking-wrap"
                 aria-labelledby="cart-address-heading"
               >
-                <div className={styles.addressSectionHeader}>
-                  <div className={styles.addressTitle}>
-                    <i
-                      className={`fa-solid fa-house ${styles.addressIcon}`}
-                      aria-hidden="true"
-                    />
-
-                    <div>
-                      <h2 id="cart-address-heading">Address</h2>
+                <div className="booking-head">
+                  <div className="left-block">
+                    <i className="fa-solid fa-house"></i>
+                    <div className="text-block">
+                      <h4>Address</h4>
                       <p>
                         Choose your preferred address for sample collection.
                       </p>
@@ -725,7 +722,7 @@ export default function CartPage() {
                   </div>
                   <button
                     type="button"
-                    className={styles.addAddressButton}
+                    className="exp-btn"
                     onClick={() => {
                       setEditingAddress(undefined);
                       setShowAddressModal(true);
@@ -760,7 +757,7 @@ export default function CartPage() {
                   </p>
                 ) : (
                   <div
-                    className={styles.addressGrid}
+                    className="add-grid"
                     role="group"
                     aria-label="Sample collection address"
                   >
@@ -779,11 +776,12 @@ export default function CartPage() {
                       return (
                         <article
                           key={address.id}
-                          className={`${styles.addressCard} ${isSelected ? styles.selectedAddress : ""
-                            }`}
+                          // className={`${styles.addressCard} ${isSelected ? styles.selectedAddress : ""
+                          //   }`}
+                          className={`add-card ${isSelected ? "selectedAddress" : ""}`}
                         >
-                          <label className={styles.addressChoice}>
-                            <span
+                          <label className="add-box">
+                            {/* <span
                               className={styles.addressAvatar}
                               aria-hidden="true"
                             >
@@ -791,28 +789,17 @@ export default function CartPage() {
                                 .trim()
                                 .charAt(0)
                                 .toUpperCase()}
-                            </span>
-
-                            <div className={styles.addressDetails}>
-                              <div className={styles.addressNameRow}>
-                                <h3>{address.fullName}</h3>
-
-                                <span className={styles.addressType}>
+                            </span> */}
+                            <div className="icon">
+                              <img alt="" src="/assets/images/user2.png" />
+                            </div>
+                            <div className="text-block">
+                              <h4>{address.fullName}</h4>
+                              {/* <span className={styles.addressType}>
                                   {address.addressName}
-                                </span>
-                              </div>
-
-                              <p className={styles.addressText}>
-                                {addressText}
-                              </p>
-
-                              <span className={styles.addressContact}>
-                                <i
-                                  className="fa-solid fa-phone"
-                                  aria-hidden="true"
-                                />
-                                {address.contactNumber}
-                              </span>
+                                </span> */}
+                              <p>{addressText}</p>
+                              <h6><i className="fa-solid fa-phone"></i>{address.contactNumber}</h6>
                             </div>
 
                             <input
@@ -828,7 +815,7 @@ export default function CartPage() {
                             />
                           </label>
 
-                          <details className={styles.addressActions}>
+                          <details className="add-act">
                             <summary
                               aria-label={`Actions for ${address.fullName}'s ${address.addressName} address`}
                             >
@@ -838,7 +825,7 @@ export default function CartPage() {
                               />
                             </summary>
 
-                            <div className={styles.addressActionsMenu}>
+                            <div className="add-menu">
                               <button
                                 type="button"
                                 onClick={(event) => {

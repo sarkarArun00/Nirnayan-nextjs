@@ -7,6 +7,7 @@
 .cart-head .left .text-block h4{ color:var(--up-black); font-weight:600; margin-bottom:5px; }
 .cart-head .left .text-block p{ color:var(--up-gray); margin-bottom:0; }
 
+/*==== Cart Item Css Start ====*/
 .pt-card{ background:var(--up-white); border:1px solid var(--up-gray3); box-shadow:0px 4px 10px 0px #C8C8C866; border-radius:15px; padding:30px; margin-bottom:20px; }
 .pt-card .pt-head{ display:flex; align-items:center; margin-bottom:20px; }
 .pt-card .pt-head .lt-side{ display:flex; align-items:center; flex:1; }
@@ -24,24 +25,58 @@
 .pt-card .card-item .lt-side h6{ flex:1; color:var(--up-black); font-weight:600; margin-bottom:0; padding-left:10px; }
 .pt-card .card-item .rt-side{ display:flex; align-items:center; flex-wrap:wrap; gap:0 10px; }
 .pt-card .card-item .rt-side h6{ color:var(--up-black); font-weight:600; margin-bottom:0; }
-.pt-card .card-item .rt-side .remove{ width:25px; height:25px; background:none; border:2px solid var(--is-red); border-radius:50%; font-size:12px; }
-
-
-
-
-
-
-
-
-
-
+.pt-card .card-item .rt-side .remove{ position:relative; width:25px; height:25px; background:none; border:2px solid var(--is-red); border-radius:50%; font-size:13px; color:var(--is-red); display:flex; align-items:center; justify-content:center; background:rgba(255,29,29,0.2); padding:0; margin-left:10px; }
+.pt-card .card-item .rt-side .remove:after{ position:absolute; content:""; width:1px; height:100%; left:-11px; background-image:linear-gradient(to top, transparent, #D2D2D2, transparent); }
 .pt-card button.add-btn{ font-size:15px; line-height:1.2; font-weight:500; color:var(--up-theme); border:0; text-transform:capitalize; text-align:center; transition:all 0.4s; background:none; padding:15px 0 0; }
 .pt-card button.add-btn:hover{ color:var(--up-black); }
+/*==== Cart Item Css End ====*/
+
+/*==== Booking Slot Css Start ====*/
+.booking-wrap{ background:var(--up-white); border:1px solid var(--up-gray3); box-shadow:0px 4px 10px 0px #C8C8C866; border-radius:15px; padding:30px; margin-bottom:20px; }
+.booking-wrap .booking-head{ display:flex; align-items:center; margin-bottom:20px; }
+.booking-wrap .booking-head .left-block{ flex:1; display:flex; align-items:center; padding-right:10px; }
+.booking-wrap .booking-head .left-block i{ font-size:28px; flex-shrink:0; }
+.booking-wrap .booking-head .left-block .text-block{ flex:1; padding-left:12px; }
+.booking-wrap .booking-head .left-block .text-block h4{ color:var(--up-black); font-weight:600; margin-bottom:5px; }
+.booking-wrap .booking-head .left-block .text-block p{ color:var(--up-gray); margin-bottom:0; }
+.booking-wrap .booking-head .slot-count{ font-size:13px; line-height:1.2; font-weight:500; color:var(--up-theme); border-radius:25px; background:#EBFFF4; padding:10px 13px; }
+.booking-wrap .date-nav{ display:flex; gap:5px; justify-content:end; margin-left:auto; }
+.booking-wrap .date-nav button{ display:inline-flex; width:30px; height:30px; align-items:center; justify-content:center; padding:0; border:1px solid var(--up-gray2); border-radius:50%; background:#fff; font-size:13px; color:var(--up-gray); cursor:pointer; }
+.booking-wrap .date-nav button:disabled{ opacity:0.35; cursor:not-allowed; }
+.booking-wrap .date-list{ display:grid; grid-template-columns:repeat(7, 1fr); gap:12px; margin-bottom:20px; margin-top:10px; }
+.booking-wrap .date-list button{ font-size:15px; line-height:1.2; color:var(--up-black); border:1px solid var(--up-gray2); border-radius:15px; background:none; padding:15px 5px; }
+.booking-wrap .date-list button strong{ font-size:25px; display:block; }
+.booking-wrap .date-list button.selectedDate{ background:#EBFFF4; border-color:var(--up-theme); }
+.booking-wrap .slot-list{ display:grid; grid-template-columns:repeat(5, 1fr); gap:12px; }
+.booking-wrap .slot-list button{ font-size:15px; line-height:1.2; color:var(--up-black); border:1px solid var(--up-gray2); border-radius:15px; background:none; padding:15px 5px; }
+.booking-wrap .slot-list button.active{ background:#EBFFF4; border-color:var(--up-theme); }
+/*==== Booking Slot Css End ====*/
+
+/*==== Address Css End ====*/
+.add-grid{ display:grid; grid-template-columns:repeat(2, 1fr); grid-row-gap:15px; grid-column-gap:15px; }
+.add-grid .add-card{ display:flex; align-items:center; border:1px solid #D9F3E5; background:#FBFFFD; border-radius:15px; padding:20px; }
+.add-grid .add-card.selectedAddress{ border-color:var(--up-theme); }
+.add-grid .add-card .add-box{ display:flex; align-items:center; flex:1; cursor:pointer; margin:0; }
+.add-grid .add-card input{ display:none; }
+.add-grid .add-card .add-box .icon{ width:42px; height:42px; border-radius:50%; overflow:hidden; }
+.add-grid .add-card .add-box .icon img{ width:100%; height:100%; }
+.add-grid .add-card .add-box .text-block{ flex:1; padding-left:10px; }
+.add-grid .add-card .add-box .text-block h4{ font-weight:600; color:var(--up-black); margin-bottom:6px; }
+.add-grid .add-card .add-box .text-block p{ width:95%; color:var(--up-gray); margin-bottom:10px; }
+.add-grid .add-card .add-box .text-block h6{ color:var(--up-black); margin-bottom:0; }
+.add-grid .add-card .add-box .text-block h6 i{ padding-right:10px; }
+.add-grid .add-card .add-act{ position:relative; }
+.add-grid .add-card .add-act i{ font-size:20px; color:var(--up-black); }
+
+.add-menu{ width:100px; position: absolute; right:20px; top:0; background:var(--up-white); border:1px solid var(--up-gray3); box-shadow:0px 4px 10px 0px #C8C8C866; border-radius:15px; padding:5px 10px; }
+.add-menu button{ font-size:14px; line-height:1.2; border:0; background:none; padding:5px 0; }
+.add-menu button i{ font-size:14px !important; padding-right:8px; }
 
 
 
 
-
-
-
-
+.booking-msg{ font-size:14px; font-weight:500; color:var(--up-theme); margin-bottom:10px; }
+summary{ list-style:none; cursor:pointer; }
+summary::-webkit-details-marker{ display:none; }
+summary::marker{ content: ""; }
+/*==== Address Css End ====*/
