@@ -156,6 +156,7 @@ export type PopularInvestigationItem = {
     description: string;
     department_id: number;
     test_code: string;
+    offerAmount: number;
 
     tat: {
         normalTat: {

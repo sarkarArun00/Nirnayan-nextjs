@@ -33,6 +33,7 @@ type PopularTestItem = {
   description: string;
   department_id: number;
   test_code: string;
+  offerAmount: number;
 
   tat: {
     normalTat: {
@@ -271,7 +272,7 @@ function PopularTest({ section = "all" }: PopularTestProps) {
 
       const response = await getPopularPackagesPost(payload);
 
-      // console.log("Test API Response:", response);
+      console.log("Test API Response:", response);
 
       if (response?.data && Array.isArray(response.data)) {
         setTestList(response.data);
@@ -444,13 +445,25 @@ function PopularTest({ section = "all" }: PopularTestProps) {
                         {gridData.map((item, index) => (
                           <div key={index} className="cmn_padding">
                             <div
-                              className={`${styles.box} ${index % 2 === 0 ? styles.oddBox : styles.evenBox
-                                } ${index === 2 || index === 3 ? styles.specialBox : ""
-                                }`}
+                              className={`${styles.box} ${
+                                index % 2 === 0 ? styles.oddBox : styles.evenBox
+                              } ${
+                                index === 2 || index === 3
+                                  ? styles.specialBox
+                                  : ""
+                              }`}
                             >
                               <div className={styles.inn}>
-                                <img className={styles.icon} src={item.icon} alt="" />
-                                <img className={styles.ch_icon} src={item.chIcon} alt="" />
+                                <img
+                                  className={styles.icon}
+                                  src={item.icon}
+                                  alt=""
+                                />
+                                <img
+                                  className={styles.ch_icon}
+                                  src={item.chIcon}
+                                  alt=""
+                                />
                                 <h2>{item.number}</h2>
                                 <p>{item.label}</p>
                               </div>
@@ -495,8 +508,9 @@ function PopularTest({ section = "all" }: PopularTestProps) {
                           <button
                             key={`${filterType}-${item.id}`}
                             type="button"
-                            className={`organ-tab ${selectedOrgan?.id === item.id ? "active" : ""
-                              }`}
+                            className={`organ-tab ${
+                              selectedOrgan?.id === item.id ? "active" : ""
+                            }`}
                             onClick={() => selectOrgan(item)}
                           >
                             <span className="icon">
@@ -567,7 +581,9 @@ function PopularTest({ section = "all" }: PopularTestProps) {
 
                           <div className="wh-block">
                             <div className="inn-pnl">
-                              <h2><span>{test.test_name}</span></h2>
+                              <h2>
+                                <span>{test.test_name}</span>
+                              </h2>
 
                               <p>
                                 {test.description || "No description available"}
@@ -611,10 +627,39 @@ function PopularTest({ section = "all" }: PopularTestProps) {
                             </div>
 
                             <div className="btm-pnl">
-                              <div className="d-flex align-items-center gap-2">
+                              {/* <div className="d-flex align-items-center gap-2">
                                 <span className="price">
                                   ₹{Number(test.mrpAmount || 0).toFixed(2)}
                                 </span>
+                              </div> */}
+                              <div className="d-flex align-items-center gap-2">
+                                {test.offerAmount ? (
+                                  <>
+                                    <span
+                                      className="price"
+                                      style={{
+                                        color: "#111",
+                                        fontWeight: 700,
+                                      }}
+                                    >
+                                      ₹{Number(test.offerAmount).toFixed(2)}
+                                    </span>
+
+                                    <span
+                                      style={{
+                                        color: "#e53935",
+                                        textDecoration: "line-through",
+                                        fontSize: "14px",
+                                      }}
+                                    >
+                                      ₹{Number(test.mrpAmount || 0).toFixed(2)}
+                                    </span>
+                                  </>
+                                ) : (
+                                  <span className="price">
+                                    ₹{Number(test.mrpAmount || 0).toFixed(2)}
+                                  </span>
+                                )}
                               </div>
 
                               {/* <button type="button" className="cmn_btn">

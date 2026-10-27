@@ -100,9 +100,9 @@ export type CartItem = {
     patientId: number;
 
     patient_name: string;
-
     test_name: string;
-
+    patient_age: number;
+    patient_gender: number;
     test_code: string;
 
     tat: {
@@ -188,16 +188,69 @@ export type GetPatientAddressesResponse = {
     message: string;
 };
 
+const LOCATION_STORAGE_KEY =
+    "nirnayan_selected_state";
+
+function getSelectedStateId(): number {
+    if (typeof window === "undefined") {
+        throw new Error(
+            "State ID is only available in browser."
+        );
+    }
+
+    const savedState =
+        localStorage.getItem(
+            LOCATION_STORAGE_KEY
+        );
+
+    if (!savedState) {
+        throw new Error(
+            "Please select a location first."
+        );
+    }
+
+    try {
+        const parsedState =
+            JSON.parse(savedState);
+
+        if (
+            !parsedState ||
+            typeof parsedState.id !== "number"
+        ) {
+            throw new Error(
+                "Invalid selected state."
+            );
+        }
+
+        return parsedState.id;
+    } catch (error) {
+        console.error(
+            "Unable to get selected state:",
+            error
+        );
+
+        throw new Error(
+            "Unable to get selected state."
+        );
+    }
+}
+
 export async function getCartByUser(): Promise<GetCartResponse> {
     const user = await getLoggedInUser();
 
     if (!user?.id) {
         throw new Error("User not logged in.");
     }
+    const stateId =
+        getSelectedStateId();
+
+    console.log(
+        "Selected State ID:",
+        stateId
+    );
 
     const url =
-        `${getBaseUrl()}b2c/getAllCartByUser` +
-        `?userId=${user.id}`;
+        `${getBaseUrl()}b2c/getAllCartByUser` + `?userId=${user.id}&stateId=${stateId}`;
 
     const response = await fetch(url, {
         method: "GET",

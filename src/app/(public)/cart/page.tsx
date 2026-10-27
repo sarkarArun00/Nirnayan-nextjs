@@ -47,6 +47,9 @@ type CartGroup = {
 type PatientCartGroup = {
   patientId: number;
   patient_name: string;
+  patient_age: number ;
+  patient_gender: number ;
+
   items: CartItem[];
 };
 
@@ -138,11 +141,26 @@ export default function CartPage() {
               (group) => group.patientId === item.patientId,
             );
 
+            // if (!patientGroup) {
+            //   patientGroup = {
+            //     patientId: item.patientId,
+
+            //     patient_name: item.patient_name,
+            //     patient_age: item.patient_age,
+            //     patient_gender: item.patient_gender,
+            //     items: [],
+            //   };
+
+            //   groups.push(patientGroup);
+            // }
+
             if (!patientGroup) {
               patientGroup = {
                 patientId: item.patientId,
-
                 patient_name: item.patient_name,
+
+                patient_age: item.patient_age,
+                patient_gender: item.patient_gender,
 
                 items: [],
               };
@@ -319,7 +337,6 @@ export default function CartPage() {
 
         setCart(parsedCart);
 
-        console.log("Cart Page Data:", parsedCart);
       }
     } catch (error) {
       console.error("Cart load error:", error);
@@ -430,11 +447,30 @@ export default function CartPage() {
     ? cartGroups.find((group) => group.patientId === removeTarget.patientId)
     : null;
 
+  const getGenderName = (gender: number) => {
+    switch (gender) {
+      case 1:
+        return "Male";
+
+      case 2:
+        return "Female";
+
+      case 3:
+        return "Other";
+
+      default:
+        return "N/A";
+    }
+  };
+
+
   return (
     <section className="cart-dtl">
       <div className="container">
         <ol className="breadcrumb">
-          <li className="breadcrumb-item"><Link href="/">Home</Link></li>
+          <li className="breadcrumb-item">
+            <Link href="/">Home</Link>
+          </li>
           <li className="breadcrumb-item active">Cart</li>
         </ol>
 
@@ -466,7 +502,10 @@ export default function CartPage() {
                       )}
                       )
                     </h4>
-                    <p>Review the items you’ve added to your cart and make any changes before proceeding to checkout.</p>
+                    <p>
+                      Review the items you’ve added to your cart and make any
+                      changes before proceeding to checkout.
+                    </p>
                   </div>
                 </div>
 
@@ -479,7 +518,6 @@ export default function CartPage() {
                 </button>
               </div>
 
-
               {cartGroups.map((group) => (
                 <div key={group.patientId} className="pt-card">
                   <div className="pt-head">
@@ -489,12 +527,20 @@ export default function CartPage() {
                       </div>
                       <div className="text">
                         <h6>{group.patient_name}</h6>
-                        <p><i className="fa-solid fa-venus-mars"></i> 33 y • Male </p>
+                        <p>
+                          <i className="fa-solid fa-venus-mars"></i>{" "}
+                          {group.patient_age
+                            ? `${group.patient_age} y`
+                            : "Age N/A"}{" "}
+                          • {getGenderName(group.patient_gender)}
+                        </p>
                       </div>
                     </div>
                     <div className="rt-side">
                       <button className="add-doc">+ Add Doctor</button>
-                      <button className="exp-btn">Upload Rx <img src="/assets/images/rx1.svg" alt="" /></button>
+                      <button className="exp-btn">
+                        Upload Rx <img src="/assets/images/rx1.svg" alt="" />
+                      </button>
                     </div>
                   </div>
 
@@ -507,13 +553,42 @@ export default function CartPage() {
                         <h6>{item.test_name}</h6>
                       </div>
                       <div className="rt-side">
-                        <h6>
-                          ₹
-                          {Number(
-                            item.finalAmount || item.mrpAmount || 0,
-                          ).toFixed(2)}
-                        </h6>
-                        <span className="is-discount">10% Off</span>
+                        <div className="d-flex align-items-center gap-2">
+                          <h6>
+                            ₹
+                            {Number(
+                              item.offerAmount || item.mrpAmount || 0,
+                            ).toFixed(2)}
+                          </h6>
+
+                          {item.offerAmount &&
+                            Number(item.offerAmount) <
+                              Number(item.mrpAmount) && (
+                              <span
+                                style={{
+                                  color: "#e53935",
+                                  textDecoration: "line-through",
+                                  fontSize: "14px",
+                                }}
+                              >
+                                ₹{Number(item.mrpAmount).toFixed(2)}
+                              </span>
+                            )}
+                        </div>
+
+                        {item.offerAmount &&
+                          Number(item.offerAmount) < Number(item.mrpAmount) && (
+                            <span className="is-discount">
+                              {Math.round(
+                                ((Number(item.mrpAmount) -
+                                  Number(item.offerAmount)) /
+                                  Number(item.mrpAmount)) *
+                                  100,
+                              )}
+                              % Off
+                            </span>
+                          )}
+
                         <button
                           type="button"
                           className="remove"
@@ -532,24 +607,26 @@ export default function CartPage() {
                     </div>
                   ))}
                   <div className="text-center">
-                    <button className="add-btn">+ Add more tests or health checkup packages</button>
+                    <button className="add-btn">
+                      + Add more tests or health checkup packages
+                    </button>
                   </div>
                 </div>
               ))}
 
               <section
-                className="booking-wrap"
+                className={styles.bookingSection}
                 aria-labelledby="booking-slot-heading"
               >
-                <div className="booking-head">
-                  <div className="left-block">
+                <div className={styles.bookingHeader}>
+                  <div className={styles.bookingHeading}>
                     <i
-                      className={`fa-solid fa-calendar-days ${styles.booking_icon}`}
+                      className={`fa-solid fa-calendar-days ${styles.bookingIcon}`}
                       aria-hidden="true"
                     />
 
-                    <div className="text-block">
-                      <h4>Book Your Slot</h4>
+                    <div>
+                      <h2 id="booking-slot-heading">Book Your Slot</h2>
                       <p>
                         Choose your preferred date and time for sample
                         collection.
@@ -558,16 +635,17 @@ export default function CartPage() {
                   </div>
 
                   {!loadingSlots && !slotError && slots.length > 0 && (
-                    <span className="slot-count">
+                    <span className={styles.slotCount}>
                       {slots.length} Time{" "}
                       {slots.length === 1 ? "Slot" : "Slots"}
                     </span>
                   )}
                 </div>
 
-                <div className="date-nav-head">
-                  {/* <span>Select date</span> */}
-                  <div className="date-nav">
+                <div className={styles.dateNavigation}>
+                  <span>Select date</span>
+
+                  <div className={styles.dateNavigationActions}>
                     <button
                       type="button"
                       aria-label="Previous seven days"
@@ -603,7 +681,7 @@ export default function CartPage() {
                 </div>
 
                 <div
-                  className="date-list"
+                  className={styles.dateList}
                   role="group"
                   aria-label="Collection date"
                 >
@@ -615,9 +693,9 @@ export default function CartPage() {
                       <button
                         key={dateValue}
                         type="button"
-                        // className={`${styles.dateButton} ${isSelected ? styles.selectedDate : ""
-                        //   }`}
-                        className={`dateButton ${isSelected ? "selectedDate" : ""}`}
+                        className={`${styles.dateButton} ${
+                          isSelected ? styles.selectedDate : ""
+                        }`}
                         aria-pressed={isSelected}
                         aria-label={date.toLocaleDateString("en-GB", {
                           weekday: "long",
@@ -648,7 +726,7 @@ export default function CartPage() {
                   })}
                 </div>
 
-                {/* <div className={styles.timeHeading}>Select time</div> */}
+                <div className={styles.timeHeading}>Select time</div>
 
                 {loadingSlots ? (
                   <p className={styles.bookingMessage} role="status">
@@ -665,13 +743,13 @@ export default function CartPage() {
                 ) : (
                   <>
                     {!selectedBookingDate && (
-                      <p className="booking-msg">
+                      <p className={styles.bookingMessage}>
                         Select a date to choose a time slot.
                       </p>
                     )}
 
                     <div
-                      className="slot-list"
+                      className={styles.timeSlotList}
                       role="group"
                       aria-label="Collection time"
                     >
@@ -686,15 +764,16 @@ export default function CartPage() {
                           <button
                             key={slot.id}
                             type="button"
-                            // className={`${styles.timeSlotButton} ${isSelected && !isInactive
-                            //   ? styles.selectedTimeSlot
-                            //   : ""
-                            //   }`}
-                            className={`timeSlotButton ${isSelected && !isInactive ? "active" : ""}`}
+                            className={`${styles.timeSlotButton} ${
+                              isSelected && !isInactive
+                                ? styles.selectedTimeSlot
+                                : ""
+                            }`}
                             disabled={!selectedBookingDate || isInactive}
                             aria-pressed={isSelected && !isInactive}
-                            aria-label={`${slot.slot_label}, ${timeLabel}${isInactive ? ", unavailable" : ""
-                              }`}
+                            aria-label={`${slot.slot_label}, ${timeLabel}${
+                              isInactive ? ", unavailable" : ""
+                            }`}
                             onClick={() => setSelectedSlotId(slot.id)}
                           >
                             {timeLabel}
@@ -707,14 +786,18 @@ export default function CartPage() {
               </section>
 
               <section
-                className="booking-wrap"
+                className={styles.addressSection}
                 aria-labelledby="cart-address-heading"
               >
-                <div className="booking-head">
-                  <div className="left-block">
-                    <i className="fa-solid fa-house"></i>
-                    <div className="text-block">
-                      <h4>Address</h4>
+                <div className={styles.addressSectionHeader}>
+                  <div className={styles.addressTitle}>
+                    <i
+                      className={`fa-solid fa-house ${styles.addressIcon}`}
+                      aria-hidden="true"
+                    />
+
+                    <div>
+                      <h2 id="cart-address-heading">Address</h2>
                       <p>
                         Choose your preferred address for sample collection.
                       </p>
@@ -722,7 +805,7 @@ export default function CartPage() {
                   </div>
                   <button
                     type="button"
-                    className="exp-btn"
+                    className={styles.addAddressButton}
                     onClick={() => {
                       setEditingAddress(undefined);
                       setShowAddressModal(true);
@@ -744,9 +827,7 @@ export default function CartPage() {
                     <button
                       type="button"
                       className={styles.addressRetryButton}
-                      onClick={() =>
-                        setAddressRefreshKey((value) => value + 1)
-                      }
+                      onClick={() => setAddressRefreshKey((value) => value + 1)}
                     >
                       Try Again
                     </button>
@@ -757,7 +838,7 @@ export default function CartPage() {
                   </p>
                 ) : (
                   <div
-                    className="add-grid"
+                    className={styles.addressGrid}
                     role="group"
                     aria-label="Sample collection address"
                   >
@@ -776,30 +857,38 @@ export default function CartPage() {
                       return (
                         <article
                           key={address.id}
-                          // className={`${styles.addressCard} ${isSelected ? styles.selectedAddress : ""
-                          //   }`}
-                          className={`add-card ${isSelected ? "selectedAddress" : ""}`}
+                          className={`${styles.addressCard} ${
+                            isSelected ? styles.selectedAddress : ""
+                          }`}
                         >
-                          <label className="add-box">
-                            {/* <span
+                          <label className={styles.addressChoice}>
+                            <span
                               className={styles.addressAvatar}
                               aria-hidden="true"
                             >
-                              {address.fullName
-                                .trim()
-                                .charAt(0)
-                                .toUpperCase()}
-                            </span> */}
-                            <div className="icon">
-                              <img alt="" src="/assets/images/user2.png" />
-                            </div>
-                            <div className="text-block">
-                              <h4>{address.fullName}</h4>
-                              {/* <span className={styles.addressType}>
+                              {address.fullName.trim().charAt(0).toUpperCase()}
+                            </span>
+
+                            <div className={styles.addressDetails}>
+                              <div className={styles.addressNameRow}>
+                                <h3>{address.fullName}</h3>
+
+                                <span className={styles.addressType}>
                                   {address.addressName}
-                                </span> */}
-                              <p>{addressText}</p>
-                              <h6><i className="fa-solid fa-phone"></i>{address.contactNumber}</h6>
+                                </span>
+                              </div>
+
+                              <p className={styles.addressText}>
+                                {addressText}
+                              </p>
+
+                              <span className={styles.addressContact}>
+                                <i
+                                  className="fa-solid fa-phone"
+                                  aria-hidden="true"
+                                />
+                                {address.contactNumber}
+                              </span>
                             </div>
 
                             <input
@@ -808,14 +897,12 @@ export default function CartPage() {
                               className={styles.addressRadio}
                               value={address.id}
                               checked={isSelected}
-                              onChange={() =>
-                                setSelectedAddressId(address.id)
-                              }
+                              onChange={() => setSelectedAddressId(address.id)}
                               aria-label={`Select ${address.addressName} address for ${address.fullName}`}
                             />
                           </label>
 
-                          <details className="add-act">
+                          <details className={styles.addressActions}>
                             <summary
                               aria-label={`Actions for ${address.fullName}'s ${address.addressName} address`}
                             >
@@ -825,7 +912,7 @@ export default function CartPage() {
                               />
                             </summary>
 
-                            <div className="add-menu">
+                            <div className={styles.addressActionsMenu}>
                               <button
                                 type="button"
                                 onClick={(event) => {
