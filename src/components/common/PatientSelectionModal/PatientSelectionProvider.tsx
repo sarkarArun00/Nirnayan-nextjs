@@ -11,12 +11,14 @@ import { useRouter } from "next/navigation";
 import styles from "./PatientSelectionModal.module.css";
 import { getAllPatients, PatientItem } from "@/services/patient.service";
 import { getLoggedInUser } from "@/actions/session.actions";
+
+import { saveToCart } from "@/services/cart.service";
 import {
   createPatient,
-  CreatePatientPayload,
+  editPatient,
+  type CreatePatientPayload,
+  type EditPatientPayload,
 } from "@/services/patient.service";
-import { saveToCart } from "@/services/cart.service";
-
 
 export type CartProduct = {
   id: number;
@@ -55,6 +57,7 @@ type PatientMode = "choose" | "new" | "existing";
 type PatientSelectionContextType = {
   openPatientModal: (product: CartProduct) => void;
   openAddPatientModal: () => void;
+  openEditPatientModal: (patient: PatientItem) => void;
   closePatientModal: () => void;
 };
 
@@ -94,6 +97,11 @@ const [isPatientOnlyMode, setIsPatientOnlyMode] = useState(false);
     phoneNumber: "",
     email: "",
   });
+
+  const [editingPatient, setEditingPatient] = useState<PatientItem | null>(
+    null,
+  );
+  const [patientFormError, setPatientFormError] = useState("");
 
   const [loggedInUserId, setLoggedInUserId] = useState<number | null>(null);
 
@@ -169,6 +177,8 @@ const [isPatientOnlyMode, setIsPatientOnlyMode] = useState(false);
   const [creatingPatient, setCreatingPatient] = useState(false);
 
   const openPatientModal = async (product: CartProduct) => {
+    setEditingPatient(null);
+    setPatientFormError("");
     setIsPatientOnlyMode(false);
     try {
       const user = await getLoggedInUser();
@@ -214,6 +224,33 @@ const [isPatientOnlyMode, setIsPatientOnlyMode] = useState(false);
     setIsOpen(true);
   };
 
+  const openEditPatientModal = (patient: PatientItem) => {
+    setEditingPatient(patient);
+    setPatientFormError("");
+    setIsPatientOnlyMode(true);
+    setSelectedProduct(null);
+    setSelectedPatientId(null);
+    setMakeDefaultPatient(false);
+
+    setNewPatient({
+      title: patient.title ?? "",
+      patientName: patient.patient_name,
+      dob: patient.dob?.slice(0, 10) ?? "",
+      bloodGroup: patient.blood_group ?? "",
+      gender:
+        patient.gender === 1
+          ? "Male"
+          : patient.gender === 2
+            ? "Female"
+            : "Other",
+      phoneNumber: patient.phoneNumber ?? "",
+      email: patient.patientEmail ?? "",
+    });
+
+    setMode("new");
+    setIsOpen(true);
+  };
+
   const getGenderName = (gender: number) => {
     if (gender === 1) {
       return "Male";
@@ -226,7 +263,9 @@ const [isPatientOnlyMode, setIsPatientOnlyMode] = useState(false);
     return "Other";
   };
 
-const openAddPatientModal = () => {
+  const openAddPatientModal = () => {
+  setEditingPatient(null);
+  setPatientFormError("");
   setIsPatientOnlyMode(true);
   setSelectedProduct(null);
   setSelectedPatientId(null);
@@ -308,6 +347,70 @@ const openAddPatientModal = () => {
 
     try {
       setCreatingPatient(true);
+      setPatientFormError("");
+
+      if (editingPatient) {
+        const payload: EditPatientPayload = {
+          patient_id: editingPatient.id,
+          centre_id: STATIC_CENTRE_ID,
+          patientName: newPatient.patientName.trim(),
+          gender:
+            newPatient.gender === "Male"
+              ? 1
+              : newPatient.gender === "Female"
+                ? 2
+                : 3,
+          blood_group: newPatient.bloodGroup,
+          dob: newPatient.dob,
+
+          // Preserve fields that this form does not edit.
+          height: editingPatient.height,
+          weight: editingPatient.weight,
+          altPhoneNumber: editingPatient.altPhoneNumber ?? "",
+          patientAddress: editingPatient.patientAddress ?? "",
+
+          title: newPatient.title,
+          phoneNumber: newPatient.phoneNumber,
+          patientEmail: newPatient.email.trim(),
+        };
+
+        await editPatient(payload);
+
+        // Keep the locally saved default patient's details current.
+        try {
+          if (loggedInUserId) {
+            const key = `nirnayan_default_patient_${loggedInUserId}`;
+            const stored = localStorage.getItem(key);
+            const saved: unknown = stored ? JSON.parse(stored) : null;
+
+            if (
+              typeof saved === "object" &&
+              saved !== null &&
+              "id" in saved &&
+              String(saved.id) === String(editingPatient.id)
+            ) {
+              const updatedDefault: TempPatient = {
+                id: editingPatient.id,
+                name: payload.patientName,
+                gender: newPatient.gender,
+                age: calculateAge(payload.dob),
+                dob: payload.dob,
+                bloodGroup: payload.blood_group,
+                isNew: false,
+              };
+
+              localStorage.setItem(key, JSON.stringify(updatedDefault));
+              window.dispatchEvent(new Event("defaultPatientUpdated"));
+            }
+          }
+        } catch (error) {
+          console.error("Default patient synchronization error:", error);
+        }
+
+        window.dispatchEvent(new Event("patientsUpdated"));
+        closePatientModal();
+        return;
+      }
 
       const payload: CreatePatientPayload = {
         schemaName: STATIC_SCHEMA_NAME,
@@ -374,18 +477,25 @@ const openAddPatientModal = () => {
     if (makeDefaultPatient) {
       saveDefaultPatient(createdPatient);
     }
-
-    if (isPatientOnlyMode) {
-      closePatientModal();
-      return;
-    }
+      
+      if (isPatientOnlyMode) {
+        window.dispatchEvent(new Event("patientsUpdated"));
+        closePatientModal();
+        return;
+      }
 
     await savePatientCart(createdPatient);
     } catch (error) {
-      console.error("Create Patient Error:", error);
-    } finally {
-      setCreatingPatient(false);
-    }
+  console.error("Save Patient Error:", error);
+
+  setPatientFormError(
+    error instanceof Error
+      ? error.message
+      : "Unable to save patient."
+  );
+} finally {
+  setCreatingPatient(false);
+}
   };
 
   const saveDefaultPatient = (patient: TempPatient) => {
@@ -425,6 +535,7 @@ const openAddPatientModal = () => {
       value={{
         openPatientModal,
         openAddPatientModal,
+        openEditPatientModal,
         closePatientModal,
       }}
     >
@@ -447,9 +558,14 @@ const openAddPatientModal = () => {
 
             {/* Header */}
             <div className={styles.header}>
-              <h4>Add Patient</h4>
+              <h4>{editingPatient ? "Edit Patient" : "Add Patient"}</h4>
+
               <p>
-                Add a new patient or select an existing patient to continue.
+                {editingPatient
+                  ? "Update the patient details."
+                  : isPatientOnlyMode
+                    ? "Enter the patient details to register a new patient."
+                    : "Add a new patient or select an existing patient to continue."}
               </p>
             </div>
             <div className="content-area">
@@ -494,7 +610,13 @@ const openAddPatientModal = () => {
 
               {mode === "new" && (
                 <div className={styles.patientSection}>
-                  <h4>Add New Patient</h4>
+                  <h4>{editingPatient ? "Edit Patient" : "Add New Patient"}</h4>
+
+                  {patientFormError && (
+                    <p className="text-danger" role="alert">
+                      {patientFormError}
+                    </p>
+                  )}
                   <div className="row">
                     <div className="col-lg-6 col-md-12 col-sm-12">
                       <div className={styles.formGroup}>
@@ -745,7 +867,13 @@ const openAddPatientModal = () => {
                         onClick={handleCreatePatient}
                         disabled={creatingPatient}
                       >
-                        {creatingPatient ? "Adding Patient..." : "Add Patient"}
+                        {creatingPatient
+                          ? editingPatient
+                            ? "Updating Patient..."
+                            : "Adding Patient..."
+                          : editingPatient
+                            ? "Update Patient"
+                            : "Add Patient"}
                       </button>
                     </div>
                   </div>

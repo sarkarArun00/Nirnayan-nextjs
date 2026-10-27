@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback,useEffect, useState } from "react";
 
 import Link from "next/link";
 
@@ -13,6 +13,13 @@ import {
 } from "@/services/patient.service";
 
 import styles from "./Profile.module.css";
+
+import AddressModal from "@/components/common/AddressModal/AddressModal";
+import {
+  getAllPatientAddresses,
+  type PatientAddress,
+} from "@/services/cart.service";
+import { usePatientSelection } from "@/components/common/PatientSelectionModal/PatientSelectionProvider";
 
 type LoginUser = {
   id: number;
@@ -44,68 +51,52 @@ export default function ProfilePage() {
   const [defaultPatient, setDefaultPatient] = useState<DefaultPatient | null>(
     null,
   );
+  const { openAddPatientModal, openEditPatientModal } = usePatientSelection();
 
-  useEffect(() => {
-    const initializeProfile = async () => {
+  const [addresses, setAddresses] = useState<PatientAddress[]>([]);
+  const [loadingAddresses, setLoadingAddresses] = useState(true);
+  const [addressError, setAddressError] = useState("");
+  const [showAddressModal, setShowAddressModal] = useState(false);
+  const [addressRefreshKey, setAddressRefreshKey] = useState(0);
+
+
+  
+  const loadPatients = useCallback(async () => {
       try {
-        const loggedUser = await getLoggedInUser();
+        setPatientLoading(true);
 
-        if (!loggedUser) {
-          setUser(null);
-          return;
+        /*
+        * IMPORTANT:
+        * Use the SAME payload that you are
+        * currently passing in your patient modal.
+        */
+        const user = await getLoggedInUser();
+            if (!user?.id) {
+              throw new Error("User not logged in.");
+            }
+
+          const userId = Number(user.id);
+        const payload: GetPatientPayload = {
+          user_id: userId,
+        };
+
+        const response = await getAllPatients(payload);
+
+        if (response?.data && Array.isArray(response.data)) {
+          setPatients(response.data);
+        } else {
+          setPatients([]);
         }
-
-        setUser(loggedUser);
-
-        loadDefaultPatient(loggedUser.id);
-
-        await loadPatients();
       } catch (error) {
-        console.error("Profile initialization error:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+        console.error("Patient list error:", error);
 
-    void initializeProfile();
-  }, []);
-
-  const loadPatients = async () => {
-    try {
-      setPatientLoading(true);
-
-      /*
-       * IMPORTANT:
-       * Use the SAME payload that you are
-       * currently passing in your patient modal.
-       */
-      const user = await getLoggedInUser();
-          if (!user?.id) {
-            throw new Error("User not logged in.");
-          }
-
-        const userId = Number(user.id);
-      const payload: GetPatientPayload = {
-        user_id: userId,
-      };
-
-      const response = await getAllPatients(payload);
-
-      if (response?.data && Array.isArray(response.data)) {
-        setPatients(response.data);
-      } else {
         setPatients([]);
+      } finally {
+        setPatientLoading(false);
       }
-    } catch (error) {
-      console.error("Patient list error:", error);
+    }, []);
 
-      setPatients([]);
-    } finally {
-      setPatientLoading(false);
-    }
-  };
-
-  const loadDefaultPatient = (userId: number) => {
+  const loadDefaultPatient = useCallback((userId: number) => {
     try {
       const key = `nirnayan_default_patient_${userId}`;
 
@@ -124,7 +115,7 @@ export default function ProfilePage() {
 
       setDefaultPatient(null);
     }
-  };
+  }, []);
 
   const calculateAge = (dob: string) => {
     const birthDate = new Date(dob);
@@ -205,6 +196,88 @@ export default function ProfilePage() {
     window.dispatchEvent(new Event("defaultPatientUpdated"));
   };
 
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadAddresses = async () => {
+      try {
+        setLoadingAddresses(true);
+        setAddressError("");
+
+        const response = await getAllPatientAddresses();
+
+        if (cancelled) return;
+
+        setAddresses(
+          response.data.filter(
+            (address) =>
+              address.status === true && address.delete_status !== true,
+          ),
+        );
+      } catch (error: unknown) {
+        if (cancelled) return;
+
+        setAddresses([]);
+        setAddressError(
+          error instanceof Error
+            ? error.message
+            : "Unable to load saved addresses.",
+        );
+      } finally {
+        if (!cancelled) {
+          setLoadingAddresses(false);
+        }
+      }
+    };
+
+    void loadAddresses();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [addressRefreshKey]);
+
+  useEffect(() => {
+    const initializeProfile = async () => {
+      try {
+        const loggedUser = await getLoggedInUser();
+
+        if (!loggedUser) {
+          setUser(null);
+          return;
+        }
+
+        setUser(loggedUser);
+
+        loadDefaultPatient(loggedUser.id);
+
+        await loadPatients();
+      } catch (error) {
+        console.error("Profile initialization error:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    void initializeProfile();
+  }, [loadPatients, loadDefaultPatient]);
+
+  useEffect(() => {
+    const handlePatientsUpdated = () => {
+      void loadPatients();
+
+      if (user?.id) {
+        loadDefaultPatient(user.id);
+      }
+    };
+
+    window.addEventListener("patientsUpdated", handlePatientsUpdated);
+
+    return () => {
+      window.removeEventListener("patientsUpdated", handlePatientsUpdated);
+    };
+  }, [loadPatients, loadDefaultPatient, user?.id]);
+  
   if (loading) {
     return (
       <section className={styles.profilePage}>
@@ -291,7 +364,13 @@ export default function ProfilePage() {
               <p>Manage patients and choose your default patient.</p>
             </div>
 
-            <span className={styles.count}>{patients.length}</span>
+            <button
+              type="button"
+              className={styles.addAddressBtn}
+              onClick={openAddPatientModal}
+            >
+              + Add Patient
+            </button>
           </div>
 
           {defaultPatient && (
@@ -374,6 +453,14 @@ export default function ProfilePage() {
                         </button>
                       )}
                     </div>
+                    <button
+                      type="button"
+                      className={styles.editPatientBtn}
+                      onClick={() => openEditPatientModal(patient)}
+                    >
+                      <i className="fa-solid fa-pen" aria-hidden="true" />
+                      Edit
+                    </button>
                   </div>
                 );
               })}
@@ -395,24 +482,87 @@ export default function ProfilePage() {
           <div className={styles.sectionHeader}>
             <div>
               <h3>Saved Addresses</h3>
-
               <p>Manage addresses for home sample collection.</p>
             </div>
 
-            <button type="button" className={styles.addAddressBtn}>
+            <button
+              type="button"
+              className={styles.addAddressBtn}
+              onClick={() => setShowAddressModal(true)}
+            >
               + Add Address
             </button>
           </div>
 
-          <div className={styles.emptyState}>
-            <div className={styles.addressIcon}>
-              <i className="fa-solid fa-location-dot"></i>
+          {loadingAddresses ? (
+            <div className={styles.emptyState} role="status">
+              <p>Loading saved addresses...</p>
             </div>
+          ) : addressError ? (
+            <div className={styles.emptyState}>
+              <p role="alert">{addressError}</p>
 
-            <h4>No saved addresses</h4>
+              <button
+                type="button"
+                className={styles.addAddressBtn}
+                onClick={() => setAddressRefreshKey((value) => value + 1)}
+              >
+                Try Again
+              </button>
+            </div>
+          ) : addresses.length === 0 ? (
+            <div className={styles.emptyState}>
+              <div className={styles.addressIcon}>
+                <i className="fa-solid fa-location-dot" aria-hidden="true" />
+              </div>
 
-            <p>Your saved collection addresses will appear here.</p>
-          </div>
+              <h4>No saved addresses</h4>
+              <p>Your saved collection addresses will appear here.</p>
+            </div>
+          ) : (
+            <div className={styles.savedAddressGrid}>
+              {addresses.map((address) => (
+                <article key={address.id} className={styles.savedAddressCard}>
+                  <div className={styles.savedAddressHeader}>
+                    <h4>{address.fullName}</h4>
+
+                    <span className={styles.savedAddressType}>
+                      {address.addressName}
+                    </span>
+                  </div>
+
+                  <p className={styles.savedAddressText}>
+                    {[
+                      address.addressLine_1,
+                      address.addressLine_2,
+                      address.landMark,
+                      address.pinCode,
+                    ]
+                      .filter(Boolean)
+                      .join(", ")}
+                  </p>
+
+                  <a
+                    href={`tel:${address.contactNumber}`}
+                    className={styles.savedAddressPhone}
+                  >
+                    <i className="fa-solid fa-phone" aria-hidden="true" />
+                    {address.contactNumber}
+                  </a>
+                </article>
+              ))}
+            </div>
+          )}
+
+          {showAddressModal && (
+            <AddressModal
+              onClose={() => setShowAddressModal(false)}
+              onSaved={() => {
+                setShowAddressModal(false);
+                setAddressRefreshKey((value) => value + 1);
+              }}
+            />
+          )}
         </div>
       </div>
     </section>

@@ -49,7 +49,7 @@ export type CreatePatientResponse = {
         gender: number;
         height: number;
         weight: number;
-        blood_group: number | null;
+        blood_group: string | null;
         title: string | null;
         created_at: string;
         updated_at: string;
@@ -62,6 +62,22 @@ export type CreatePatientResponse = {
         patientAddress: string | null;
         patientEmail: string | null;
     };
+};
+
+export type EditPatientPayload = {
+    patient_id: number;
+    centre_id: number;
+    patientName: string;
+    gender: number;
+    blood_group: string;
+    dob: string;
+    height: number;
+    weight: number;
+    title: string;
+    phoneNumber: string;
+    altPhoneNumber: string;
+    patientAddress: string;
+    patientEmail: string;
 };
 
 export type PatientItem = {
@@ -186,4 +202,77 @@ export async function getAllPatients(payload: GetPatientPayload): Promise<Patien
     }
 
     return response.json();
+}
+
+async function sendPatientMutation(
+    endpoint: "editPatient" | "deletePatient",
+    payload: EditPatientPayload | { patient_id: number }
+): Promise<unknown> {
+    const user = await getLoggedInUser();
+
+    if (!user?.id) {
+        throw new Error("User not logged in.");
+    }
+
+    const response = await fetch(
+        `${getBaseUrl()}b2c/patient/${endpoint}`,
+        {
+            method: "POST",
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+                user_id: String(user.id),
+            },
+            body: JSON.stringify(payload),
+            cache: "no-store",
+        }
+    );
+
+    const fallbackMessage =
+        endpoint === "editPatient"
+            ? "Unable to update patient."
+            : "Unable to delete patient.";
+
+    if (response.status === 204 && response.ok) {
+        return null;
+    }
+
+    const result: unknown = await response.json();
+
+    if (typeof result === "object" && result !== null) {
+        const failedStatus =
+            "status" in result &&
+            typeof result.status === "number" &&
+            result.status !== 1;
+
+        const failedSuccess =
+            "success" in result && result.success === false;
+
+        if (!response.ok || failedStatus || failedSuccess) {
+            const message =
+                "message" in result && typeof result.message === "string"
+                    ? result.message
+                    : fallbackMessage;
+
+            throw new Error(message);
+        }
+    } else if (!response.ok) {
+        throw new Error(fallbackMessage);
+    }
+
+    return result;
+}
+
+export async function editPatient(
+    payload: EditPatientPayload
+): Promise<unknown> {
+    return sendPatientMutation("editPatient", payload);
+}
+
+export async function deletePatient(
+    patientId: number
+): Promise<unknown> {
+    return sendPatientMutation("deletePatient", {
+        patient_id: patientId,
+    });
 }
