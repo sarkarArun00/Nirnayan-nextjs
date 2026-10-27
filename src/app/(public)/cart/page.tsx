@@ -835,9 +835,7 @@ export default function CartPage() {
                             </div>
                             <div className="text-block">
                               <h4>{address.fullName}</h4>
-                              {/* <span className={styles.addressType}>
-                                  {address.addressName}
-                                </span> */}
+                              <h5 className="add-type">{address.addressName}</h5>
                               <p>{addressText}</p>
                               <h6><i className="fa-solid fa-phone"></i>{address.contactNumber}</h6>
                             </div>

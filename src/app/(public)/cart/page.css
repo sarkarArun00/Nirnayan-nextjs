@@ -63,7 +63,8 @@
 
 /*==== Address Css End ====*/
 .add-grid{ display:grid; grid-template-columns:repeat(2, 1fr); grid-row-gap:15px; grid-column-gap:15px; }
-.add-grid .add-card{ display:flex; align-items:center; border:1px solid #D9F3E5; background:#FBFFFD; border-radius:15px; padding:20px; }
+.add-grid .add-card{ position:relative; display:flex; align-items:center; overflow:hidden; border:1px solid #D9F3E5; background:#FBFFFD; border-radius:15px; padding:20px; }
+.add-grid .add-card .add-type{ position:absolute; right:0; top:0; font-size:13px; line-height:1.2; font-weight:500; color:var(--up-black); background:#FAC801; border-radius:0 0 0 25px; padding:6px 15px; }
 .add-grid .add-card.selectedAddress{ border-color:var(--up-theme); }
 .add-grid .add-card .add-box{ display:flex; align-items:center; flex:1; cursor:pointer; margin:0; }
 .add-grid .add-card input{ display:none; }
