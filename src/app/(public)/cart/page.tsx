@@ -47,8 +47,8 @@ type CartGroup = {
 type PatientCartGroup = {
   patientId: number;
   patient_name: string;
-  patient_age: number ;
-  patient_gender: number ;
+  patient_age: number;
+  patient_gender: number;
 
   items: CartItem[];
 };
@@ -563,7 +563,7 @@ export default function CartPage() {
 
                           {item.offerAmount &&
                             Number(item.offerAmount) <
-                              Number(item.mrpAmount) && (
+                            Number(item.mrpAmount) && (
                               <span
                                 style={{
                                   color: "#e53935",
@@ -583,7 +583,7 @@ export default function CartPage() {
                                 ((Number(item.mrpAmount) -
                                   Number(item.offerAmount)) /
                                   Number(item.mrpAmount)) *
-                                  100,
+                                100,
                               )}
                               % Off
                             </span>
@@ -693,9 +693,8 @@ export default function CartPage() {
                       <button
                         key={dateValue}
                         type="button"
-                        className={`${styles.dateButton} ${
-                          isSelected ? styles.selectedDate : ""
-                        }`}
+                        className={`${styles.dateButton} ${isSelected ? styles.selectedDate : ""
+                          }`}
                         aria-pressed={isSelected}
                         aria-label={date.toLocaleDateString("en-GB", {
                           weekday: "long",
@@ -764,16 +763,14 @@ export default function CartPage() {
                           <button
                             key={slot.id}
                             type="button"
-                            className={`${styles.timeSlotButton} ${
-                              isSelected && !isInactive
+                            className={`${styles.timeSlotButton} ${isSelected && !isInactive
                                 ? styles.selectedTimeSlot
                                 : ""
-                            }`}
+                              }`}
                             disabled={!selectedBookingDate || isInactive}
                             aria-pressed={isSelected && !isInactive}
-                            aria-label={`${slot.slot_label}, ${timeLabel}${
-                              isInactive ? ", unavailable" : ""
-                            }`}
+                            aria-label={`${slot.slot_label}, ${timeLabel}${isInactive ? ", unavailable" : ""
+                              }`}
                             onClick={() => setSelectedSlotId(slot.id)}
                           >
                             {timeLabel}
@@ -857,9 +854,8 @@ export default function CartPage() {
                       return (
                         <article
                           key={address.id}
-                          className={`${styles.addressCard} ${
-                            isSelected ? styles.selectedAddress : ""
-                          }`}
+                          className={`${styles.addressCard} ${isSelected ? styles.selectedAddress : ""
+                            }`}
                         >
                           <label className={styles.addressChoice}>
                             <span
@@ -959,6 +955,48 @@ export default function CartPage() {
 
             {/* RIGHT SIDE */}
             <div className="col-lg-4">
+              <div className="coupon">
+                <div className="inn">
+                  <div className="coupon-head">
+                    <div className="icon">
+                      <img src="/assets/images/coupon-icon.svg" alt="" />
+                    </div>
+                    <h4>Coupons Available</h4>
+                  </div>
+                  <div className="box active">
+                    <div className="top-block">
+                      <div className="lt-side">
+                        <div className="icon">
+                          <img src="/assets/images/coupon.svg" alt="" />
+                        </div>
+                        <div className="text">
+                          <h4>20% Off</h4>
+                          <p>Complete health screening package</p>
+                        </div>
+                      </div>
+                      <button className="cmn_btn">Apply</button>
+                    </div>
+                    <h6>Upto Rs. 250 on minimum purchase of Rs. 300.</h6>
+                    <span className="dis-tag">HEALTH20</span>
+                  </div>
+                  <div className="box">
+                    <div className="top-block">
+                      <div className="lt-side">
+                        <div className="icon">
+                          <img src="/assets/images/coupon.svg" alt="" />
+                        </div>
+                        <div className="text">
+                          <h4>20% Off</h4>
+                          <p>Complete health screening package</p>
+                        </div>
+                      </div>
+                      <button className="cmn_btn">Apply</button>
+                    </div>
+                    <h6>Upto Rs. 250 on minimum purchase of Rs. 300.</h6>
+                    <span className="dis-tag">HEALTH20</span>
+                  </div>
+                </div>
+              </div>
               <div
                 style={{
                   background: "#fff",

@@ -72,11 +72,19 @@
 .add-menu button{ font-size:14px; line-height:1.2; border:0; background:none; padding:5px 0; }
 .add-menu button i{ font-size:14px !important; padding-right:8px; }
 
-
-
-
 .booking-msg{ font-size:14px; font-weight:500; color:var(--up-theme); margin-bottom:10px; }
 summary{ list-style:none; cursor:pointer; }
 summary::-webkit-details-marker{ display:none; }
 summary::marker{ content: ""; }
 /*==== Address Css End ====*/
+
+.coupon{ background-image:linear-gradient(123.13deg, #FAC801, #FFFFFF, #FFFFFF, #00A651); border-radius:15px; box-shadow:0px 4px 10px 0px #C8C8C866; padding:1px; margin-bottom:20px; }
+.coupon .inn{ background:var(--up-white); border-radius:15px; padding:15px; }
+.coupon .coupon-head{ display:flex; align-items:center; margin-bottom:15px; }
+.coupon .coupon-head .icon{ width:30px; }
+.coupon .coupon-head .icon img{ max-width:100%; }
+.coupon .coupon-head h4{ flex:1; font-weight:600; color:var(--up-black); margin:0; padding-left:12px; }
+
+.coupon .box{ background:linear-gradient(93.71deg, #D9F3E5 0%, #FFFFFF 100%); border-radius:15px; padding:20px 15px; margin-bottom:14px; }
+.coupon .box.active{ border:1px dashed var(--up-theme); }
+
