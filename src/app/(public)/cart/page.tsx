@@ -47,9 +47,6 @@ type CartGroup = {
 type PatientCartGroup = {
   patientId: number;
   patient_name: string;
-  patient_age: number;
-  patient_gender: number;
-
   items: CartItem[];
 };
 
@@ -127,6 +124,8 @@ export default function CartPage() {
 
   const addressDeleteDialogRef = useRef<HTMLDialogElement>(null);
   const addressDeletePendingRef = useRef(false);
+  const [openDoctorIndex, setOpenDoctorIndex] = useState<number | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const loadCart = async () => {
     try {
@@ -141,26 +140,11 @@ export default function CartPage() {
               (group) => group.patientId === item.patientId,
             );
 
-            // if (!patientGroup) {
-            //   patientGroup = {
-            //     patientId: item.patientId,
-
-            //     patient_name: item.patient_name,
-            //     patient_age: item.patient_age,
-            //     patient_gender: item.patient_gender,
-            //     items: [],
-            //   };
-
-            //   groups.push(patientGroup);
-            // }
-
             if (!patientGroup) {
               patientGroup = {
                 patientId: item.patientId,
-                patient_name: item.patient_name,
 
-                patient_age: item.patient_age,
-                patient_gender: item.patient_gender,
+                patient_name: item.patient_name,
 
                 items: [],
               };
@@ -337,6 +321,7 @@ export default function CartPage() {
 
         setCart(parsedCart);
 
+        console.log("Cart Page Data:", parsedCart);
       }
     } catch (error) {
       console.error("Cart load error:", error);
@@ -447,30 +432,11 @@ export default function CartPage() {
     ? cartGroups.find((group) => group.patientId === removeTarget.patientId)
     : null;
 
-  const getGenderName = (gender: number) => {
-    switch (gender) {
-      case 1:
-        return "Male";
-
-      case 2:
-        return "Female";
-
-      case 3:
-        return "Other";
-
-      default:
-        return "N/A";
-    }
-  };
-
-
   return (
     <section className="cart-dtl">
       <div className="container">
         <ol className="breadcrumb">
-          <li className="breadcrumb-item">
-            <Link href="/">Home</Link>
-          </li>
+          <li className="breadcrumb-item"><Link href="/">Home</Link></li>
           <li className="breadcrumb-item active">Cart</li>
         </ol>
 
@@ -502,10 +468,7 @@ export default function CartPage() {
                       )}
                       )
                     </h4>
-                    <p>
-                      Review the items you’ve added to your cart and make any
-                      changes before proceeding to checkout.
-                    </p>
+                    <p>Review the items you’ve added to your cart and make any changes before proceeding to checkout.</p>
                   </div>
                 </div>
 
@@ -518,7 +481,8 @@ export default function CartPage() {
                 </button>
               </div>
 
-              {cartGroups.map((group) => (
+
+              {cartGroups.map((group, index) => (
                 <div key={group.patientId} className="pt-card">
                   <div className="pt-head">
                     <div className="lt-side">
@@ -527,20 +491,43 @@ export default function CartPage() {
                       </div>
                       <div className="text">
                         <h6>{group.patient_name}</h6>
-                        <p>
-                          <i className="fa-solid fa-venus-mars"></i>{" "}
-                          {group.patient_age
-                            ? `${group.patient_age} y`
-                            : "Age N/A"}{" "}
-                          • {getGenderName(group.patient_gender)}
-                        </p>
+                        <p><i className="fa-solid fa-venus-mars"></i> 33 y • Male </p>
                       </div>
                     </div>
                     <div className="rt-side">
-                      <button className="add-doc">+ Add Doctor</button>
-                      <button className="exp-btn">
-                        Upload Rx <img src="/assets/images/rx1.svg" alt="" />
+                      <button
+                        type="button"
+                        className="add-doc"
+                        onClick={() =>
+                          setOpenDoctorIndex((prev) =>
+                            prev === index ? null : index
+                          )
+                        }
+                      >
+                        + Add Doctor
                       </button>
+                      {openDoctorIndex === index && (
+                        <div className="add-dv">
+                          <input
+                            type="text"
+                            placeholder="Doctor Name"
+                            className="form-control"
+                          />
+                        </div>
+                      )}
+                      <button className="exp-btn" onClick={() => fileInputRef.current?.click()}>Upload Rx <img src="/assets/images/rx1.svg" alt="" /></button>
+                      <input
+                        type="file"
+                        ref={fileInputRef}
+                        accept=".pdf,.jpg,.jpeg,.png"
+                        hidden
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) {
+                            console.log("Selected file:", file);
+                          }
+                        }}
+                      />
                     </div>
                   </div>
 
@@ -553,42 +540,13 @@ export default function CartPage() {
                         <h6>{item.test_name}</h6>
                       </div>
                       <div className="rt-side">
-                        <div className="d-flex align-items-center gap-2">
-                          <h6>
-                            ₹
-                            {Number(
-                              item.offerAmount || item.mrpAmount || 0,
-                            ).toFixed(2)}
-                          </h6>
-
-                          {item.offerAmount &&
-                            Number(item.offerAmount) <
-                            Number(item.mrpAmount) && (
-                              <span
-                                style={{
-                                  color: "#e53935",
-                                  textDecoration: "line-through",
-                                  fontSize: "14px",
-                                }}
-                              >
-                                ₹{Number(item.mrpAmount).toFixed(2)}
-                              </span>
-                            )}
-                        </div>
-
-                        {item.offerAmount &&
-                          Number(item.offerAmount) < Number(item.mrpAmount) && (
-                            <span className="is-discount">
-                              {Math.round(
-                                ((Number(item.mrpAmount) -
-                                  Number(item.offerAmount)) /
-                                  Number(item.mrpAmount)) *
-                                100,
-                              )}
-                              % Off
-                            </span>
-                          )}
-
+                        <h6>
+                          ₹
+                          {Number(
+                            item.finalAmount || item.mrpAmount || 0,
+                          ).toFixed(2)}
+                        </h6>
+                        <span className="is-discount">10% Off</span>
                         <button
                           type="button"
                           className="remove"
@@ -606,27 +564,32 @@ export default function CartPage() {
                       </div>
                     </div>
                   ))}
+                  <div className="attach">
+                    <h6>Attach Prescription Document</h6>
+                    <ul>
+                      <li><img src="/assets/images/prescription.png" alt="" /></li>
+                      <li><img src="/assets/images/prescription.png" alt="" /></li>
+                    </ul>
+                  </div>
                   <div className="text-center">
-                    <button className="add-btn">
-                      + Add more tests or health checkup packages
-                    </button>
+                    <button className="add-btn">+ Add more tests or health checkup packages</button>
                   </div>
                 </div>
               ))}
 
               <section
-                className={styles.bookingSection}
+                className="booking-wrap"
                 aria-labelledby="booking-slot-heading"
               >
-                <div className={styles.bookingHeader}>
-                  <div className={styles.bookingHeading}>
+                <div className="booking-head">
+                  <div className="left-block">
                     <i
-                      className={`fa-solid fa-calendar-days ${styles.bookingIcon}`}
+                      className={`fa-solid fa-calendar-days ${styles.booking_icon}`}
                       aria-hidden="true"
                     />
 
-                    <div>
-                      <h2 id="booking-slot-heading">Book Your Slot</h2>
+                    <div className="text-block">
+                      <h4>Book Your Slot</h4>
                       <p>
                         Choose your preferred date and time for sample
                         collection.
@@ -635,17 +598,16 @@ export default function CartPage() {
                   </div>
 
                   {!loadingSlots && !slotError && slots.length > 0 && (
-                    <span className={styles.slotCount}>
+                    <span className="slot-count">
                       {slots.length} Time{" "}
                       {slots.length === 1 ? "Slot" : "Slots"}
                     </span>
                   )}
                 </div>
 
-                <div className={styles.dateNavigation}>
-                  <span>Select date</span>
-
-                  <div className={styles.dateNavigationActions}>
+                <div className="date-nav-head">
+                  {/* <span>Select date</span> */}
+                  <div className="date-nav">
                     <button
                       type="button"
                       aria-label="Previous seven days"
@@ -681,7 +643,7 @@ export default function CartPage() {
                 </div>
 
                 <div
-                  className={styles.dateList}
+                  className="date-list"
                   role="group"
                   aria-label="Collection date"
                 >
@@ -693,8 +655,9 @@ export default function CartPage() {
                       <button
                         key={dateValue}
                         type="button"
-                        className={`${styles.dateButton} ${isSelected ? styles.selectedDate : ""
-                          }`}
+                        // className={`${styles.dateButton} ${isSelected ? styles.selectedDate : ""
+                        //   }`}
+                        className={`dateButton ${isSelected ? "selectedDate" : ""}`}
                         aria-pressed={isSelected}
                         aria-label={date.toLocaleDateString("en-GB", {
                           weekday: "long",
@@ -725,7 +688,7 @@ export default function CartPage() {
                   })}
                 </div>
 
-                <div className={styles.timeHeading}>Select time</div>
+                {/* <div className={styles.timeHeading}>Select time</div> */}
 
                 {loadingSlots ? (
                   <p className={styles.bookingMessage} role="status">
@@ -742,13 +705,13 @@ export default function CartPage() {
                 ) : (
                   <>
                     {!selectedBookingDate && (
-                      <p className={styles.bookingMessage}>
+                      <p className="booking-msg">
                         Select a date to choose a time slot.
                       </p>
                     )}
 
                     <div
-                      className={styles.timeSlotList}
+                      className="slot-list"
                       role="group"
                       aria-label="Collection time"
                     >
@@ -763,10 +726,11 @@ export default function CartPage() {
                           <button
                             key={slot.id}
                             type="button"
-                            className={`${styles.timeSlotButton} ${isSelected && !isInactive
-                                ? styles.selectedTimeSlot
-                                : ""
-                              }`}
+                            // className={`${styles.timeSlotButton} ${isSelected && !isInactive
+                            //   ? styles.selectedTimeSlot
+                            //   : ""
+                            //   }`}
+                            className={`timeSlotButton ${isSelected && !isInactive ? "active" : ""}`}
                             disabled={!selectedBookingDate || isInactive}
                             aria-pressed={isSelected && !isInactive}
                             aria-label={`${slot.slot_label}, ${timeLabel}${isInactive ? ", unavailable" : ""
@@ -783,18 +747,14 @@ export default function CartPage() {
               </section>
 
               <section
-                className={styles.addressSection}
+                className="booking-wrap"
                 aria-labelledby="cart-address-heading"
               >
-                <div className={styles.addressSectionHeader}>
-                  <div className={styles.addressTitle}>
-                    <i
-                      className={`fa-solid fa-house ${styles.addressIcon}`}
-                      aria-hidden="true"
-                    />
-
-                    <div>
-                      <h2 id="cart-address-heading">Address</h2>
+                <div className="booking-head">
+                  <div className="left-block">
+                    <i className="fa-solid fa-house"></i>
+                    <div className="text-block">
+                      <h4>Address</h4>
                       <p>
                         Choose your preferred address for sample collection.
                       </p>
@@ -802,7 +762,7 @@ export default function CartPage() {
                   </div>
                   <button
                     type="button"
-                    className={styles.addAddressButton}
+                    className="exp-btn"
                     onClick={() => {
                       setEditingAddress(undefined);
                       setShowAddressModal(true);
@@ -824,7 +784,9 @@ export default function CartPage() {
                     <button
                       type="button"
                       className={styles.addressRetryButton}
-                      onClick={() => setAddressRefreshKey((value) => value + 1)}
+                      onClick={() =>
+                        setAddressRefreshKey((value) => value + 1)
+                      }
                     >
                       Try Again
                     </button>
@@ -835,7 +797,7 @@ export default function CartPage() {
                   </p>
                 ) : (
                   <div
-                    className={styles.addressGrid}
+                    className="add-grid"
                     role="group"
                     aria-label="Sample collection address"
                   >
@@ -854,37 +816,30 @@ export default function CartPage() {
                       return (
                         <article
                           key={address.id}
-                          className={`${styles.addressCard} ${isSelected ? styles.selectedAddress : ""
-                            }`}
+                          // className={`${styles.addressCard} ${isSelected ? styles.selectedAddress : ""
+                          //   }`}
+                          className={`add-card ${isSelected ? "selectedAddress" : ""}`}
                         >
-                          <label className={styles.addressChoice}>
-                            <span
+                          <label className="add-box">
+                            {/* <span
                               className={styles.addressAvatar}
                               aria-hidden="true"
                             >
-                              {address.fullName.trim().charAt(0).toUpperCase()}
-                            </span>
-
-                            <div className={styles.addressDetails}>
-                              <div className={styles.addressNameRow}>
-                                <h3>{address.fullName}</h3>
-
-                                <span className={styles.addressType}>
+                              {address.fullName
+                                .trim()
+                                .charAt(0)
+                                .toUpperCase()}
+                            </span> */}
+                            <div className="icon">
+                              <img alt="" src="/assets/images/user2.png" />
+                            </div>
+                            <div className="text-block">
+                              <h4>{address.fullName}</h4>
+                              {/* <span className={styles.addressType}>
                                   {address.addressName}
-                                </span>
-                              </div>
-
-                              <p className={styles.addressText}>
-                                {addressText}
-                              </p>
-
-                              <span className={styles.addressContact}>
-                                <i
-                                  className="fa-solid fa-phone"
-                                  aria-hidden="true"
-                                />
-                                {address.contactNumber}
-                              </span>
+                                </span> */}
+                              <p>{addressText}</p>
+                              <h6><i className="fa-solid fa-phone"></i>{address.contactNumber}</h6>
                             </div>
 
                             <input
@@ -893,12 +848,14 @@ export default function CartPage() {
                               className={styles.addressRadio}
                               value={address.id}
                               checked={isSelected}
-                              onChange={() => setSelectedAddressId(address.id)}
+                              onChange={() =>
+                                setSelectedAddressId(address.id)
+                              }
                               aria-label={`Select ${address.addressName} address for ${address.fullName}`}
                             />
                           </label>
 
-                          <details className={styles.addressActions}>
+                          <details className="add-act">
                             <summary
                               aria-label={`Actions for ${address.fullName}'s ${address.addressName} address`}
                             >
@@ -908,7 +865,7 @@ export default function CartPage() {
                               />
                             </summary>
 
-                            <div className={styles.addressActionsMenu}>
+                            <div className="add-menu">
                               <button
                                 type="button"
                                 onClick={(event) => {
@@ -967,122 +924,114 @@ export default function CartPage() {
                     <input type="text" placeholder="Enter Coupon Code" className="form-control" />
                     <button>Check</button>
                   </div>
-                  <div className="box active">
-                    <div className="top-block">
-                      <div className="lt-side">
-                        <div className="icon">
-                          <img src="/assets/images/coupon.svg" alt="" />
+                  <div className="scroll-dv">
+                    <div className="box active">
+                      <div className="left-sec">
+                        <div className="lt-side">
+                          <div className="icon">
+                            <img src="/assets/images/coupon.svg" alt="" />
+                          </div>
+                          <div className="text">
+                            <h4>20% Off</h4>
+                            <p>Complete health screening package</p>
+                          </div>
                         </div>
-                        <div className="text">
-                          <h4>20% Off</h4>
-                          <p>Complete health screening package</p>
-                        </div>
+                        <h6>Upto Rs. 250 on minimum purchase of Rs. 300.</h6>
                       </div>
                       <button className="cmn_btn">Apply</button>
+                      <span className="dis-tag">HEALTH20</span>
                     </div>
-                    <h6>Upto Rs. 250 on minimum purchase of Rs. 300.</h6>
-                    <span className="dis-tag">HEALTH20</span>
-                  </div>
-                  <div className="box">
-                    <div className="top-block">
-                      <div className="lt-side">
-                        <div className="icon">
-                          <img src="/assets/images/coupon.svg" alt="" />
+                    <div className="box">
+                      <div className="left-sec">
+                        <div className="lt-side">
+                          <div className="icon">
+                            <img src="/assets/images/coupon.svg" alt="" />
+                          </div>
+                          <div className="text">
+                            <h4>20% Off</h4>
+                            <p>Complete health screening package</p>
+                          </div>
                         </div>
-                        <div className="text">
-                          <h4>20% Off</h4>
-                          <p>Complete health screening package</p>
-                        </div>
+                        <h6>Upto Rs. 250 on minimum purchase of Rs. 300.</h6>
                       </div>
                       <button className="cmn_btn">Apply</button>
+                      <span className="dis-tag">HEALTH20</span>
                     </div>
-                    <h6>Upto Rs. 250 on minimum purchase of Rs. 300.</h6>
-                    <span className="dis-tag">HEALTH20</span>
+                    <div className="box">
+                      <div className="left-sec">
+                        <div className="lt-side">
+                          <div className="icon">
+                            <img src="/assets/images/coupon.svg" alt="" />
+                          </div>
+                          <div className="text">
+                            <h4>20% Off</h4>
+                            <p>Complete health screening package</p>
+                          </div>
+                        </div>
+                        <h6>Upto Rs. 250 on minimum purchase of Rs. 300.</h6>
+                      </div>
+                      <button className="cmn_btn">Apply</button>
+                      <span className="dis-tag">HEALTH20</span>
+                    </div>
+                    <div className="box">
+                      <div className="left-sec">
+                        <div className="lt-side">
+                          <div className="icon">
+                            <img src="/assets/images/coupon.svg" alt="" />
+                          </div>
+                          <div className="text">
+                            <h4>20% Off</h4>
+                            <p>Complete health screening package</p>
+                          </div>
+                        </div>
+                        <h6>Upto Rs. 250 on minimum purchase of Rs. 300.</h6>
+                      </div>
+                      <button className="cmn_btn">Apply</button>
+                      <span className="dis-tag">HEALTH20</span>
+                    </div>
                   </div>
                 </div>
               </div>
-              <div
-                style={{
-                  background: "#fff",
-                  borderRadius: "16px",
-                  padding: "22px",
-                  border: "1px solid #e8e8e8",
-                  position: "sticky",
-                  top: "110px",
-                }}
-              >
-                <h3
-                  style={{
-                    fontSize: "19px",
-                    marginBottom: "20px",
-                  }}
-                >
-                  Order Summary
-                </h3>
 
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    marginBottom: "12px",
-                    color: "#666",
-                  }}
-                >
-                  <span>Patients</span>
-
+              <div className="coupon">
+                <div className="inn">
+                  <div className="coupon-head">
+                    <div className="icon">
+                      <img src="/assets/images/price.svg" alt="" />
+                    </div>
+                    <h4>Your Price Summary</h4>
+                  </div>
+                  {/* <span>Patients</span>
                   <span>{cartGroups.length}</span>
-                </div>
-
-                <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    marginBottom: "18px",
-                    color: "#666",
-                  }}
-                >
                   <span>Items</span>
-
                   <span>
                     {cartGroups.reduce(
                       (count, group) => count + group.items.length,
                       0,
                     )}
-                  </span>
+                  </span> */}
+                  <ul className="amt">
+                    <li><span>Gross Amount</span> ₹ 2,500.00</li>
+                    <li><span>Net Amount</span> ₹ 414.00</li>
+                    <li><span>Offer Discount</span> ₹ 0.00</li>
+                    <li><span>Coupon Discount</span> Apply Coupon</li>
+                  </ul>
+                  <div className="total-amount">
+                    <div className="lt-side">
+                      <h6>Total Amount</h6>
+                      <h4>₹{getTotal().toFixed(2)}</h4>
+                    </div>
+                    <div className="rt-side">
+                      <button type="button" className="cmn_btn">Proceed to Checkout</button>
+                      <div className="d-flex justify-content-center align-items-center gap-2 mt-2">
+                        <img src="/assets/images/shield.svg" alt="" />
+                        <h6 className="m-0">Secure checkout</h6>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-
-                <div
-                  style={{
-                    borderTop: "1px solid #eee",
-                    paddingTop: "16px",
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                  }}
-                >
-                  <strong>Total</strong>
-
-                  <strong
-                    style={{
-                      fontSize: "22px",
-                      color: "#079653",
-                    }}
-                  >
-                    ₹{getTotal().toFixed(2)}
-                  </strong>
-                </div>
-
-                <button
-                  type="button"
-                  className="cmn_btn"
-                  style={{
-                    width: "100%",
-                    marginTop: "22px",
-                  }}
-                >
-                  Proceed
-                </button>
               </div>
+
             </div>
           </div>
         )}
