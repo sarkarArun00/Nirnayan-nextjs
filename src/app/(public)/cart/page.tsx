@@ -963,6 +963,10 @@ export default function CartPage() {
                     </div>
                     <h4>Coupons Available</h4>
                   </div>
+                  <div className="inp-box">
+                    <input type="text" placeholder="Enter Coupon Code" className="form-control" />
+                    <button>Check</button>
+                  </div>
                   <div className="box active">
                     <div className="top-block">
                       <div className="lt-side">
