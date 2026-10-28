@@ -642,10 +642,10 @@ function PopularTest({ section = "all" }: PopularTestProps) {
                                         fontWeight: 700,
                                       }}
                                     >
-                                      ₹{Number(test.offerAmount).toFixed(2)}
+                                      ₹{Number(test.offerAmount).toFixed(2)} <del>₹{Number(test.mrpAmount || 0).toFixed(2)}</del>
                                     </span>
 
-                                    <span
+                                    {/* <span
                                       style={{
                                         color: "#e53935",
                                         textDecoration: "line-through",
@@ -653,7 +653,7 @@ function PopularTest({ section = "all" }: PopularTestProps) {
                                       }}
                                     >
                                       ₹{Number(test.mrpAmount || 0).toFixed(2)}
-                                    </span>
+                                    </span> */}
                                   </>
                                 ) : (
                                   <span className="price">

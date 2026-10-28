@@ -215,7 +215,7 @@ label span{ color:#FF0000; }
 .test-box .inn-pnl .info .right span.lab{ font-size:14px; font-weight:500; color:var(--up-black); display:flex; align-items:center; gap:0 6px; }
 .test-box .btm-pnl{ display:flex; align-items:center; justify-content:space-between; padding:15px 11px; }
 .test-box .btm-pnl span.price{ font-size:18px; line-height:1; font-weight:500; color:var(--up-black); display:block; }
-.test-box .btm-pnl span.price del{ font-size:13px; color:var(--up-gray); }
+.test-box .btm-pnl span.price del{ font-weight:400; font-size:13px; color:var(--up-gray); }
 .test-box .btm-pnl span.discount{ font-size:12px; line-height:1.2; font-weight:500; color:var(--up-black); background:linear-gradient(90deg, #FAC801 0%, #FFFFFF 50%, #FAC801 100%); border-radius:25px; padding:5px 8px; }
 /* Pack Card */
 .pack-card{ background:radial-gradient(50% 50% at 50% 50%, #FFFFFF 65%, #D9F3E5 100%); border-radius:25px; padding:15px; }
