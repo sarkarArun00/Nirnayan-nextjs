@@ -174,6 +174,19 @@ export type PopularInvestigationItem = {
     mrpAmount: string;
 };
 
+export type AwardItem = {
+    id: number;
+    awardTitle: string;
+    awardDesc: string;
+    status: boolean;
+    delete_status: boolean | null;
+    awardImage: string;
+};
+
+export type AwardsResponse = {
+    data: AwardItem[];
+};
+
 export type PopularInvestigationResponse = {
     data: PopularInvestigationItem[];
 };
@@ -402,4 +415,44 @@ export async function getAllWordPressBlogs(
         );
 
     return blogsWithImages;
+}
+
+
+export async function getAllAwards(): Promise<AwardsResponse> {
+    const response = await fetch(
+        `${getBaseUrl()}b2c/awards/getAllAwards`,
+        {
+            method: "GET",
+            headers: {
+                Accept: "application/json",
+            },
+            cache: "no-store",
+        }
+    );
+
+    if (!response.ok) {
+        throw new Error("Unable to load awards.");
+    }
+
+    const result: AwardsResponse = await response.json();
+
+    if (!Array.isArray(result?.data)) {
+        throw new Error("Invalid awards response.");
+    }
+
+    return result;
+}
+
+export function getAwardImageUrl(path: string): string {
+    const cleanPath = path.trim();
+
+    if (!cleanPath) {
+        return "/assets/images/awards.png";
+    }
+
+    if (/^https?:\/\//i.test(cleanPath)) {
+        return cleanPath;
+    }
+
+    return `${getBaseUrl()}${cleanPath.replace(/^\/+/, "")}`;
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback,useEffect, useState } from "react";
+import { useCallback,useEffect, useRef, useState } from "react";
 
 import Link from "next/link";
 
@@ -10,12 +10,14 @@ import {
   getAllPatients,
   PatientItem,
   GetPatientPayload,
+  deletePatient,
 } from "@/services/patient.service";
 
 import styles from "./Profile.module.css";
 
 import AddressModal from "@/components/common/AddressModal/AddressModal";
 import {
+  deletePatientAddress,
   getAllPatientAddresses,
   type PatientAddress,
 } from "@/services/cart.service";
@@ -58,8 +60,29 @@ export default function ProfilePage() {
   const [addressError, setAddressError] = useState("");
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [addressRefreshKey, setAddressRefreshKey] = useState(0);
+  const [addressToDelete, setAddressToDelete] = useState<PatientAddress | null>(
+    null,
+  );
+    const addressDeleteDialogRef = useRef<HTMLDialogElement>(null);
+    const addressDeletePendingRef = useRef(false);
+  const [deletingAddress, setDeletingAddress] = useState(false);
+  const [addressDeleteError, setAddressDeleteError] = useState("");
 
 
+  const [patientToDelete, setPatientToDelete] = useState<PatientItem | null>(
+    null,
+  );
+
+  const [deletingPatient, setDeletingPatient] = useState(false);
+  const [patientDeleteError, setPatientDeleteError] = useState("");
+
+  const patientDeleteDialogRef = useRef<HTMLDialogElement>(null);
+  const patientDeletePendingRef = useRef(false);
+
+  
+  const [editingAddress, setEditingAddress] = useState<
+    PatientAddress | undefined
+  >(undefined);
   
   const loadPatients = useCallback(async () => {
       try {
@@ -196,6 +219,33 @@ export default function ProfilePage() {
     window.dispatchEvent(new Event("defaultPatientUpdated"));
   };
 
+    const handleDeleteAddress = async () => {
+      if (!addressToDelete || addressDeletePendingRef.current) return;
+  
+      const addressId = addressToDelete.id;
+  
+      try {
+        addressDeletePendingRef.current = true;
+        setDeletingAddress(true);
+        setAddressDeleteError("");
+  
+        await deletePatientAddress(addressId);
+
+  
+        setAddressToDelete(null);
+        setAddressRefreshKey((value) => value + 1);
+      } catch (error: unknown) {
+        setAddressDeleteError(
+          error instanceof Error
+            ? error.message
+            : "Unable to delete the address. Please try again.",
+        );
+      } finally {
+        addressDeletePendingRef.current = false;
+        setDeletingAddress(false);
+      }
+    };
+  
   useEffect(() => {
     let cancelled = false;
 
@@ -237,6 +287,27 @@ export default function ProfilePage() {
     };
   }, [addressRefreshKey]);
 
+    useEffect(() => {
+      if (!addressToDelete) return;
+
+      const dialog = addressDeleteDialogRef.current;
+      const previousOverflow = document.body.style.overflow;
+
+      if (dialog && !dialog.open) {
+        dialog.showModal();
+      }
+
+      document.body.style.overflow = "hidden";
+
+      return () => {
+        document.body.style.overflow = previousOverflow;
+
+        if (dialog?.open) {
+          dialog.close();
+        }
+      };
+    }, [addressToDelete]);
+  
   useEffect(() => {
     const initializeProfile = async () => {
       try {
@@ -278,6 +349,82 @@ export default function ProfilePage() {
     };
   }, [loadPatients, loadDefaultPatient, user?.id]);
   
+  useEffect(() => {
+    if (!patientToDelete) return;
+
+    const dialog = patientDeleteDialogRef.current;
+    const previousOverflow = document.body.style.overflow;
+
+    if (dialog && !dialog.open) {
+      dialog.showModal();
+    }
+
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+
+      if (dialog?.open) {
+        dialog.close();
+      }
+    };
+  }, [patientToDelete]);
+
+  const handleDeletePatient = async () => {
+    if (!patientToDelete || !user?.id || patientDeletePendingRef.current) {
+      return;
+    }
+
+    const patientId = patientToDelete.id;
+
+    try {
+      patientDeletePendingRef.current = true;
+      setDeletingPatient(true);
+      setPatientDeleteError("");
+
+      await deletePatient(patientId);
+
+      // Clear the saved default only if it is the deleted patient.
+      try {
+        const key = `nirnayan_default_patient_${user.id}`;
+        const stored = localStorage.getItem(key);
+        const saved: unknown = stored ? JSON.parse(stored) : null;
+
+        if (
+          typeof saved === "object" &&
+          saved !== null &&
+          "id" in saved &&
+          String(saved.id) === String(patientId)
+        ) {
+          localStorage.removeItem(key);
+          window.dispatchEvent(new Event("defaultPatientUpdated"));
+        }
+      } catch (error) {
+        console.error("Default patient cleanup error:", error);
+      }
+
+      setDefaultPatient((current) =>
+        String(current?.id) === String(patientId) ? null : current,
+      );
+
+      setPatientToDelete(null);
+
+      await loadPatients();
+
+      // Refresh the header using the latest backend cart data.
+      window.dispatchEvent(new Event("cartUpdated"));
+    } catch (error: unknown) {
+      setPatientDeleteError(
+        error instanceof Error
+          ? error.message
+          : "Unable to delete patient. Please try again.",
+      );
+    } finally {
+      patientDeletePendingRef.current = false;
+      setDeletingPatient(false);
+    }
+  };
+
   if (loading) {
     return (
       <section className={styles.profilePage}>
@@ -435,6 +582,29 @@ export default function ProfilePage() {
                     </div>
 
                     <div className={styles.patientActions}>
+                      <button
+                        type="button"
+                        className={styles.editPatientBtn}
+                        disabled={deletingPatient}
+                        onClick={() => openEditPatientModal(patient)}
+                      >
+                        <i className="fa-solid fa-pen" aria-hidden="true" />
+                        Edit
+                      </button>
+
+                      <button
+                        type="button"
+                        className={styles.deletePatientBtn}
+                        disabled={deletingPatient}
+                        onClick={() => {
+                          setPatientDeleteError("");
+                          setPatientToDelete(patient);
+                        }}
+                      >
+                        <i className="fa-solid fa-trash" aria-hidden="true" />
+                        Delete
+                      </button>
+
                       {isDefault ? (
                         <button
                           type="button"
@@ -453,14 +623,14 @@ export default function ProfilePage() {
                         </button>
                       )}
                     </div>
-                    <button
+                    {/* <button
                       type="button"
                       className={styles.editPatientBtn}
                       onClick={() => openEditPatientModal(patient)}
                     >
                       <i className="fa-solid fa-pen" aria-hidden="true" />
                       Edit
-                    </button>
+                    </button> */}
                   </div>
                 );
               })}
@@ -549,6 +719,34 @@ export default function ProfilePage() {
                     <i className="fa-solid fa-phone" aria-hidden="true" />
                     {address.contactNumber}
                   </a>
+
+                  <div className={styles.savedAddressActions}>
+                    <button
+                      type="button"
+                      className={styles.savedAddressEditBtn}
+                      disabled={deletingAddress}
+                      onClick={() => {
+                        setEditingAddress(address);
+                        setShowAddressModal(true);
+                      }}
+                    >
+                      <i className="fa-solid fa-pen" aria-hidden="true" />
+                      Edit
+                    </button>
+
+                    <button
+                      type="button"
+                      className={styles.savedAddressDeleteBtn}
+                      disabled={deletingAddress}
+                      onClick={() => {
+                        setAddressDeleteError("");
+                        setAddressToDelete(address);
+                      }}
+                    >
+                      <i className="fa-solid fa-trash" aria-hidden="true" />
+                      Delete
+                    </button>
+                  </div>
                 </article>
               ))}
             </div>
@@ -556,15 +754,169 @@ export default function ProfilePage() {
 
           {showAddressModal && (
             <AddressModal
-              onClose={() => setShowAddressModal(false)}
+              key={editingAddress?.id ?? "new-address"}
+              address={editingAddress}
+              onClose={() => {
+                setShowAddressModal(false);
+                setEditingAddress(undefined);
+              }}
               onSaved={() => {
                 setShowAddressModal(false);
+                setEditingAddress(undefined);
                 setAddressRefreshKey((value) => value + 1);
               }}
             />
           )}
         </div>
       </div>
+
+      {addressToDelete && (
+        <dialog
+          ref={addressDeleteDialogRef}
+          className={styles.addressDeleteDialog}
+          aria-labelledby="delete-address-heading"
+          aria-describedby="delete-address-description"
+          onCancel={(event) => {
+            event.preventDefault();
+
+            if (!addressDeletePendingRef.current) {
+              setAddressToDelete(null);
+            }
+          }}
+        >
+          <h2 id="delete-address-heading">Delete Address?</h2>
+
+          <p id="delete-address-description">
+            Remove the <strong>{addressToDelete.addressName}</strong> address
+            for <strong>{addressToDelete.fullName}</strong>?
+          </p>
+
+          {addressDeleteError && (
+            <p className={styles.addressDeleteError} role="alert">
+              {addressDeleteError}
+            </p>
+          )}
+
+          <div className={styles.addressDeleteButtons}>
+            <button
+              type="button"
+              disabled={deletingAddress}
+              onClick={() => setAddressToDelete(null)}
+              autoFocus
+            >
+              Cancel
+            </button>
+
+            <button
+              type="button"
+              className={styles.confirmAddressDelete}
+              disabled={deletingAddress}
+              onClick={() => void handleDeleteAddress()}
+            >
+              {deletingAddress ? "Deleting..." : "Delete"}
+            </button>
+          </div>
+        </dialog>
+      )}
+
+      {addressToDelete && (
+        <dialog
+          ref={addressDeleteDialogRef}
+          className={styles.addressDeleteDialog}
+          aria-labelledby="delete-address-heading"
+          aria-describedby="delete-address-description"
+          onCancel={(event) => {
+            event.preventDefault();
+
+            if (!addressDeletePendingRef.current) {
+              setAddressToDelete(null);
+            }
+          }}
+        >
+          <h2 id="delete-address-heading">Delete Address?</h2>
+
+          <p id="delete-address-description">
+            Remove the <strong>{addressToDelete.addressName}</strong> address
+            for <strong>{addressToDelete.fullName}</strong>?
+          </p>
+
+          {addressDeleteError && (
+            <p className={styles.addressDeleteError} role="alert">
+              {addressDeleteError}
+            </p>
+          )}
+
+          <div className={styles.addressDeleteButtons}>
+            <button
+              type="button"
+              disabled={deletingAddress}
+              onClick={() => setAddressToDelete(null)}
+              autoFocus
+            >
+              Cancel
+            </button>
+
+            <button
+              type="button"
+              className={styles.confirmAddressDelete}
+              disabled={deletingAddress}
+              onClick={() => void handleDeleteAddress()}
+            >
+              {deletingAddress ? "Deleting..." : "Delete"}
+            </button>
+          </div>
+        </dialog>
+      )}
+
+      {patientToDelete && (
+        <dialog
+          ref={patientDeleteDialogRef}
+          className={styles.patientDeleteDialog}
+          aria-labelledby="delete-patient-heading"
+          aria-describedby="delete-patient-description"
+          onCancel={(event) => {
+            event.preventDefault();
+
+            if (!patientDeletePendingRef.current) {
+              setPatientToDelete(null);
+            }
+          }}
+        >
+          <h2 id="delete-patient-heading">Delete Patient?</h2>
+
+          <p id="delete-patient-description">
+            Are you sure you want to delete{" "}
+            <strong>{patientToDelete.patient_name}</strong> from your saved
+            patients?
+          </p>
+
+          {patientDeleteError && (
+            <p className={styles.patientDeleteError} role="alert">
+              {patientDeleteError}
+            </p>
+          )}
+
+          <div className={styles.patientDeleteActions}>
+            <button
+              type="button"
+              disabled={deletingPatient}
+              onClick={() => setPatientToDelete(null)}
+              autoFocus
+            >
+              Cancel
+            </button>
+
+            <button
+              type="button"
+              className={styles.confirmPatientDelete}
+              disabled={deletingPatient}
+              onClick={() => void handleDeletePatient()}
+            >
+              {deletingPatient ? "Deleting..." : "Delete Patient"}
+            </button>
+          </div>
+        </dialog>
+      )}
     </section>
   );
 }

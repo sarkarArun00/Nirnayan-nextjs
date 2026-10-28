@@ -101,8 +101,8 @@ export type CartItem = {
 
     patient_name: string;
     test_name: string;
-    patient_age: number;
-    patient_gender: number;
+    patient_age: number ;
+    patient_gender: number ;
     test_code: string;
 
     tat: {

@@ -47,6 +47,8 @@ type CartGroup = {
 type PatientCartGroup = {
   patientId: number;
   patient_name: string;
+  patient_age: number ;
+  patient_gender: number ;
   items: CartItem[];
 };
 
@@ -146,6 +148,8 @@ export default function CartPage() {
 
                 patient_name: item.patient_name,
 
+                patient_age: item.patient_age,
+                patient_gender: item.patient_gender,
                 items: [],
               };
 
@@ -428,6 +432,22 @@ export default function CartPage() {
     return <div className="container py-5">Loading cart...</div>;
   }
 
+  const getGenderName = (gender: number) => {
+    switch (gender) {
+      case 1:
+        return "Male";
+
+      case 2:
+        return "Female";
+
+      case 3:
+        return "Other";
+
+      default:
+        return "N/A";
+    }
+  };
+
   const removePatient = removeTarget
     ? cartGroups.find((group) => group.patientId === removeTarget.patientId)
     : null;
@@ -436,7 +456,9 @@ export default function CartPage() {
     <section className="cart-dtl">
       <div className="container">
         <ol className="breadcrumb">
-          <li className="breadcrumb-item"><Link href="/">Home</Link></li>
+          <li className="breadcrumb-item">
+            <Link href="/">Home</Link>
+          </li>
           <li className="breadcrumb-item active">Cart</li>
         </ol>
 
@@ -468,7 +490,10 @@ export default function CartPage() {
                       )}
                       )
                     </h4>
-                    <p>Review the items you’ve added to your cart and make any changes before proceeding to checkout.</p>
+                    <p>
+                      Review the items you’ve added to your cart and make any
+                      changes before proceeding to checkout.
+                    </p>
                   </div>
                 </div>
 
@@ -481,7 +506,6 @@ export default function CartPage() {
                 </button>
               </div>
 
-
               {cartGroups.map((group, index) => (
                 <div key={group.patientId} className="pt-card">
                   <div className="pt-head">
@@ -491,7 +515,15 @@ export default function CartPage() {
                       </div>
                       <div className="text">
                         <h6>{group.patient_name}</h6>
-                        <p><i className="fa-solid fa-venus-mars"></i> 33 y • Male </p>
+                        <p>
+                          <i className="fa-solid fa-venus-mars"></i>{" "}
+                          {group.patient_age !== null &&
+                          group.patient_age !== undefined
+                            ? `${group.patient_age} Y`
+                            : "Age N/A"}
+                          {" • "}
+                          {getGenderName(group.patient_gender)}
+                        </p>
                       </div>
                     </div>
                     <div className="rt-side">
@@ -500,7 +532,7 @@ export default function CartPage() {
                         className="add-doc"
                         onClick={() =>
                           setOpenDoctorIndex((prev) =>
-                            prev === index ? null : index
+                            prev === index ? null : index,
                           )
                         }
                       >
@@ -515,7 +547,12 @@ export default function CartPage() {
                           />
                         </div>
                       )}
-                      <button className="exp-btn" onClick={() => fileInputRef.current?.click()}>Upload Rx <img src="/assets/images/rx1.svg" alt="" /></button>
+                      <button
+                        className="exp-btn"
+                        onClick={() => fileInputRef.current?.click()}
+                      >
+                        Upload Rx <img src="/assets/images/rx1.svg" alt="" />
+                      </button>
                       <input
                         type="file"
                         ref={fileInputRef}
@@ -540,13 +577,42 @@ export default function CartPage() {
                         <h6>{item.test_name}</h6>
                       </div>
                       <div className="rt-side">
-                        <h6>
-                          ₹
-                          {Number(
-                            item.finalAmount || item.mrpAmount || 0,
-                          ).toFixed(2)}
-                        </h6>
-                        <span className="is-discount">10% Off</span>
+                        <div className="d-flex align-items-center gap-2">
+                          <h6>
+                            ₹
+                            {Number(
+                              item.offerAmount || item.mrpAmount || 0,
+                            ).toFixed(2)}
+                          </h6>
+
+                          {item.offerAmount &&
+                            Number(item.offerAmount) <
+                              Number(item.mrpAmount) && (
+                              <span
+                                style={{
+                                  color: "#e53935",
+                                  textDecoration: "line-through",
+                                  fontSize: "14px",
+                                }}
+                              >
+                                ₹{Number(item.mrpAmount).toFixed(2)}
+                              </span>
+                            )}
+                        </div>
+
+                        {item.offerAmount &&
+                          Number(item.offerAmount) < Number(item.mrpAmount) && (
+                            <span className="is-discount">
+                              {Math.round(
+                                ((Number(item.mrpAmount) -
+                                  Number(item.offerAmount)) /
+                                  Number(item.mrpAmount)) *
+                                  100,
+                              )}
+                              % Off
+                            </span>
+                          )}
+
                         <button
                           type="button"
                           className="remove"
@@ -567,12 +633,18 @@ export default function CartPage() {
                   <div className="attach">
                     <h6>Attach Prescription Document</h6>
                     <ul>
-                      <li><img src="/assets/images/prescription.png" alt="" /></li>
-                      <li><img src="/assets/images/prescription.png" alt="" /></li>
+                      <li>
+                        <img src="/assets/images/prescription.png" alt="" />
+                      </li>
+                      <li>
+                        <img src="/assets/images/prescription.png" alt="" />
+                      </li>
                     </ul>
                   </div>
                   <div className="text-center">
-                    <button className="add-btn">+ Add more tests or health checkup packages</button>
+                    <Link className="add-btn" href="/">
+                      + Add more tests or health checkup packages
+                    </Link>
                   </div>
                 </div>
               ))}
@@ -733,8 +805,9 @@ export default function CartPage() {
                             className={`timeSlotButton ${isSelected && !isInactive ? "active" : ""}`}
                             disabled={!selectedBookingDate || isInactive}
                             aria-pressed={isSelected && !isInactive}
-                            aria-label={`${slot.slot_label}, ${timeLabel}${isInactive ? ", unavailable" : ""
-                              }`}
+                            aria-label={`${slot.slot_label}, ${timeLabel}${
+                              isInactive ? ", unavailable" : ""
+                            }`}
                             onClick={() => setSelectedSlotId(slot.id)}
                           >
                             {timeLabel}
@@ -784,9 +857,7 @@ export default function CartPage() {
                     <button
                       type="button"
                       className={styles.addressRetryButton}
-                      onClick={() =>
-                        setAddressRefreshKey((value) => value + 1)
-                      }
+                      onClick={() => setAddressRefreshKey((value) => value + 1)}
                     >
                       Try Again
                     </button>
@@ -835,9 +906,14 @@ export default function CartPage() {
                             </div>
                             <div className="text-block">
                               <h4>{address.fullName}</h4>
-                              <h5 className="add-type">{address.addressName}</h5>
+                              <h5 className="add-type">
+                                {address.addressName}
+                              </h5>
                               <p>{addressText}</p>
-                              <h6><i className="fa-solid fa-phone"></i>{address.contactNumber}</h6>
+                              <h6>
+                                <i className="fa-solid fa-phone"></i>
+                                {address.contactNumber}
+                              </h6>
                             </div>
 
                             <input
@@ -846,9 +922,7 @@ export default function CartPage() {
                               className={styles.addressRadio}
                               value={address.id}
                               checked={isSelected}
-                              onChange={() =>
-                                setSelectedAddressId(address.id)
-                              }
+                              onChange={() => setSelectedAddressId(address.id)}
                               aria-label={`Select ${address.addressName} address for ${address.fullName}`}
                             />
                           </label>
@@ -909,6 +983,7 @@ export default function CartPage() {
             </div>
 
             {/* RIGHT SIDE */}
+            {/* Coupons */}
             <div className="col-lg-4">
               <div className="coupon">
                 <div className="inn">
@@ -919,7 +994,11 @@ export default function CartPage() {
                     <h4>Coupons Available</h4>
                   </div>
                   <div className="inp-box">
-                    <input type="text" placeholder="Enter Coupon Code" className="form-control" />
+                    <input
+                      type="text"
+                      placeholder="Enter Coupon Code"
+                      className="form-control"
+                    />
                     <button>Check</button>
                   </div>
                   <div className="scroll-dv">
@@ -1009,10 +1088,18 @@ export default function CartPage() {
                     )}
                   </span> */}
                   <ul className="amt">
-                    <li><span>Gross Amount</span> ₹ 2,500.00</li>
-                    <li><span>Net Amount</span> ₹ 414.00</li>
-                    <li><span>Offer Discount</span> ₹ 0.00</li>
-                    <li><span>Coupon Discount</span> Apply Coupon</li>
+                    <li>
+                      <span>Gross Amount</span> ₹ 2,500.00
+                    </li>
+                    <li>
+                      <span>Net Amount</span> ₹ 414.00
+                    </li>
+                    <li>
+                      <span>Offer Discount</span> ₹ 0.00
+                    </li>
+                    <li>
+                      <span>Coupon Discount</span> Apply Coupon
+                    </li>
                   </ul>
                   <div className="total-amount">
                     <div className="lt-side">
@@ -1020,7 +1107,9 @@ export default function CartPage() {
                       <h4>₹{getTotal().toFixed(2)}</h4>
                     </div>
                     <div className="rt-side">
-                      <button type="button" className="cmn_btn">Proceed to Checkout</button>
+                      <button type="button" className="cmn_btn">
+                        Proceed to Checkout
+                      </button>
                       <div className="d-flex justify-content-center align-items-center gap-2 mt-2">
                         <img src="/assets/images/shield.svg" alt="" />
                         <h6 className="m-0">Secure checkout</h6>
@@ -1029,7 +1118,6 @@ export default function CartPage() {
                   </div>
                 </div>
               </div>
-
             </div>
           </div>
         )}
