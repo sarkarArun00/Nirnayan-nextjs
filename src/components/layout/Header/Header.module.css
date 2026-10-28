@@ -116,10 +116,10 @@
 .main-header .user .accountTrigger img{ width:100%; height:100%; border-radius:50%; object-fit:cover; }
 .main-header .user .accountAvatar{ font-size:20px; font-weight:600; color:var(--up-black); }
 .dropdown_menu{ position:absolute; top:100%; right:0; width:160px; background:var(--up-white); box-shadow:0px 0px 4px 0px rgba(0,0,0,0.25); border:0; border-radius:15px; padding:8px; }
-.dropdown_menu button{ font-size:15px; line-height:1.2; font-weight:400; color:var(--up-black); transition:all 0.6s; border-radius:8px; display:flex; align-items:center; gap:0 10px; width:100%; border:0; background:none; padding:8px; }
-.dropdown_menu button:hover{ background:var(--up-black); color:var(--up-white); }
-.dropdown_menu button img{ width:20px; transition:all 0.6s; }
-.dropdown_menu button:hover img{ filter:brightness(0) invert(1); }
+.dropdown_menu a{ font-size:15px; line-height:1.2; font-weight:400; color:var(--up-black); transition:all 0.6s; border-radius:8px; display:flex; align-items:center; gap:0 10px; width:100%; border:0; background:none; padding:8px; }
+.dropdown_menu a:hover{ background:var(--up-black); color:var(--up-white); }
+.dropdown_menu a img{ width:20px; transition:all 0.6s; }
+.dropdown_menu a:hover img{ filter:brightness(0) invert(1); }
 
 .main-header .lang_switcher{ position:relative; padding-left:23px; }
 .main-header .lang_switcher .lang_trigger{ display:flex; align-items:center; gap:0 6px; border:0; background:none; padding:0; margin:0; }

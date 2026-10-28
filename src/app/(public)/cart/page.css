@@ -63,9 +63,15 @@
 
 /*==== Address Css End ====*/
 .add-grid{ display:grid; grid-template-columns:repeat(2, 1fr); grid-row-gap:15px; grid-column-gap:15px; }
-.add-grid .add-card{ position:relative; display:flex; align-items:center; overflow:hidden; border:1px solid #D9F3E5; background:#FBFFFD; border-radius:15px; padding:20px; }
+.add-grid .add-card{ position:relative; display:flex; align-items:center; overflow:hidden; border:1px solid var(--up-gray2); border-radius:15px; padding:20px; }
 .add-grid .add-card .add-type{ position:absolute; right:0; top:0; font-size:13px; line-height:1.2; font-weight:500; color:var(--up-black); background:#FAC801; border-radius:0 0 0 25px; padding:6px 15px; }
-.add-grid .add-card.selectedAddress{ border-color:var(--up-theme); }
+.add-grid .add-card.selectedAddress{ position:relative; border-color:var(--up-theme); background:#FBFFFD; }
+.add-grid .add-card:after{ position:absolute; content:"\f00c"; position:absolute; left:8px; top:8px; font-family:Fontawesome; font-size:10px; line-height:1; background:var(--up-theme); color:var(--up-white); width:18px; height:18px; border-radius:50%;  display:flex; align-items:center; justify-content:center; transform:scale(0.5); transition:all 0.4s; opacity:0; pointer-events:none; }
+.add-grid .add-card.selectedAddress:after{ transform:scale(1); opacity:1; }
+
+
+
+
 .add-grid .add-card .add-box{ display:flex; align-items:center; flex:1; cursor:pointer; margin:0; }
 .add-grid .add-card input{ display:none; }
 .add-grid .add-card .add-box .icon{ width:42px; height:42px; border-radius:50%; overflow:hidden; }

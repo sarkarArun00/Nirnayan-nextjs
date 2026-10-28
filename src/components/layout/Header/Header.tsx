@@ -1349,17 +1349,17 @@ useEffect(() => {
                           <img src="/assets/images/profile.svg" alt="" />
                           My Profile
                         </Link>
-                        <button>
+                        <Link href="#">
                           <img src="/assets/images/orders.svg" alt="" /> My
                           Order
-                        </button>
-                        <button>
+                        </Link>
+                        <Link href="#">
                           <img src="/assets/images/rx.svg" alt="" />{" "}
                           Prescriptions
-                        </button>
-                        <button onClick={handleLogout}>
+                        </Link>
+                        <Link href="#" onClick={handleLogout}>
                           <img src="/assets/images/logout.svg" alt="" /> Logout
-                        </button>
+                        </Link>
                       </>
                     ) : (
                       <>
