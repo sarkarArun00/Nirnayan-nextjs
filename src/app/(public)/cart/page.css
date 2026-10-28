@@ -36,8 +36,8 @@
 .pt-card .card-item .rt-side h6{ color:var(--up-black); font-weight:600; margin-bottom:0; }
 .pt-card .card-item .rt-side .remove{ position:relative; width:25px; height:25px; background:none; border:2px solid var(--is-red); border-radius:50%; font-size:13px; color:var(--is-red); display:flex; align-items:center; justify-content:center; background:rgba(255,29,29,0.2); padding:0; margin-left:10px; }
 .pt-card .card-item .rt-side .remove:after{ position:absolute; content:""; width:1px; height:100%; left:-11px; background-image:linear-gradient(to top, transparent, #D2D2D2, transparent); }
-.pt-card button.add-btn{ font-size:15px; line-height:1.2; font-weight:500; color:var(--up-theme); border:0; text-transform:capitalize; text-align:center; transition:all 0.4s; background:none; padding:15px 0 0; }
-.pt-card button.add-btn:hover{ color:var(--up-black); }
+.pt-card .add-btn{ font-size:15px; line-height:1.2; font-weight:500; color:var(--up-theme); border:0; text-transform:capitalize; text-align:center; transition:all 0.4s; background:none; padding:15px 0 0; }
+.pt-card .add-btn:hover{ color:var(--up-black); }
 /*==== Cart Item Css End ====*/
 
 /*==== Booking Slot Css Start ====*/
@@ -68,10 +68,6 @@
 .add-grid .add-card.selectedAddress{ position:relative; border-color:var(--up-theme); background:#FBFFFD; }
 .add-grid .add-card:after{ position:absolute; content:"\f00c"; position:absolute; left:8px; top:8px; font-family:Fontawesome; font-size:10px; line-height:1; background:var(--up-theme); color:var(--up-white); width:18px; height:18px; border-radius:50%;  display:flex; align-items:center; justify-content:center; transform:scale(0.5); transition:all 0.4s; opacity:0; pointer-events:none; }
 .add-grid .add-card.selectedAddress:after{ transform:scale(1); opacity:1; }
-
-
-
-
 .add-grid .add-card .add-box{ display:flex; align-items:center; flex:1; cursor:pointer; margin:0; }
 .add-grid .add-card input{ display:none; }
 .add-grid .add-card .add-box .icon{ width:42px; height:42px; border-radius:50%; overflow:hidden; }
@@ -96,7 +92,7 @@ summary::marker{ content: ""; }
 
 /* ==== Coupon Css Start ==== */
 .coupon{ background-image:linear-gradient(123.13deg, #FAC801, #FFFFFF, #FFFFFF, #00A651); border-radius:15px; box-shadow:0px 4px 10px 0px #C8C8C866; padding:1px; margin-bottom:20px; }
-.coupon .inn{ background:var(--up-white); border-radius:15px; padding:15px; }
+.coupon .inn{ background:var(--up-white); border-radius:15px; padding:20px 15px; }
 .coupon .coupon-head{ display:flex; align-items:center; margin-bottom:15px; }
 .coupon .coupon-head .icon{ width:25px; }
 .coupon .coupon-head .icon img{ max-width:100%; }
@@ -128,4 +124,17 @@ summary::marker{ content: ""; }
 .coupon .total-amount .rt-side{ text-align:center; }
 .coupon .total-amount .rt-side button{ box-shadow:0px 3px 12.5px 0px #00000059; }
 .coupon .total-amount .rt-side h6{ font-size:12px; color:var(--up-gray); }
+
+.has-no-coupon{ text-align:center; padding:10px 0 0; }
+.has-no-coupon img{ margin-bottom:25px; }
+.has-no-coupon h3{ font-weight:700; color:var(--up-black); margin-bottom:12px; }
+.has-no-coupon p{ color:var(--up-gray); margin-bottom:0; }
+
 /* ==== Coupon Css End ==== */
+
+/* ==== Empty State Design ==== */
+.empty-cart img{ margin-bottom:15px; }
+.empty-cart h3{ font-weight:700; color:var(--up-black); }
+.empty-cart p{ color:var(--up-gray); }
+.empty-cart p span{ display:block; }
+/* ==== Empty State Design ==== */

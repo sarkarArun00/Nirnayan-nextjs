@@ -47,8 +47,8 @@ type CartGroup = {
 type PatientCartGroup = {
   patientId: number;
   patient_name: string;
-  patient_age: number ;
-  patient_gender: number ;
+  patient_age: number;
+  patient_gender: number;
   items: CartItem[];
 };
 
@@ -463,21 +463,16 @@ export default function CartPage() {
         </ol>
 
         {cartGroups.length === 0 ? (
-          <div
-            style={{
-              background: "#fff",
-              padding: "50px 20px",
-              borderRadius: "16px",
-              textAlign: "center",
-            }}
-          >
-            <h3>Your cart is empty</h3>
-            <p>Add a test or package to continue.</p>
+          <div className="empty-cart text-center">
+            <img src="/assets/images/empty-img1.svg" alt="" />
+            <h3>No Tests Added Yet</h3>
+            <p>You haven’t added any lab tests yet. Browse our tests and book <span>your next health checkup.</span></p>
+            <Link href="/" className="cmn_btn">Add New Tests</Link>
           </div>
         ) : (
           <div className="row">
             {/* LEFT SIDE */}
-            <div className="col-lg-8">
+            <div className="col-lg-8 col-md-12 col-sm-12">
               <div className="cart-head">
                 <div className="left">
                   <i className="fa-solid fa-cart-shopping"></i>
@@ -518,7 +513,7 @@ export default function CartPage() {
                         <p>
                           <i className="fa-solid fa-venus-mars"></i>{" "}
                           {group.patient_age !== null &&
-                          group.patient_age !== undefined
+                            group.patient_age !== undefined
                             ? `${group.patient_age} Y`
                             : "Age N/A"}
                           {" • "}
@@ -587,7 +582,7 @@ export default function CartPage() {
 
                           {item.offerAmount &&
                             Number(item.offerAmount) <
-                              Number(item.mrpAmount) && (
+                            Number(item.mrpAmount) && (
                               <span
                                 style={{
                                   color: "#e53935",
@@ -607,7 +602,7 @@ export default function CartPage() {
                                 ((Number(item.mrpAmount) -
                                   Number(item.offerAmount)) /
                                   Number(item.mrpAmount)) *
-                                  100,
+                                100,
                               )}
                               % Off
                             </span>
@@ -805,9 +800,8 @@ export default function CartPage() {
                             className={`timeSlotButton ${isSelected && !isInactive ? "active" : ""}`}
                             disabled={!selectedBookingDate || isInactive}
                             aria-pressed={isSelected && !isInactive}
-                            aria-label={`${slot.slot_label}, ${timeLabel}${
-                              isInactive ? ", unavailable" : ""
-                            }`}
+                            aria-label={`${slot.slot_label}, ${timeLabel}${isInactive ? ", unavailable" : ""
+                              }`}
                             onClick={() => setSelectedSlotId(slot.id)}
                           >
                             {timeLabel}
@@ -984,9 +978,14 @@ export default function CartPage() {
 
             {/* RIGHT SIDE */}
             {/* Coupons */}
-            <div className="col-lg-4">
+            <div className="col-lg-4 col-md-12 col-sm-12">
               <div className="coupon">
                 <div className="inn">
+                  <div className="has-no-coupon text-center d-none">
+                    <img src="/assets/images/empty-img2.svg" alt="" />
+                    <h3>Sorry! no coupons available</h3>
+                    <p>Sorry no coupons available at the moment</p>
+                  </div>
                   <div className="coupon-head">
                     <div className="icon">
                       <img src="/assets/images/coupon-icon.svg" alt="" />
