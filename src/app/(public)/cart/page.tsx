@@ -578,21 +578,15 @@ export default function CartPage() {
                             {Number(
                               item.offerAmount || item.mrpAmount || 0,
                             ).toFixed(2)}
-                          </h6>
 
-                          {item.offerAmount &&
-                            Number(item.offerAmount) <
-                            Number(item.mrpAmount) && (
-                              <span
-                                style={{
-                                  color: "#e53935",
-                                  textDecoration: "line-through",
-                                  fontSize: "14px",
-                                }}
-                              >
-                                ₹{Number(item.mrpAmount).toFixed(2)}
-                              </span>
-                            )}
+                            {item.offerAmount &&
+                              Number(item.offerAmount) <
+                              Number(item.mrpAmount) && (
+                                <del>
+                                  ₹{Number(item.mrpAmount).toFixed(2)}
+                                </del>
+                              )}
+                          </h6>
                         </div>
 
                         {item.offerAmount &&

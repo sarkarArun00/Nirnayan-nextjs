@@ -34,6 +34,7 @@
 .pt-card .card-item .lt-side h6{ flex:1; color:var(--up-black); font-weight:600; margin-bottom:0; padding-left:10px; }
 .pt-card .card-item .rt-side{ display:flex; align-items:center; flex-wrap:wrap; gap:0 10px; }
 .pt-card .card-item .rt-side h6{ color:var(--up-black); font-weight:600; margin-bottom:0; }
+.pt-card .card-item .rt-side h6 del{ color:var(--up-gray); font-weight:400; padding-left:10px; }
 .pt-card .card-item .rt-side .remove{ position:relative; width:25px; height:25px; background:none; border:2px solid var(--is-red); border-radius:50%; font-size:13px; color:var(--is-red); display:flex; align-items:center; justify-content:center; background:rgba(255,29,29,0.2); padding:0; margin-left:10px; }
 .pt-card .card-item .rt-side .remove:after{ position:absolute; content:""; width:1px; height:100%; left:-11px; background-image:linear-gradient(to top, transparent, #D2D2D2, transparent); }
 .pt-card .add-btn{ font-size:15px; line-height:1.2; font-weight:500; color:var(--up-theme); border:0; text-transform:capitalize; text-align:center; transition:all 0.4s; background:none; padding:15px 0 0; }
