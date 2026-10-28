@@ -12,7 +12,6 @@ import dynamic from "next/dynamic";
 import type { MapPosition } from "./AddressLocationMap";
 
 
-
 type AddressModalProps = {
   address?: PatientAddress;
   onClose: () => void;
@@ -117,12 +116,12 @@ export default function AddressModal({
   const submittingRef = useRef(false);
 
   const [saving, setSaving] = useState(false);
-    const [error, setError] = useState("");
-    
-    const [locating, setLocating] = useState(false);
-    const [locationError, setLocationError] = useState("");
+  const [error, setError] = useState("");
 
-    const locationRequestRef = useRef(0);
+  const [locating, setLocating] = useState(false);
+  const [locationError, setLocationError] = useState("");
+
+  const locationRequestRef = useRef(0);
 
   const [form, setForm] = useState<AddressForm>(() => ({
     addressName: address?.addressName ?? "",
@@ -137,11 +136,11 @@ export default function AddressModal({
     longitude: address ? String(address.longitude) : "",
   }));
 
-    useEffect(() => {
-      return () => {
-        locationRequestRef.current += 1;
-      };
-    }, []);
+  useEffect(() => {
+    return () => {
+      locationRequestRef.current += 1;
+    };
+  }, []);
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -161,6 +160,14 @@ export default function AddressModal({
       }
     };
   }, []);
+
+  const AddressLocationMap = dynamic(
+    () => import("./AddressLocationMap"),
+    {
+      ssr: false,
+      loading: () => <p>Loading map...</p>,
+    }
+  );
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -244,125 +251,119 @@ export default function AddressModal({
     }
   };
 
-    const handleMapPositionChange = (position: MapPosition) => {
-      if (submittingRef.current) return;
+  const handleMapPositionChange = (position: MapPosition) => {
+    if (submittingRef.current) return;
 
-      // Ignore a pending GPS result if the user selects the map instead.
-      locationRequestRef.current += 1;
-      setLocating(false);
-      setLocationError("");
+    // Ignore a pending GPS result if the user selects the map instead.
+    locationRequestRef.current += 1;
+    setLocating(false);
+    setLocationError("");
 
-      setForm((current) => ({
-        ...current,
-        latitude: position.latitude.toFixed(6),
-        longitude: position.longitude.toFixed(6),
-      }));
-    };
+    setForm((current) => ({
+      ...current,
+      latitude: position.latitude.toFixed(6),
+      longitude: position.longitude.toFixed(6),
+    }));
+  };
 
-    const handleUseCurrentLocation = () => {
-      if (saving || locating) return;
+  const handleUseCurrentLocation = () => {
+    if (saving || locating) return;
 
-      setLocationError("");
+    setLocationError("");
 
-      if (!window.isSecureContext) {
-        setLocationError("Current location requires HTTPS or localhost.");
-        return;
-      }
+    if (!window.isSecureContext) {
+      setLocationError("Current location requires HTTPS or localhost.");
+      return;
+    }
 
-      if (!navigator.geolocation) {
-        setLocationError(
-          "Your browser does not support location access. Select your location on the map.",
-        );
-        return;
-      }
-
-      const requestId = ++locationRequestRef.current;
-
-      setLocating(true);
-
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          if (requestId !== locationRequestRef.current) return;
-
-          setForm((current) => ({
-            ...current,
-            latitude: position.coords.latitude.toFixed(6),
-            longitude: position.coords.longitude.toFixed(6),
-          }));
-
-          setLocating(false);
-        },
-        (locationError) => {
-          if (requestId !== locationRequestRef.current) return;
-
-          setLocating(false);
-
-          switch (locationError.code) {
-            case 1:
-              setLocationError(
-                "Location access was denied. Allow location access in your browser or select a location on the map.",
-              );
-              break;
-
-            case 2:
-              setLocationError(
-                "Your location could not be determined. Select a location on the map.",
-              );
-              break;
-
-            case 3:
-              setLocationError(
-                "Location request timed out. Try again or select a location on the map.",
-              );
-              break;
-
-            default:
-              setLocationError(
-                "Unable to get your location. Select a location on the map.",
-              );
-          }
-        },
-        {
-          enableHighAccuracy: true,
-          timeout: 15000,
-          maximumAge: 0,
-        },
+    if (!navigator.geolocation) {
+      setLocationError(
+        "Your browser does not support location access. Select your location on the map.",
       );
-    };
+      return;
+    }
 
-    const selectedMapPosition: MapPosition | null =
-      form.latitude.trim() !== "" && form.longitude.trim() !== ""
-        ? {
-            latitude: Number(form.latitude),
-            longitude: Number(form.longitude),
-          }
-        : null;
-  return (
-    <dialog
-      ref={dialogRef}
-      className={styles.dialog}
-      aria-labelledby="address-modal-title"
-      onCancel={(event) => {
-        event.preventDefault();
+    const requestId = ++locationRequestRef.current;
 
-        if (!submittingRef.current) {
-          onClose();
+    setLocating(true);
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        if (requestId !== locationRequestRef.current) return;
+
+        setForm((current) => ({
+          ...current,
+          latitude: position.coords.latitude.toFixed(6),
+          longitude: position.coords.longitude.toFixed(6),
+        }));
+
+        setLocating(false);
+      },
+      (locationError) => {
+        if (requestId !== locationRequestRef.current) return;
+
+        setLocating(false);
+
+        switch (locationError.code) {
+          case 1:
+            setLocationError(
+              "Location access was denied. Allow location access in your browser or select a location on the map.",
+            );
+            break;
+
+          case 2:
+            setLocationError(
+              "Your location could not be determined. Select a location on the map.",
+            );
+            break;
+
+          case 3:
+            setLocationError(
+              "Location request timed out. Try again or select a location on the map.",
+            );
+            break;
+
+          default:
+            setLocationError(
+              "Unable to get your location. Select a location on the map.",
+            );
         }
-      }}
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 15000,
+        maximumAge: 0,
+      },
+    );
+  };
+
+  const selectedMapPosition: MapPosition | null =
+    form.latitude.trim() !== "" && form.longitude.trim() !== ""
+      ? {
+        latitude: Number(form.latitude),
+        longitude: Number(form.longitude),
+      }
+      : null;
+  return (
+    <div
+      className="cmn-backdrop active"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="address-modal-title"
     >
-      <form onSubmit={handleSubmit} className={styles.form}>
-        <div className={styles.header}>
+      <div className="inn">
+        <div className="header">
           <div>
-            <h2 id="address-modal-title">
+            <h4 id="address-modal-title">
               {address ? "Edit Address" : "Add Address"}
-            </h2>
+            </h4>
 
             <p>Enter your sample collection address.</p>
           </div>
 
           <button
             type="button"
-            className={styles.closeButton}
+            className="closeBtn"
             aria-label="Close address modal"
             disabled={saving}
             onClick={onClose}
@@ -370,165 +371,174 @@ export default function AddressModal({
             <i className="fa-solid fa-xmark" aria-hidden="true" />
           </button>
         </div>
+        <div className="content-area">
+          <form onSubmit={handleSubmit} className="overflow-hidden">
+            <div className={styles.body}>
+              <fieldset className={styles.fields} disabled={saving}>
+                <div className={styles.fullWidth}>
+                  <label id="address-name-label" className={styles.fieldLabel}>
+                    Address Name <span aria-hidden="true">*</span>
+                  </label>
 
-        <div className={styles.body}>
-          <fieldset className={styles.fields} disabled={saving}>
-            <div className={styles.fullWidth}>
-              <div id="address-name-label" className={styles.fieldLabel}>
-                Address Name <span aria-hidden="true">*</span>
-              </div>
-
-              <div
-                className={styles.addressTypeOptions}
-                role="radiogroup"
-                aria-labelledby="address-name-label"
-              >
-                {(["Home", "Office", "Work", "Other"] as const).map((name) => (
-                  <label
-                    key={name}
-                    className={`${styles.addressTypeChoice} ${
-                      form.addressName === name
-                        ? styles.selectedAddressType
-                        : ""
-                    }`}
+                  <div
+                    className={styles.addressTypeOptions}
+                    role="radiogroup"
+                    aria-labelledby="address-name-label"
                   >
-                    <input
-                      type="radio"
-                      name="addressName"
-                      value={name}
-                      checked={form.addressName === name}
-                      required
-                      onChange={() =>
-                        setForm((current) => ({
-                          ...current,
-                          addressName: name,
-                        }))
-                      }
+                    {(["Home", "Office", "Work", "Other"] as const).map((name) => (
+                      
+                      <label
+                        key={name}
+                        className={`${styles.addressTypeChoice} ${form.addressName === name
+                          ? styles.selectedAddressType
+                          : ""
+                          }`}
+                      >
+                        <input
+                          type="radio"
+                          name="addressName"
+                          value={name}
+                          checked={form.addressName === name}
+                          required
+                          onChange={() =>
+                            setForm((current) => ({
+                              ...current,
+                              addressName: name,
+                            }))
+                          }
+                        />
+
+                        {name}
+                      </label>
+                    ))}
+                  </div>
+                </div>
+
+                <div className={styles.fullWidth}>
+                  <div className={styles.locationToolbar}>
+                    <label className={styles.fieldLabel}>
+                      Collection Location <span aria-hidden="true">*</span>
+                    </label>
+
+                    <button
+                      type="button"
+                      className={styles.currentLocationButton}
+                      disabled={saving || locating}
+                      onClick={handleUseCurrentLocation}
+                    >
+                      <i
+                        className={
+                          locating
+                            ? "fa-solid fa-spinner fa-spin"
+                            : "fa-solid fa-location-crosshairs"
+                        }
+                        aria-hidden="true"
+                      />
+
+                      {locating ? "Getting Location..." : "Use My Current Location"}
+                    </button>
+                  </div>
+
+                  <div className={styles.mapWrapper}>
+                    <AddressLocationMap
+                      value={selectedMapPosition}
+                      onChange={handleMapPositionChange}
+                      disabled={saving}
                     />
+                  </div>
 
-                    <span>{name}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
+                  <p className={styles.mapHint}>
+                    Click the map or drag the marker to select your collection
+                    location.
+                  </p>
 
-            <div className={styles.fullWidth}>
-              <div className={styles.locationToolbar}>
-                <div className={styles.fieldLabel}>
-                  Collection Location <span aria-hidden="true">*</span>
+                  {locating && (
+                    <p className={styles.mapHint} role="status">
+                      Finding your current location...
+                    </p>
+                  )}
+
+                  {locationError && (
+                    <p className={styles.locationError} role="alert">
+                      {locationError}
+                    </p>
+                  )}
                 </div>
 
-                <button
-                  type="button"
-                  className={styles.currentLocationButton}
-                  disabled={saving || locating}
-                  onClick={handleUseCurrentLocation}
-                >
-                  <i
-                    className={
-                      locating
-                        ? "fa-solid fa-spinner fa-spin"
-                        : "fa-solid fa-location-crosshairs"
-                    }
-                    aria-hidden="true"
-                  />
+                <div className="row">
+                  {addressFields
+                    .filter((field) => !address || field.name !== "alt_contactNumber")
+                    .map((field) => (
+                      <div
+                        key={field.name}
+                        className={`col-lg-6 col-md-6 col-sm-12 ${field.wide ? "col-12" : ""
+                          }`}
+                      >
+                        <div className={styles.fullWidth}>
+                          <label htmlFor={`address-${field.name}`}>
+                            {field.label}
+                            {field.required && <span aria-hidden="true"> *</span>}
+                          </label>
 
-                  {locating ? "Getting Location..." : "Use My Current Location"}
-                </button>
-              </div>
+                          <input
+                            id={`address-${field.name}`}
+                            name={field.name}
+                            className="form-control"
+                            type={field.type ?? "text"}
+                            value={form[field.name]}
+                            readOnly={
+                              field.name === "latitude" || field.name === "longitude"
+                            }
+                            required={field.required}
+                            min={field.min}
+                            max={field.max}
+                            step={field.step}
+                            onChange={(event) => {
+                              const value = event.target.value;
 
-              <div className={styles.mapWrapper}>
-                <AddressLocationMap
-                  value={selectedMapPosition}
-                  onChange={handleMapPositionChange}
-                  disabled={saving}
-                />
-              </div>
+                              setForm((current) => ({
+                                ...current,
+                                [field.name]: value,
+                              }));
+                            }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                </div>
+              </fieldset>
 
-              <p className={styles.mapHint}>
-                Click the map or drag the marker to select your collection
-                location.
-              </p>
-
-              {locating && (
-                <p className={styles.mapHint} role="status">
-                  Finding your current location...
-                </p>
-              )}
-
-              {locationError && (
-                <p className={styles.locationError} role="alert">
-                  {locationError}
+              {error && (
+                <p className={styles.error} role="alert">
+                  {error}
                 </p>
               )}
             </div>
 
-            {addressFields
-              .filter((field) => !address || field.name !== "alt_contactNumber")
-              .map((field) => (
-                <div
-                  key={field.name}
-                  className={field.wide ? styles.fullWidth : undefined}
-                >
-                  <label htmlFor={`address-${field.name}`}>
-                    {field.label}
-                    {field.required && <span aria-hidden="true"> *</span>}
-                  </label>
+            <div className={styles.footer}>
+              {/* <button
+                type="button"
+                className={styles.cancelButton}
+                disabled={saving}
+                onClick={onClose}
+              >
+                Cancel
+              </button> */}
 
-                  <input
-                    id={`address-${field.name}`}
-                    name={field.name}
-                    type={field.type ?? "text"}
-                    value={form[field.name]}
-                    readOnly={
-                      field.name === "latitude" || field.name === "longitude"
-                    }
-                    required={field.required}
-                    min={field.min}
-                    max={field.max}
-                    step={field.step}
-                    onChange={(event) => {
-                      const value = event.target.value;
-
-                      setForm((current) => ({
-                        ...current,
-                        [field.name]: value,
-                      }));
-                    }}
-                  />
-                </div>
-              ))}
-          </fieldset>
-
-          {error && (
-            <p className={styles.error} role="alert">
-              {error}
-            </p>
-          )}
+              <button
+                type="submit"
+                className="cmn_btn w-100"
+                disabled={saving || locating}
+              >
+                {saving ? "Saving..." : address ? "Update Address" : "Save Address"}
+              </button>
+              {/* <button type="submit" className={styles.saveButton} disabled={saving}>
+                {saving ? "Saving..." : address ? "Update Address" : "Save Address"}
+              </button> */}
+            </div>
+          </form>
         </div>
-
-        <div className={styles.footer}>
-          <button
-            type="button"
-            className={styles.cancelButton}
-            disabled={saving}
-            onClick={onClose}
-          >
-            Cancel
-          </button>
-
-          <button
-            type="submit"
-            className={styles.saveButton}
-            disabled={saving || locating}
-          >
-            {saving ? "Saving..." : address ? "Update Address" : "Save Address"}
-          </button>
-          {/* <button type="submit" className={styles.saveButton} disabled={saving}>
-            {saving ? "Saving..." : address ? "Update Address" : "Save Address"}
-          </button> */}
-        </div>
-      </form>
-    </dialog>
+      </div>
+    </div>
   );
 }

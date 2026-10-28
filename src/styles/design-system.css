@@ -284,6 +284,12 @@ label span{ color:#FF0000; }
 .cmn-backdrop.active{ opacity:1; visibility:visible; }
 .cmn-backdrop.active .inn{ opacity:1; transform:translateY(0) scale(1); }
 
+.cmn-backdrop .closeBtn{ position:absolute; right:30px; top:30px; width:30px; height:30px; display:flex; align-items:center; justify-content:center; border:1px solid var(--up-gray); background:none; border-radius:50%; }
+.cmn-backdrop .closeBtn i{ font-size:14px; color:var(--up-black); }
+.cmn-backdrop .header{ margin-bottom:25px; }
+.cmn-backdrop .header h4{ font-weight:600; color:var(--up-black); margin-bottom:10px; }
+.cmn-backdrop .header p{ font-weight:400; color:var(--up-gray); margin-bottom:0; }
+
 .content-area{ overflow-y:scroll; max-height:calc(480px - 70px); padding-right:5px; }
 .cmn-backdrop .inn.is-wide{ width:1200px; }
 .cmn-backdrop .inn.is-wide-lg{ width:800px; }
