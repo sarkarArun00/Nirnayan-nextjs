@@ -18,6 +18,8 @@ interface Organ {
 
 interface PopularTestProps {
   section?: 1 | 2 | 3 | "all";
+  hideButton?: boolean;
+  removeBg?: boolean;
 }
 
 type FilterItem = {
@@ -53,7 +55,7 @@ type PopularTestItem = {
 
 type FilterType = "mostpopular" | "organ" | "condition" | "department";
 
-function PopularTest({ section = "all" }: PopularTestProps) {
+function PopularTest({ section = "all", hideButton = false, removeBg = false }: PopularTestProps) {
   var popular_slider = {
     dots: true,
     arrows: false,
@@ -393,11 +395,11 @@ function PopularTest({ section = "all" }: PopularTestProps) {
 
   return (
     <>
-      <div className={styles.pop_main}>
+      <div className={`${styles.pop_main} ${removeBg ? styles.noBg : ""}`}>
         {showSection1 && (
           <div className={styles.why_us}>
             <div className="container">
-              <div className="row">
+              <div className="row align-items-center">
                 <div className="col-xl-5 col-lg-12 col-md-12 col-sm-12">
                   <div className={styles.text_block}>
                     <h2>
@@ -408,18 +410,20 @@ function PopularTest({ section = "all" }: PopularTestProps) {
                       Cras dapibus ullamcorper mi, non vestibulum magna dapibus
                       vitae. Nulla id efficitur neque
                     </p>
-                    <ul>
-                      <li>
-                        <a href="#" className="cmn_btn">
-                          Explore Tests
-                        </a>
-                      </li>
-                      <li>
-                        <a href="#" className="sec_btn">
-                          See More Packages
-                        </a>
-                      </li>
-                    </ul>
+                    {!hideButton && (
+                      <ul>
+                        <li>
+                          <a href="#" className="cmn_btn">
+                            Explore Tests
+                          </a>
+                        </li>
+                        <li>
+                          <a href="#" className="sec_btn">
+                            See More Packages
+                          </a>
+                        </li>
+                      </ul>
+                    )}
                   </div>
                 </div>
                 <div className="col-xl-7 col-lg-12 col-md-12 col-sm-12">
@@ -445,13 +449,11 @@ function PopularTest({ section = "all" }: PopularTestProps) {
                         {gridData.map((item, index) => (
                           <div key={index} className="cmn_padding">
                             <div
-                              className={`${styles.box} ${
-                                index % 2 === 0 ? styles.oddBox : styles.evenBox
-                              } ${
-                                index === 2 || index === 3
+                              className={`${styles.box} ${index % 2 === 0 ? styles.oddBox : styles.evenBox
+                                } ${index === 2 || index === 3
                                   ? styles.specialBox
                                   : ""
-                              }`}
+                                }`}
                             >
                               <div className={styles.inn}>
                                 <img
@@ -508,9 +510,8 @@ function PopularTest({ section = "all" }: PopularTestProps) {
                           <button
                             key={`${filterType}-${item.id}`}
                             type="button"
-                            className={`organ-tab ${
-                              selectedOrgan?.id === item.id ? "active" : ""
-                            }`}
+                            className={`organ-tab ${selectedOrgan?.id === item.id ? "active" : ""
+                              }`}
                             onClick={() => selectOrgan(item)}
                           >
                             <span className="icon">

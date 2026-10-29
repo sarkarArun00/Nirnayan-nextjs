@@ -1,11 +1,11 @@
 .pop_main{ background:url(/assets/images/popularbg.png) no-repeat left top / cover; }
-
+.noBg{ background:none !important; background-image:none !important; }
 /* Why Us Css Start */
 .why_us{ padding-bottom:var(--cmngap-btm); margin:0; }
 .why_us .text_block{ padding:0; margin:0; }
 .why_us .text_block h2{ font-weight:600; color:var(--up-black); }
-.why_us .text_block p{ width:90%; font-weight:400; color:var(--up-gray); margin-bottom:45px; }
-.why_us .text_block ul{ display:flex; align-items:center; gap:0 20px; }
+.why_us .text_block p{ width:90%; font-weight:400; color:var(--up-gray); margin-bottom:0; }
+.why_us .text_block ul{ display:flex; align-items:center; gap:0 20px; margin-top:45px; }
 .why_us .ch_grid{ display:grid; grid-template-columns:repeat(4, 1fr); grid-row-gap:20px; grid-column-gap:20px; }
 .why_us .ch_grid .box{ background:linear-gradient(135deg, #00A651 0%, #FFFFFF 100%); border-radius:15px; padding:1px; overflow:hidden; cursor:pointer; }
 .why_us .ch_grid .box:nth-child(even){ background:linear-gradient(135deg, #FAC801 0%, #FFFFFF 100%); }
@@ -32,13 +32,13 @@
 
 @media screen and (max-width:1199px){
     .why_us .text_block{ text-align:center; padding:0 0 30px; }
-    .why_us .text_block p{ width:90%; margin:0 auto 20px; }
-    .why_us .text_block ul{ justify-content:center; }
+    .why_us .text_block p{ width:90%; }
+    .why_us .text_block ul{ justify-content:center; margin-top:20px; }
 }
 
 @media screen and (max-width:991px){
     .why_us .text_block{ padding:40px 0 30px; }
-    .why_us .text_block p{ width:100%; margin:0 auto 20px; }
+    .why_us .text_block p{ width:100%; }
     .why_us .ch_grid{ grid-template-columns:repeat(2, 1fr); }
 
 }
