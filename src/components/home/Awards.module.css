@@ -11,7 +11,7 @@
 .accolades .award_item .text_block p{ line-height:1.3; color:var(--up-black); transition:all 0.4s; margin-bottom:0; }
 
 
-.help_box{ padding:40px 0 var(--cmngap-btm); margin-bottom:30px; }
+.help_box{ padding:62px 0 30px; margin-bottom:0; }
 .help_box .help_inn{ position:relative; }
 .help_box .banner_wrap{ position:relative; background:url('/assets/images/help-banner.jpg') no-repeat center center / cover; border-radius:24px; box-shadow:0px 10px 30px rgba(0,122,72,0.15); display:flex; align-items:center; padding:0 115px 0 60px; }
 .help_box .banner_wrap .text_block{ flex:1; }
@@ -25,7 +25,7 @@
 .help_box .shape3{ position:absolute; height:10px; left:50px; right:50px; bottom:-30px; background:#EBEBEB; border-radius:0 0 20px 20px; }
 
 /* Lab Video Start */
-.path_lab{ position:relative; background:#000; overflow:hidden; padding:100px 0; margin:0; }
+.path_lab{ position:relative; background:#000; overflow:hidden; padding:100px 0; margin-top:var(--cmngap-btm); }
 .path_lab video{ position:absolute; left:0; top:0; width:100%; height:100%; object-fit:cover; z-index:1; pointer-events:none; }
 .path_lab:after{ position:absolute; content:""; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:2; pointer-events:none; }
 .visiable{ z-index:3; position:relative; }
@@ -65,7 +65,7 @@
     .path_lab{ padding:50px 0; }
     .path_lab h2{ font-size:24px; }
 
-    .help_box{ padding:0px 0 var(--cmngap-btm); margin-bottom:30px; }
+    .help_box{ padding-top:0; }
     .help_box .banner_wrap{ flex-direction:column; background:url('/assets/images/mob-wp-banner.jpg') no-repeat center center / cover; padding:25px 40px 0; }
     .help_box .banner_wrap .img_block{ flex-shrink:0; margin-top:0; }
     .help_box .banner_wrap .text_block{ flex:1; margin-bottom:25px; text-align:center; }

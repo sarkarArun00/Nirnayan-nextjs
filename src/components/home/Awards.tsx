@@ -8,81 +8,89 @@ import {
   type AwardItem,
 } from "@/services/master.service";
 
-
-
-
 const text = "We provide comprehensive test lists like culture tests, routine tests, Gene sequencing analysis, TSH, Blood Sugar tests, and antibody tests with the shortest TAT for timely and better patient treatment";
 
-function Awards() {
-    const sectionRef = useRef<HTMLDivElement>(null);
-    const [progress, setProgress] = useState(0);
+type AwardsProps = {
+  section?: "all" | 1 | 2 | 3;
+  pageClass?: string;
+};
 
-    const [awards, setAwards] = useState<AwardItem[]>([]);
-    const [loadingAwards, setLoadingAwards] = useState(true);
-    const [awardsError, setAwardsError] = useState("");
+function Awards({ section = "all", pageClass = "" }: AwardsProps) {
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const [progress, setProgress] = useState(0);
 
-    useEffect(() => {
-      let cancelled = false;
+  const [awards, setAwards] = useState<AwardItem[]>([]);
+  const [loadingAwards, setLoadingAwards] = useState(true);
+  const [awardsError, setAwardsError] = useState("");
 
-      const loadAwards = async () => {
-        try {
-          setLoadingAwards(true);
-          setAwardsError("");
+  useEffect(() => {
+    let cancelled = false;
 
-          const response = await getAllAwards();
+    const loadAwards = async () => {
+      try {
+        setLoadingAwards(true);
+        setAwardsError("");
 
-          if (cancelled) return;
+        const response = await getAllAwards();
 
-          setAwards(
-            response.data.filter(
-              (award) => award.status === true && award.delete_status !== true,
-            ),
-          );
-        } catch (error: unknown) {
-          if (cancelled) return;
+        if (cancelled) return;
 
-          setAwards([]);
-          setAwardsError(
-            error instanceof Error ? error.message : "Unable to load awards.",
-          );
-        } finally {
-          if (!cancelled) {
-            setLoadingAwards(false);
-          }
+        setAwards(
+          response.data.filter(
+            (award) => award.status === true && award.delete_status !== true,
+          ),
+        );
+      } catch (error: unknown) {
+        if (cancelled) return;
+
+        setAwards([]);
+        setAwardsError(
+          error instanceof Error ? error.message : "Unable to load awards.",
+        );
+      } finally {
+        if (!cancelled) {
+          setLoadingAwards(false);
         }
-      };
-
-      void loadAwards();
-
-      return () => {
-        cancelled = true;
-      };
-    }, []);
-
-    const words = text.split(" ");
-
-    const awardsConfig = {
-        dots: true,
-        arrows: false,
-        infinite: true,
-        speed: 500,
-        slidesToShow: 1,
-        slidesToScroll: 1,
-        centerMode: true,
-        centerPadding: '26%',
-        responsive: [
-            {
-                breakpoint: 991,
-                settings: {
-                    centerPadding: "0",
-                },
-            },
-        ]
-
+      }
     };
 
-    return (
-      <>
+    void loadAwards();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const words = text.split(" ");
+
+  const awardsConfig = {
+    dots: true,
+    arrows: false,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    centerMode: true,
+    centerPadding: '26%',
+    responsive: [
+      {
+        breakpoint: 991,
+        settings: {
+          centerPadding: "0",
+        },
+      },
+    ]
+
+  };
+
+  const showSection1 = section === "all" || section === 1;
+  const showSection2 = section === "all" || section === 2;
+  const showSection3 = section === "all" || section === 3;
+
+
+  return (
+    <>
+      {showSection1 && (
         <div className={`accolades ${styles.accolades}`}>
           <div className="container">
             <div className={styles.title}>
@@ -145,8 +153,10 @@ function Awards() {
             )}
           </div>
         </div>
+      )}
 
-        <section className={styles.help_box}>
+      {showSection2 && (
+        <section className={`${styles.help_box} ${pageClass}`}>
           <div className="container">
             <div className={styles.help_inn}>
               <div className={styles.banner_wrap}>
@@ -174,7 +184,8 @@ function Awards() {
             </div>
           </div>
         </section>
-
+      )}
+      {showSection3 && (
         <div className={styles.path_lab}>
           <video width={640} height={360} autoPlay muted loop playsInline>
             <source src="/assets/images/dna.webm" type="video/webm" />
@@ -195,9 +206,8 @@ function Awards() {
                       return (
                         <span
                           key={index}
-                          className={`${styles.word} ${
-                            active ? styles.active : ""
-                          }`}
+                          className={`${styles.word} ${active ? styles.active : ""
+                            }`}
                         >
                           {word}{" "}
                         </span>
@@ -264,8 +274,9 @@ function Awards() {
             </div>
           </div>
         </div>
-      </>
-    );
+      )}
+    </>
+  );
 }
 
 export default Awards
