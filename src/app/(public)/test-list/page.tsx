@@ -119,7 +119,7 @@ function page() {
                         <h3>Available Lab Tests & Packages</h3>
                         <ul>
                             <li><Link href="#" className="active">Tests</Link></li>
-                            <li><Link href="#">Packages</Link></li>
+                            <li><Link href="/our-package">Packages</Link></li>
                         </ul>
                     </div>
                     <div className="btm-block">
