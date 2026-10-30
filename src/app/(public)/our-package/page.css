@@ -20,7 +20,7 @@
 .ava-pkg .organ-slider button{ width:100%; border:0; text-align:center; background:none; }
 .ava-pkg .organ-slider button .organ-icon{ width:110px; height:110px; border:1px solid var(--up-white); background:var(--up-white); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto; }
 .ava-pkg .organ-slider button.active .organ-icon{ border-color:var(--up-theme); box-shadow:0px 7px 25px 0px #FAC80140 inset; }
-.ava-pkg .organ-slider button .organ-icon img{ display:block; width:50px; height:50px; object-fit:contain; }
+.ava-pkg .organ-slider button .organ-icon img{ display:block; width:100%; height:100%; object-fit:contain; }
 .ava-pkg .organ-slider button h6{ font-weight:500; color:var(--up-black); margin:15px 0 0; }
 .ava-pkg .organ-slider button.active h6{ color:var(--up-theme); }
 

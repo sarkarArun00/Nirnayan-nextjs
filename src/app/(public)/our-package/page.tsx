@@ -9,19 +9,18 @@ import Awards from '@/components/home/Awards';
 import Slider from 'react-slick';
 
 const organs = [
-    { id: 1, name: "Heart", image: "/assets/images/heart1.png" },
-    { id: 2, name: "Hormones", image: "/assets/images/hormone.png" },
-    { id: 3, name: "Lungs", image: "/assets/images/lungs.png" },
-    { id: 4, name: "Lungs", image: "/assets/images/lungs.png" },
-    { id: 5, name: "Lungs", image: "/assets/images/lungs.png" },
-    { id: 6, name: "Liver", image: "/assets/images/heart1.png" },
-    { id: 7, name: "Liver", image: "/assets/images/heart1.png" },
-    { id: 8, name: "Prostate", image: "/assets/images/heart1.png" },
-    { id: 9, name: "Breast", image: "/assets/images/heart1.png" },
-    { id: 10, name: "Breast", image: "/assets/images/heart1.png" },
-    { id: 11, name: "Breast", image: "/assets/images/heart1.png" },
-    { id: 12, name: "Breast", image: "/assets/images/heart1.png" },
-    { id: 13, name: "Breast", image: "/assets/images/heart1.png" },
+    { id: 1, name: "under 30 yrs Man", image: "/assets/images/pkg-img1.png" },
+    { id: 2, name: "30 - 45 yrs Man", image: "/assets/images/pkg-img2.png" },
+    { id: 3, name: "30 - 45 yrs Man", image: "/assets/images/pkg-img1.png" },
+    { id: 4, name: "under 30 yrs Man", image: "/assets/images/pkg-img2.png" },
+    { id: 5, name: "30 - 45 yrs Man", image: "/assets/images/pkg-img1.png" },
+    { id: 6, name: "under 30 yrs Man", image: "/assets/images/pkg-img2.png" },
+    { id: 7, name: "30 - 45 yrs Man", image: "/assets/images/pkg-img1.png" },
+    { id: 8, name: "under 30 yrs Man", image: "/assets/images/pkg-img2.png" },
+    { id: 9, name: "30 - 45 yrs Man", image: "/assets/images/pkg-img1.png" },
+    { id: 10, name: "under 30 yrs Man", image: "/assets/images/pkg-img2.png" },
+    { id: 11, name: "30 - 45 yrs Man", image: "/assets/images/pkg-img1.png" },
+    { id: 12, name: "30 - 45 yrs Man", image: "/assets/images/pkg-img1.png" },
 ];
 
 function page() {
@@ -32,7 +31,7 @@ function page() {
         arrows: false,
         infinite: true,
         speed: 500,
-        slidesToShow: 12,
+        slidesToShow: 11,
         slidesToScroll: 1,
         swipeToSlide: true,
         responsive: [
@@ -90,7 +89,7 @@ function page() {
                                 <Link href="/">Home</Link>
                             </li>
                             <li className="breadcrumb-item active" aria-current="page">
-                                Lab Test
+                                Lab Test Packages
                             </li>
                         </ol>
                     </nav>
@@ -100,9 +99,9 @@ function page() {
             <div className="in-banner">
                 <div className="container">
                     <div className="inn">
-                        <img src="/assets/images/testlist.jpg" alt="" />
+                        <img src="/assets/images/pkg-banner.jpg" alt="" />
                         <div className="text-block">
-                            <h1><span>Find the Right Lab Test </span>for Your Health</h1>
+                            <h1><span>One Package for Complete </span>Health and Better Living.</h1>
                             <p>Explore our comprehensive range of laboratory tests, from routine health checkups to specialized diagnostic investigations, with accurate results and reliable care.</p>
                         </div>
                     </div>
@@ -169,13 +168,264 @@ function page() {
                         </div>
 
                         <div className="btm-wrap">
-                            
+                            <div className="pack-card">
+                                <div className="image-section">
+                                    <div className="img">
+                                        <img src="/assets/images/pack-img.png" alt="" />
+                                        <div className="img-lbl">
+                                            THYROID
+                                        </div>
+                                    </div>
+                                    <div className="popular-badge">
+                                        <img src="/assets/images/fire.svg" alt="" />
+                                        <h6>Most Popular</h6>
+                                    </div>
+                                    <div className="icon">
+                                        <img src="/assets/images/joint.png" alt="" />
+                                    </div>
+                                </div>
+                                <h2 className="title">Thyroid - FT4 AEC - Absolute Eosinophil Count</h2>
+                                <div className="contains-row">
+                                    <h6>Contains</h6>
+                                    <div className="test-count">
+                                        <img src="/assets/images/laboratory.svg" alt="" />
+                                        <p>90 Tests</p>
+                                    </div>
+                                </div>
+                                <div className="tags">
+                                    <span className="tag">CBC</span>
+                                    <span className="tag">Liver</span>
+                                    <span className="tag">Kidney</span>
+                                    <span className="tag">+6 More</span>
+                                </div>
+                                <div className="info-section">
+                                    <div className="info-box">
+                                        <span className="info-icon">
+                                            <img src="/assets/images/microscope.svg" alt="" />
+                                        </span>
+                                        <div className="info-text">
+                                            <h6>Available in <span>Home & Lab</span></h6>
+                                        </div>
+                                    </div>
+                                    <div className="info-box">
+                                        <span className="info-icon">
+                                            <img src="/assets/images/calender.svg" alt="" />
+                                        </span>
+                                        <div className="info-text">
+                                            <h6>Report <span>Same Day</span></h6>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="price-section">
+                                    <div className="flex-wrap">
+                                        <div className="pr-sec">
+                                            <h3 className="price">₹450</h3>
+                                            <h6 className="old-price">₹899</h6>
+                                        </div>
+                                        <span className="discount">
+                                            Save 10%
+                                        </span>
+                                    </div>
+                                    <button className="cmn_btn">
+                                        Book Now
+                                    </button>
+                                </div>
+                            </div>
+                            <div className="pack-card">
+                                <div className="image-section">
+                                    <div className="img">
+                                        <img src="/assets/images/pack-img.png" alt="" />
+                                        <div className="img-lbl">
+                                            THYROID
+                                        </div>
+                                    </div>
+                                    <div className="popular-badge">
+                                        <img src="/assets/images/fire.svg" alt="" />
+                                        <h6>Most Popular</h6>
+                                    </div>
+                                    <div className="icon">
+                                        <img src="/assets/images/joint.png" alt="" />
+                                    </div>
+                                </div>
+                                <h2 className="title">Thyroid - FT4 AEC - Absolute Eosinophil Count</h2>
+                                <div className="contains-row">
+                                    <h6>Contains</h6>
+                                    <div className="test-count">
+                                        <img src="/assets/images/laboratory.svg" alt="" />
+                                        <p>90 Tests</p>
+                                    </div>
+                                </div>
+                                <div className="tags">
+                                    <span className="tag">CBC</span>
+                                    <span className="tag">Liver</span>
+                                    <span className="tag">Kidney</span>
+                                    <span className="tag">+6 More</span>
+                                </div>
+                                <div className="info-section">
+                                    <div className="info-box">
+                                        <span className="info-icon">
+                                            <img src="/assets/images/microscope.svg" alt="" />
+                                        </span>
+                                        <div className="info-text">
+                                            <h6>Available in <span>Home & Lab</span></h6>
+                                        </div>
+                                    </div>
+                                    <div className="info-box">
+                                        <span className="info-icon">
+                                            <img src="/assets/images/calender.svg" alt="" />
+                                        </span>
+                                        <div className="info-text">
+                                            <h6>Report <span>Same Day</span></h6>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="price-section">
+                                    <div className="flex-wrap">
+                                        <div className="pr-sec">
+                                            <h3 className="price">₹450</h3>
+                                            <h6 className="old-price">₹899</h6>
+                                        </div>
+                                        <span className="discount">
+                                            Save 10%
+                                        </span>
+                                    </div>
+                                    <button className="cmn_btn">
+                                        Book Now
+                                    </button>
+                                </div>
+                            </div>
+                            <div className="pack-card">
+                                <div className="image-section">
+                                    <div className="img">
+                                        <img src="/assets/images/pack-img.png" alt="" />
+                                        <div className="img-lbl">
+                                            THYROID
+                                        </div>
+                                    </div>
+                                    <div className="popular-badge">
+                                        <img src="/assets/images/fire.svg" alt="" />
+                                        <h6>Most Popular</h6>
+                                    </div>
+                                    <div className="icon">
+                                        <img src="/assets/images/joint.png" alt="" />
+                                    </div>
+                                </div>
+                                <h2 className="title">Thyroid - FT4 AEC - Absolute Eosinophil Count</h2>
+                                <div className="contains-row">
+                                    <h6>Contains</h6>
+                                    <div className="test-count">
+                                        <img src="/assets/images/laboratory.svg" alt="" />
+                                        <p>90 Tests</p>
+                                    </div>
+                                </div>
+                                <div className="tags">
+                                    <span className="tag">CBC</span>
+                                    <span className="tag">Liver</span>
+                                    <span className="tag">Kidney</span>
+                                    <span className="tag">+6 More</span>
+                                </div>
+                                <div className="info-section">
+                                    <div className="info-box">
+                                        <span className="info-icon">
+                                            <img src="/assets/images/microscope.svg" alt="" />
+                                        </span>
+                                        <div className="info-text">
+                                            <h6>Available in <span>Home & Lab</span></h6>
+                                        </div>
+                                    </div>
+                                    <div className="info-box">
+                                        <span className="info-icon">
+                                            <img src="/assets/images/calender.svg" alt="" />
+                                        </span>
+                                        <div className="info-text">
+                                            <h6>Report <span>Same Day</span></h6>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="price-section">
+                                    <div className="flex-wrap">
+                                        <div className="pr-sec">
+                                            <h3 className="price">₹450</h3>
+                                            <h6 className="old-price">₹899</h6>
+                                        </div>
+                                        <span className="discount">
+                                            Save 10%
+                                        </span>
+                                    </div>
+                                    <button className="cmn_btn">
+                                        Book Now
+                                    </button>
+                                </div>
+                            </div>
+                            <div className="pack-card">
+                                <div className="image-section">
+                                    <div className="img">
+                                        <img src="/assets/images/pack-img.png" alt="" />
+                                        <div className="img-lbl">
+                                            THYROID
+                                        </div>
+                                    </div>
+                                    <div className="popular-badge">
+                                        <img src="/assets/images/fire.svg" alt="" />
+                                        <h6>Most Popular</h6>
+                                    </div>
+                                    <div className="icon">
+                                        <img src="/assets/images/joint.png" alt="" />
+                                    </div>
+                                </div>
+                                <h2 className="title">Thyroid - FT4 AEC - Absolute Eosinophil Count</h2>
+                                <div className="contains-row">
+                                    <h6>Contains</h6>
+                                    <div className="test-count">
+                                        <img src="/assets/images/laboratory.svg" alt="" />
+                                        <p>90 Tests</p>
+                                    </div>
+                                </div>
+                                <div className="tags">
+                                    <span className="tag">CBC</span>
+                                    <span className="tag">Liver</span>
+                                    <span className="tag">Kidney</span>
+                                    <span className="tag">+6 More</span>
+                                </div>
+                                <div className="info-section">
+                                    <div className="info-box">
+                                        <span className="info-icon">
+                                            <img src="/assets/images/microscope.svg" alt="" />
+                                        </span>
+                                        <div className="info-text">
+                                            <h6>Available in <span>Home & Lab</span></h6>
+                                        </div>
+                                    </div>
+                                    <div className="info-box">
+                                        <span className="info-icon">
+                                            <img src="/assets/images/calender.svg" alt="" />
+                                        </span>
+                                        <div className="info-text">
+                                            <h6>Report <span>Same Day</span></h6>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="price-section">
+                                    <div className="flex-wrap">
+                                        <div className="pr-sec">
+                                            <h3 className="price">₹450</h3>
+                                            <h6 className="old-price">₹899</h6>
+                                        </div>
+                                        <span className="discount">
+                                            Save 10%
+                                        </span>
+                                    </div>
+                                    <button className="cmn_btn">
+                                        Book Now
+                                    </button>
+                                </div>
+                            </div>
                         </div>
 
                         <div className="text-center">
                             <button className="sec_btn border-0">Load more</button>
                         </div>
-                        
+
                         <div className="is-upload">
                             <div className="text-block">
                                 <h2>Upload Prescription to <span>Book Lab Tests</span></h2>
@@ -189,7 +439,6 @@ function page() {
                     </div>
                 </div>
             </div>
-
 
             <div className="related-test">
                 <div className="container">
@@ -207,7 +456,331 @@ function page() {
                     </div>
                     <div className="cmn-right-align">
                         <Slider {...popular_slider} className='is_slick_dot'>
-                            
+                            <div className="item">
+                                <div className="pack-card cmn_margin">
+                                    <div className="image-section">
+                                        <div className="img">
+                                            <img src="/assets/images/pack-img.png" alt="" />
+                                            <div className="img-lbl">
+                                                THYROID
+                                            </div>
+                                        </div>
+                                        <div className="popular-badge">
+                                            <img src="/assets/images/fire.svg" alt="" />
+                                            <h6>Most Popular</h6>
+                                        </div>
+                                        <div className="icon">
+                                            <img src="/assets/images/joint.png" alt="" />
+                                        </div>
+                                    </div>
+                                    <h2 className="title">Thyroid - FT4 AEC - Absolute Eosinophil Count</h2>
+                                    <div className="contains-row">
+                                        <h6>Contains</h6>
+                                        <div className="test-count">
+                                            <img src="/assets/images/laboratory.svg" alt="" />
+                                            <p>90 Tests</p>
+                                        </div>
+                                    </div>
+                                    <div className="tags">
+                                        <span className="tag">CBC</span>
+                                        <span className="tag">Liver</span>
+                                        <span className="tag">Kidney</span>
+                                        <span className="tag">+6 More</span>
+                                    </div>
+                                    <div className="info-section">
+                                        <div className="info-box">
+                                            <span className="info-icon">
+                                                <img src="/assets/images/microscope.svg" alt="" />
+                                            </span>
+                                            <div className="info-text">
+                                                <h6>Available in <span>Home & Lab</span></h6>
+                                            </div>
+                                        </div>
+                                        <div className="info-box">
+                                            <span className="info-icon">
+                                                <img src="/assets/images/calender.svg" alt="" />
+                                            </span>
+                                            <div className="info-text">
+                                                <h6>Report <span>Same Day</span></h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="price-section">
+                                        <div className="flex-wrap">
+                                            <div className="pr-sec">
+                                                <h3 className="price">₹450</h3>
+                                                <h6 className="old-price">₹899</h6>
+                                            </div>
+                                            <span className="discount">
+                                                Save 10%
+                                            </span>
+                                        </div>
+                                        <button className="cmn_btn">
+                                            Book Now
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="item">
+                                <div className="pack-card cmn_margin">
+                                    <div className="image-section">
+                                        <div className="img">
+                                            <img src="/assets/images/pack-img.png" alt="" />
+                                            <div className="img-lbl">
+                                                THYROID
+                                            </div>
+                                        </div>
+                                        <div className="popular-badge">
+                                            <img src="/assets/images/fire.svg" alt="" />
+                                            <h6>Most Popular</h6>
+                                        </div>
+                                        <div className="icon">
+                                            <img src="/assets/images/joint.png" alt="" />
+                                        </div>
+                                    </div>
+                                    <h2 className="title">Thyroid - FT4 AEC - Absolute Eosinophil Count</h2>
+                                    <div className="contains-row">
+                                        <h6>Contains</h6>
+                                        <div className="test-count">
+                                            <img src="/assets/images/laboratory.svg" alt="" />
+                                            <p>90 Tests</p>
+                                        </div>
+                                    </div>
+                                    <div className="tags">
+                                        <span className="tag">CBC</span>
+                                        <span className="tag">Liver</span>
+                                        <span className="tag">Kidney</span>
+                                        <span className="tag">+6 More</span>
+                                    </div>
+                                    <div className="info-section">
+                                        <div className="info-box">
+                                            <span className="info-icon">
+                                                <img src="/assets/images/microscope.svg" alt="" />
+                                            </span>
+                                            <div className="info-text">
+                                                <h6>Available in <span>Home & Lab</span></h6>
+                                            </div>
+                                        </div>
+                                        <div className="info-box">
+                                            <span className="info-icon">
+                                                <img src="/assets/images/calender.svg" alt="" />
+                                            </span>
+                                            <div className="info-text">
+                                                <h6>Report <span>Same Day</span></h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="price-section">
+                                        <div className="flex-wrap">
+                                            <div className="pr-sec">
+                                                <h3 className="price">₹450</h3>
+                                                <h6 className="old-price">₹899</h6>
+                                            </div>
+                                            <span className="discount">
+                                                Save 10%
+                                            </span>
+                                        </div>
+                                        <button className="cmn_btn">
+                                            Book Now
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="item">
+                                <div className="pack-card cmn_margin">
+                                    <div className="image-section">
+                                        <div className="img">
+                                            <img src="/assets/images/pack-img.png" alt="" />
+                                            <div className="img-lbl">
+                                                THYROID
+                                            </div>
+                                        </div>
+                                        <div className="popular-badge">
+                                            <img src="/assets/images/fire.svg" alt="" />
+                                            <h6>Most Popular</h6>
+                                        </div>
+                                        <div className="icon">
+                                            <img src="/assets/images/joint.png" alt="" />
+                                        </div>
+                                    </div>
+                                    <h2 className="title">Thyroid - FT4 AEC - Absolute Eosinophil Count</h2>
+                                    <div className="contains-row">
+                                        <h6>Contains</h6>
+                                        <div className="test-count">
+                                            <img src="/assets/images/laboratory.svg" alt="" />
+                                            <p>90 Tests</p>
+                                        </div>
+                                    </div>
+                                    <div className="tags">
+                                        <span className="tag">CBC</span>
+                                        <span className="tag">Liver</span>
+                                        <span className="tag">Kidney</span>
+                                        <span className="tag">+6 More</span>
+                                    </div>
+                                    <div className="info-section">
+                                        <div className="info-box">
+                                            <span className="info-icon">
+                                                <img src="/assets/images/microscope.svg" alt="" />
+                                            </span>
+                                            <div className="info-text">
+                                                <h6>Available in <span>Home & Lab</span></h6>
+                                            </div>
+                                        </div>
+                                        <div className="info-box">
+                                            <span className="info-icon">
+                                                <img src="/assets/images/calender.svg" alt="" />
+                                            </span>
+                                            <div className="info-text">
+                                                <h6>Report <span>Same Day</span></h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="price-section">
+                                        <div className="flex-wrap">
+                                            <div className="pr-sec">
+                                                <h3 className="price">₹450</h3>
+                                                <h6 className="old-price">₹899</h6>
+                                            </div>
+                                            <span className="discount">
+                                                Save 10%
+                                            </span>
+                                        </div>
+                                        <button className="cmn_btn">
+                                            Book Now
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="item">
+                                <div className="pack-card cmn_margin">
+                                    <div className="image-section">
+                                        <div className="img">
+                                            <img src="/assets/images/pack-img.png" alt="" />
+                                            <div className="img-lbl">
+                                                THYROID
+                                            </div>
+                                        </div>
+                                        <div className="popular-badge">
+                                            <img src="/assets/images/fire.svg" alt="" />
+                                            <h6>Most Popular</h6>
+                                        </div>
+                                        <div className="icon">
+                                            <img src="/assets/images/joint.png" alt="" />
+                                        </div>
+                                    </div>
+                                    <h2 className="title">Thyroid - FT4 AEC - Absolute Eosinophil Count</h2>
+                                    <div className="contains-row">
+                                        <h6>Contains</h6>
+                                        <div className="test-count">
+                                            <img src="/assets/images/laboratory.svg" alt="" />
+                                            <p>90 Tests</p>
+                                        </div>
+                                    </div>
+                                    <div className="tags">
+                                        <span className="tag">CBC</span>
+                                        <span className="tag">Liver</span>
+                                        <span className="tag">Kidney</span>
+                                        <span className="tag">+6 More</span>
+                                    </div>
+                                    <div className="info-section">
+                                        <div className="info-box">
+                                            <span className="info-icon">
+                                                <img src="/assets/images/microscope.svg" alt="" />
+                                            </span>
+                                            <div className="info-text">
+                                                <h6>Available in <span>Home & Lab</span></h6>
+                                            </div>
+                                        </div>
+                                        <div className="info-box">
+                                            <span className="info-icon">
+                                                <img src="/assets/images/calender.svg" alt="" />
+                                            </span>
+                                            <div className="info-text">
+                                                <h6>Report <span>Same Day</span></h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="price-section">
+                                        <div className="flex-wrap">
+                                            <div className="pr-sec">
+                                                <h3 className="price">₹450</h3>
+                                                <h6 className="old-price">₹899</h6>
+                                            </div>
+                                            <span className="discount">
+                                                Save 10%
+                                            </span>
+                                        </div>
+                                        <button className="cmn_btn">
+                                            Book Now
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="item">
+                                <div className="pack-card cmn_margin">
+                                    <div className="image-section">
+                                        <div className="img">
+                                            <img src="/assets/images/pack-img.png" alt="" />
+                                            <div className="img-lbl">
+                                                THYROID
+                                            </div>
+                                        </div>
+                                        <div className="popular-badge">
+                                            <img src="/assets/images/fire.svg" alt="" />
+                                            <h6>Most Popular</h6>
+                                        </div>
+                                        <div className="icon">
+                                            <img src="/assets/images/joint.png" alt="" />
+                                        </div>
+                                    </div>
+                                    <h2 className="title">Thyroid - FT4 AEC - Absolute Eosinophil Count</h2>
+                                    <div className="contains-row">
+                                        <h6>Contains</h6>
+                                        <div className="test-count">
+                                            <img src="/assets/images/laboratory.svg" alt="" />
+                                            <p>90 Tests</p>
+                                        </div>
+                                    </div>
+                                    <div className="tags">
+                                        <span className="tag">CBC</span>
+                                        <span className="tag">Liver</span>
+                                        <span className="tag">Kidney</span>
+                                        <span className="tag">+6 More</span>
+                                    </div>
+                                    <div className="info-section">
+                                        <div className="info-box">
+                                            <span className="info-icon">
+                                                <img src="/assets/images/microscope.svg" alt="" />
+                                            </span>
+                                            <div className="info-text">
+                                                <h6>Available in <span>Home & Lab</span></h6>
+                                            </div>
+                                        </div>
+                                        <div className="info-box">
+                                            <span className="info-icon">
+                                                <img src="/assets/images/calender.svg" alt="" />
+                                            </span>
+                                            <div className="info-text">
+                                                <h6>Report <span>Same Day</span></h6>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="price-section">
+                                        <div className="flex-wrap">
+                                            <div className="pr-sec">
+                                                <h3 className="price">₹450</h3>
+                                                <h6 className="old-price">₹899</h6>
+                                            </div>
+                                            <span className="discount">
+                                                Save 10%
+                                            </span>
+                                        </div>
+                                        <button className="cmn_btn">
+                                            Book Now
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                         </Slider>
                     </div>
                 </div>
