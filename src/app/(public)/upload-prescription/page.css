@@ -1,0 +1,507 @@
+
+/* Main */
+.prescription-page {
+    padding: 15px 20px 30px;
+    font-family: Arial, sans-serif;
+    color: #111;
+}
+
+/* Tabs */
+.prescription-tabs {
+    display: flex;
+    width: fit-content;
+    background: #f1f1f1;
+    border-radius: 50px;
+    padding: 4px;
+    margin-bottom: 15px;
+}
+
+.prescription-tabs button {
+    border: 0;
+    background: transparent;
+    padding: 10px 24px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    color: #111;
+}
+
+.prescription-tabs button.active {
+    background: #000;
+    color: #fff;
+}
+
+/* Common Card */
+.prescription-card {
+    background: #fff;
+    border-radius: 13px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.09);
+    position: relative;
+    overflow: hidden;
+}
+
+.card-heading {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+    z-index: 1;
+}
+
+.heading-icon {
+    font-size: 27px;
+    font-weight: bold;
+    width: 25px;
+    flex-shrink: 0;
+    line-height: 1;
+}
+
+.heading-content {
+    flex: 1;
+}
+
+.heading-content h5 {
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0 0 3px;
+}
+
+.heading-content p {
+    font-size: 11px;
+    color: #888;
+    margin: 0;
+}
+
+/* Patient */
+.patient-card {
+    min-height: 157px;
+}
+
+.patient-card::after,
+.details-card::after,
+.workflow-card::after {
+    content: "";
+    position: absolute;
+    width: 130px;
+    height: 100px;
+    background: #f1faf5;
+    right: -15px;
+    bottom: -35px;
+    transform: rotate(-28deg);
+    z-index: 0;
+}
+
+.add-patient-btn {
+    border: 1px solid #333;
+    border-radius: 30px;
+    padding: 9px 17px;
+    background: #fff;
+    font-size: 11px;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.add-patient-btn span {
+    margin-left: 10px;
+}
+
+.empty-patient {
+    position: relative;
+    z-index: 1;
+    border: 1px dashed #20c978;
+    border-radius: 10px;
+    padding: 26px 10px;
+    margin-top: 15px;
+    text-align: center;
+    font-size: 11px;
+    color: #888;
+    background: rgba(255, 255, 255, 0.7);
+}
+
+.empty-patient strong {
+    color: #111;
+    font-weight: 600;
+}
+
+/* More Details */
+.details-card {
+    min-height: 194px;
+}
+
+.details-card .form-label {
+    position: relative;
+    z-index: 1;
+    font-size: 11px;
+    margin: 12px 0 5px;
+}
+
+.details-card .form-label span {
+    color: #888;
+}
+
+.symptoms-input {
+    position: relative;
+    z-index: 1;
+    min-height: 100px;
+    resize: none;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 12px;
+    font-size: 11px;
+    box-shadow: none !important;
+}
+
+.symptoms-input::placeholder {
+    color: #c4c4c4;
+}
+
+/* Workflow */
+.workflow-card {
+    min-height: 224px;
+    background: linear-gradient(120deg, #fffefa, #fff 75%, #f0faf5);
+}
+
+.workflow-card::after {
+    width: 180px;
+    height: 130px;
+    bottom: -85px;
+    right: -45px;
+}
+
+.workflow-steps {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 28px;
+    position: relative;
+    z-index: 1;
+}
+
+.workflow-step {
+    flex: 1;
+    text-align: center;
+    min-width: 0;
+}
+
+.step-icon {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 45px;
+    height: 45px;
+    margin: 0 auto 8px;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #f2d900, #00a84f 75%);
+    color: white;
+    font-size: 22px;
+}
+
+.step-icon b {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #009c4c;
+    color: #fff;
+    width: 17px;
+    height: 17px;
+    line-height: 17px;
+    font-size: 10px;
+    border-radius: 50%;
+}
+
+.workflow-step h6 {
+    font-size: 11px;
+    font-weight: 700;
+    margin: 0 0 5px;
+}
+
+.workflow-step p {
+    color: #888;
+    font-size: 10px;
+    line-height: 1.4;
+    margin: 0;
+}
+
+.step-arrow {
+    font-size: 27px;
+    flex-shrink: 0;
+    margin-top: -20px;
+}
+
+.workflow-dots {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin-top: 20px;
+}
+
+.workflow-dots span {
+    height: 6px;
+    width: 6px;
+    background: #ddd;
+    border-radius: 10px;
+}
+
+.workflow-dots span.selected {
+    width: 18px;
+    background: #00a651;
+}
+
+/* Upload Card */
+.upload-card {
+    min-height: 460px;
+}
+
+.upload-area {
+    border: 1px dashed #16c878;
+    border-radius: 13px;
+    min-height: 197px;
+    margin-top: 12px;
+    padding: 20px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    background: #fbfffd;
+    transition: 0.3s ease;
+}
+
+.upload-area.dragging {
+    background: #e9fff3;
+    border-color: #009e53;
+}
+
+.upload-file-icon {
+    font-size: 34px;
+    margin-bottom: 8px;
+}
+
+.upload-area h6 {
+    font-size: 11px;
+    margin: 0 0 7px;
+    font-weight: 500;
+}
+
+.upload-area > p {
+    font-size: 10px;
+    color: #999;
+    margin: 0 0 8px;
+}
+
+.upload-features {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    font-size: 9px;
+    margin-bottom: 12px;
+}
+
+.upload-features span {
+    color: #222;
+}
+
+.upload-features span::first-letter {
+    color: #00b65e;
+}
+
+.browse-btn {
+    border: 1px solid #00c66b;
+    background: #fff;
+    border-radius: 30px;
+    padding: 10px 27px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #333;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.browse-btn:hover {
+    background: #00a651;
+    color: #fff;
+}
+
+/* Uploaded Files */
+.uploaded-files {
+    margin-top: 20px;
+}
+
+.uploaded-file {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-bottom: 7px;
+}
+
+.file-type-icon {
+    width: 24px;
+    height: 24px;
+    background: #e6f5ff;
+    color: #0788d1;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.file-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.file-info h6 {
+    font-size: 10px;
+    font-weight: 600;
+    margin: 0 0 4px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.file-info p {
+    font-size: 9px;
+    color: #999;
+    margin: 0;
+}
+
+.remove-file {
+    border: 1px solid #ff4545;
+    background: #fff;
+    color: #ff4545;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    line-height: 1;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+/* Footer */
+.upload-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.upload-footer p {
+    font-size: 10px;
+    margin: 0;
+}
+
+.upload-footer p span {
+    color: #00b65e;
+    font-size: 15px;
+}
+
+.submit-review-btn {
+    background: linear-gradient(90deg, #00ae57, #00a64e);
+    border: none;
+    border-radius: 30px;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 11px 23px;
+    white-space: nowrap;
+    box-shadow: 0 3px 7px rgba(0, 0, 0, 0.25);
+    cursor: pointer;
+}
+
+.my-prescription-card {
+    min-height: 200px;
+}
+
+/* Responsive */
+@media (max-width: 991px) {
+    .prescription-page {
+        padding: 15px;
+    }
+
+    .upload-card {
+        min-height: auto;
+    }
+}
+
+@media (max-width: 575px) {
+    .prescription-page {
+        padding: 10px;
+    }
+
+    .prescription-tabs {
+        width: 100%;
+    }
+
+    .prescription-tabs button {
+        flex: 1;
+        padding: 10px 8px;
+        font-size: 12px;
+    }
+
+    .prescription-card {
+        padding: 15px;
+    }
+
+    .card-heading {
+        gap: 8px;
+    }
+
+    .heading-content h5 {
+        font-size: 14px;
+    }
+
+    .heading-content p {
+        font-size: 10px;
+    }
+
+    .add-patient-btn {
+        padding: 8px 10px;
+        font-size: 10px;
+    }
+
+    .workflow-steps {
+        gap: 4px;
+    }
+
+    .workflow-step h6 {
+        font-size: 9px;
+    }
+
+    .workflow-step p {
+        font-size: 8px;
+    }
+
+    .step-arrow {
+        font-size: 19px;
+    }
+
+    .upload-footer {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .submit-review-btn {
+        width: 100%;
+    }
+
+    .upload-features {
+        gap: 5px;
+        font-size: 8px;
+    }
+}

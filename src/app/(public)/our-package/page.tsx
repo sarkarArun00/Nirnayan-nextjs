@@ -31,7 +31,7 @@ function page() {
         arrows: false,
         infinite: true,
         speed: 500,
-        slidesToShow: 11,
+        slidesToShow: 8,
         slidesToScroll: 1,
         swipeToSlide: true,
         responsive: [
@@ -122,40 +122,81 @@ function page() {
                         </ul>
                     </div>
                     <div className="btm-block">
-                        <div className="select-pnl">
-                            <div className="left-block">
-                                <input type="text" placeholder='Search Tests & Packages' className='form-control' />
-                            </div>
-                            <div className="select-pnl">
-                                <select className="form-control form-select">
-                                    <option value="mostpopular" selected>Most Popular</option>
-                                    <option value="organ">Organ Wise</option><option value="condition">Condition Wise</option>
-                                    <option value="department">Department Wise</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div className="organ-slider">
-                            <Slider {...settings} className="is_slick_dot">
-                                {organs.map((organ, index) => (
-                                    <div key={organ.id} className="organ-slide">
-                                        <button
-                                            type="button"
-                                            className={`organ-item ${active === index ? "active" : ""
-                                                }`}
-                                            onClick={() => setActive(index)}
-                                            aria-pressed={active === index}
-                                        >
-                                            <span className="organ-icon">
-                                                <img src={organ.image} alt="" />
-                                            </span>
-
-                                            <h6 className="organ-name">{organ.name}</h6>
-                                        </button>
+                        <div className="row">
+                            <div className="col-lg-3 col-md-4 col-sm-12">
+                                <div className="rating">
+                                    <div className="icon">
+                                        <img src="/assets/images/trust-card-ratings.webp" alt="" />
                                     </div>
-                                ))}
-                            </Slider>
+                                    <div className="text">
+                                        <h3>Highest rated <span>diagnostics lab</span></h3>
+                                    </div>
+                                </div>
+                                <div className="box">
+                                    <div className="icon">
+                                        <img src="/assets/images/labs-icon.webp" alt="" />
+                                    </div>
+                                    <div className="text">
+                                        <h6>OWN LABS</h6>
+                                        <p>NABL, EQAS accredited</p>
+                                    </div>
+                                </div>
+                                <div className="box">
+                                    <div className="icon">
+                                        <img src="/assets/images/heart-customer.webp" alt="" />
+                                    </div>
+                                    <div className="text">
+                                        <h6>LOVED BY</h6>
+                                        <p>1 M+ Customers</p>
+                                    </div>
+                                </div>
+                                <div className="box">
+                                    <div className="icon">
+                                        <img src="/assets/images/instant-sample-collection.webp" alt="" />
+                                    </div>
+                                    <div className="text">
+                                        <h6>COLLECTION IN MINUTES</h6>
+                                        <p>Instant Sample Collection</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="col-lg-9 col-md-8 col-sm-12">
+                                <div className="select-pnls">
+                                    <div className="left-block">
+                                        <input type="text" placeholder='Search Tests & Packages' className='form-control' />
+                                    </div>
+                                    <div className="select-pnl">
+                                        <select className="form-control form-select">
+                                            <option value="mostpopular" selected>Most Popular</option>
+                                            <option value="organ">Organ Wise</option><option value="condition">Condition Wise</option>
+                                            <option value="department">Department Wise</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div className="organ-slider">
+                                    <Slider {...settings} className="is_slick_dot">
+                                        {organs.map((organ, index) => (
+                                            <div key={organ.id} className="organ-slide">
+                                                <button
+                                                    type="button"
+                                                    className={`organ-item ${active === index ? "active" : ""
+                                                        }`}
+                                                    onClick={() => setActive(index)}
+                                                    aria-pressed={active === index}
+                                                >
+                                                    <span className="organ-icon">
+                                                        <img src={organ.image} alt="" />
+                                                    </span>
+
+                                                    <h6 className="organ-name">{organ.name}</h6>
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </Slider>
+                                </div>
+                            </div>
                         </div>
+
                     </div>
 
                     <div className="search-result">
