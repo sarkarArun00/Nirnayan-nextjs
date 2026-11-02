@@ -164,6 +164,8 @@ function page() {
                                 <div className="select-pnls">
                                     <div className="left-block">
                                         <input type="text" placeholder='Search Tests & Packages' className='form-control' />
+                                        <i className="fa-solid fa-magnifying-glass search-icon"></i>
+                                        <button><i className="fa-solid fa-microphone"></i></button>
                                     </div>
                                     <div className="select-pnl">
                                         <select className="form-control form-select">
