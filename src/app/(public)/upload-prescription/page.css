@@ -92,5 +92,34 @@ span.is-lbl-text{ color:var(--up-gray) !important; }
 .pt-banner .text-block .symptoms-list{ display:flex; flex-wrap:wrap; gap:10px; }
 .pt-banner .text-block .symptoms-list span{ font-size:14px; color:var(--up-white); font-weight:400; background:var(--up-black); border-radius:25px; padding:6px 15px; }
 
+.pt-progress{ display:flex; border-bottom:2px solid var(--up-gray3); padding:30px 0 25px; padding-bottom:30px; }
+.pt-progress .progress-step{ position:relative; width:25%; text-align:center; }
+.pt-progress .progress-step .step-icon{ height:35px; display:flex; align-items:center; justify-content:center; margin-bottom:15px; }
+.pt-progress .progress-step .step-icon img{ -webkit-filter: brightness(0); filter: brightness(0); }
+.pt-progress .progress-step.completed .step-icon img{ -webkit-filter: brightness(1); filter: brightness(1); }
+.pt-progress .progress-step.active .step-icon img{ -webkit-filter: brightness(1); filter: brightness(1); }
+.pt-progress .progress-step h6{ font-weight:500; color:var(--up-gray); margin-bottom:0; }
+.pt-progress .progress-step.completed:after{ position:absolute; content:""; left:0; bottom:-32px; width:100%; height:2px; background:var(--up-theme); }
+.pt-progress .progress-step.active:after{ position:absolute; content:""; left:0; bottom:-32px; width:50%; height:2px; background:var(--up-theme); }
+.pt-progress .progress-step.active:before{ position:absolute; content:""; left:0; right:0; bottom:-35px; width:10px; height:10px; background:var(--up-theme); border-radius:50%; margin:0 auto; animation: pulseOne 1.5s ease-out infinite; }
+
+
+
+@keyframes pulseOne {
+    0% {
+        box-shadow:
+            0 0 0 0 rgba(0, 166, 81, 0.5),
+            0 0 0 0 rgba(0, 166, 81, 0.3);
+    }
+    100% {
+        box-shadow:
+            0 0 0 12px rgba(0, 166, 81, 0),
+            0 0 0 20px rgba(0, 166, 81, 0);
+    }
+}
+
+
+
+
 
 /* ==== View Details Modal Css End ==== */

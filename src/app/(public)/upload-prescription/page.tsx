@@ -508,7 +508,7 @@ const Page = () => {
                                 <i className="fa-solid fa-xmark" aria-hidden="true"></i>
                             </button>
                         </div> */}
-                        <div className="content-area">
+                        <div className="content-areas">
                             <div className="pt-banner">
                                 <div className="text-block">
                                     <div className="patient-name d-flex align-items-start gap-2">
@@ -531,37 +531,31 @@ const Page = () => {
 
                             </div>
 
-                            {/* Progress Steps */}
-                            <div className="prescription-progress">
-
+                            <div className="pt-progress">
                                 <div className="progress-step completed">
                                     <div className="step-icon">
                                         <img src="/assets/images/lab-up1.svg" alt="" />
                                     </div>
-                                    <h5>Uploaded</h5>
+                                    <h6>Uploaded</h6>
                                 </div>
-
                                 <div className="progress-step completed">
                                     <div className="step-icon">
                                         <img src="/assets/images/lab-up2.svg" alt="" />
                                     </div>
-                                    <h5>Lab Reviewed</h5>
+                                    <h6>Lab Reviewed</h6>
                                 </div>
-
                                 <div className="progress-step active">
                                     <div className="step-icon">
                                         <img src="/assets/images/lab-up3.svg" alt="" />
                                     </div>
-                                    <h5>Cart Ready</h5>
+                                    <h6>Cart Ready</h6>
                                 </div>
-
                                 <div className="progress-step">
                                     <div className="step-icon">
                                         <img src="/assets/images/lab-up4.svg" alt="" />
                                     </div>
-                                    <h5>Completed</h5>
+                                    <h6>Completed</h6>
                                 </div>
-
                             </div>
 
                         </div>
