@@ -103,8 +103,6 @@ span.is-lbl-text{ color:var(--up-gray) !important; }
 .pt-progress .progress-step.active:after{ position:absolute; content:""; left:0; bottom:-32px; width:50%; height:2px; background:var(--up-theme); }
 .pt-progress .progress-step.active:before{ position:absolute; content:""; left:0; right:0; bottom:-35px; width:10px; height:10px; background:var(--up-theme); border-radius:50%; margin:0 auto; animation: pulseOne 1.5s ease-out infinite; }
 
-
-
 @keyframes pulseOne {
     0% {
         box-shadow:
@@ -117,6 +115,79 @@ span.is-lbl-text{ color:var(--up-gray) !important; }
             0 0 0 20px rgba(0, 166, 81, 0);
     }
 }
+
+/* ==== Chat Card start ==== */
+.pres-review{ background:linear-gradient(180deg, #D9F3E5 0%, #FFFFFF 100%); border-radius:15px; padding:15px; margin-top:30px; }
+
+/* attachment */
+.attach-card{ background:var(--up-white); border-radius:15px; box-shadow:0px 0px 10px 0px rgba(200,200,200, 0.4); padding:25px; margin:0 0 20px; }
+.document-list{ display:grid; grid-template-columns:repeat(3, 1fr); grid-row-gap:15px; grid-column-gap:15px; }
+.document-list .document-item{ background:var(--up-gray3); border-radius:15px; padding:15px; }
+.document-list .document-item .document-info{ display:flex; align-items:center; margin-bottom:8px; }
+.document-list .document-item .document-info .icon{ flex-shrink:0; }
+.document-list .document-item .document-info .icon i{ font-size:20px; color:var(--up-black); }
+.document-list .document-item .document-info .text{ flex:1; padding-left:12px; }
+.document-list .document-item .document-info .text h6{ font-size:12px; line-height:1.2; color:var(--up-gray); font-weight:500; margin:0; }
+.document-list .document-item .document-info .text h6 span{ display:block; }
+.document-list .document-item .document-preview{ max-width:100px; }
+/* attachment */
+
+.card-head{ display:flex; align-items:center; margin-bottom:20px; }
+.card-head i{ font-size:28px; flex-shrink:0; }
+.card-head h4{ flex:1; color:var(--up-black); font-weight:600; margin-bottom:0; padding-left:10px; }
+
+.chat-card{ background:var(--up-white); border-radius:15px; box-shadow:0px 0px 10px 0px rgba(200,200,200, 0.4); padding:25px; margin:0; }
+.chat-messages{ display:flex; flex-direction:column; gap:15px; max-height:300px; overflow-y:auto; padding-right:5px; }
+.chat-message{ display: flex; align-items: flex-start; gap:9px; }
+.lab-avatar{ width:42px; height:42px; flex-shrink:0; border-radius:50%; background:var(--up-theme); display:flex; justify-content:center; align-items:center; font-size:16px; font-weight:600; color:var(--up-white); }
+.message-content{ padding:8px 18px; border-radius:15px; min-width:0; }
+.message-content h6{ font-weight:600; margin: 0 0 5px; }
+.message-content p{ line-height:1.3; color:var(--up-black); margin:0; }
+.lab-message .message-content{ background:rgba(217,243,229,0.2); border: 1px solid #D9F3E5; border-top-left-radius:0; flex:1; }
+.lab-message .message-content h6{ color:var(--up-theme); }
+/* User Message */
+.user-message{ justify-content:flex-end; }
+.user-message .message-content{ background:#e5edff; border:1px solid #cbdcff; border-bottom-right-radius:0; /* max-width: 84%; */ flex:1; }
+.user-avatar{ width:42px; height:42px; border-radius:50%; overflow:hidden; flex-shrink:0; background:var(--up-gray); }
+.user-avatar img{ width:100%; height:100%; object-fit:cover; }
+/* Chat Input */
+.chat-input-area{ margin-top:15px; }
+.chat-input-area .form-control{ height:80px !important; }
+.sec_btn i{ color:var(--up-theme); padding-left:10px; }
+/* ==== Chat Card end ==== */
+
+/* ==== Investigation Start ==== */
+.sugg-card{ background:linear-gradient(143.81deg, #FAC801 0.98%, #FFFFFF 25.55%, #FFFFFF 70.76%, #00A651 99.26%); border-radius:15px; box-shadow:0px 0px 10px 0px rgba(200,200,200, 0.4); padding:1px; margin:0; }
+.sugg-card .inn-wrap{ background:var(--up-white); border-radius:15px; padding:25px; margin:0; }
+
+
+
+/* Suggested Investigation List */
+.sugglist{ display:flex; flex-direction:column; gap:20px; }
+.sugglist .sug-box{ padding:12px; border-radius:15px; background:linear-gradient(90deg, #FFFFFF 0%, #D9F3E5 100%); box-shadow:0px 0px 4px 0px rgba(0,0,0,0.25); }
+.sugglist .inv-heading{ display:flex; align-items:center; gap:10px; margin-bottom:15px; }
+.sugglist .inv-icon{ width:42px; height:42px; flex-shrink:0; display:flex; align-items:center; justify-content:center; border-radius:50%; background:var(--up-gray3); }
+.sugglist .inv-icon img{ width:23px; height:23px; object-fit:contain; }
+.sugglist .inv-heading h5{ font-weight:600; color:var(--up-black); margin:0; }
+.sugglist .btm-pnl{ display:flex; align-items:center; justify-content:space-between; gap:20px; margin-bottom:15px; }
+.sugglist .bt-box{ display:flex; align-items:center; justify-content:space-between; gap:10px; flex:1; min-width:0; }
+.sugglist .bt-box .icon{ display:flex; align-items:center; gap:8px; min-width:0; }
+.sugglist .bt-box .icon img{ width:20px; height:20px; object-fit:contain; flex-shrink:0; }
+.sugglist .bt-box h6{ font-size:14px; font-weight:400; margin:0; white-space:nowrap; }
+.sugglist .bt-box .icon h6{ color:var(--up-gray); }
+.sugglist .bt-box .text-block h6{ color:var(--up-black); font-weight:500; }
+.sugglist .inv-price{ display:flex; align-items:center; justify-content:space-between; border:1px solid var(--up-theme); border-radius:35px; background:var(--up-white); padding:10px 20px; }
+.sugglist .price-content h4{ display:flex; flex-direction:column; font-weight:600; color:var(--up-black); margin:0; }
+.sugglist .price-content h4 del{ font-size:15px; font-weight:400; color:var(--up-gray); }
+
+
+
+
+/* ==== Investigation end ==== */
+
+
+
+
 
 
 

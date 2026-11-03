@@ -88,7 +88,7 @@ const Page = () => {
         setFiles((prev) => prev.filter((_, i) => i !== index));
     };
 
-    // for pres
+    // for prescription
     const [activeFilter, setActiveFilter] = useState("All");
 
     const filteredPatients =
@@ -110,6 +110,7 @@ const Page = () => {
                 return "";
         }
     };
+    // End prescription
 
     const [showDetails, setShowDetails] = useState(false);
     const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
@@ -121,6 +122,38 @@ const Page = () => {
     const closeDetailsModal = () => {
         setShowDetails(false);
         setSelectedPatient(null);
+    };
+
+    const [message, setMessage] = useState("");
+    const [messages, setMessages] = useState([
+        {
+            id: 1,
+            sender: "lab",
+            name: "Lab Team",
+            text: "Hi! We Reviewed The Prescription For Tarun Sana. Our Pathologist Recommends The Tests Below. You Can Add Individual Tests Or The Full Bundle (10% Off). Reply Here If You Have Any Questions.",
+        },
+        {
+            id: 2,
+            sender: "user",
+            name: "Tarun",
+            text: "Hello, I Have A Prescription From My Doctor For Some Blood Tests. I'm Sending It Here For Your Reference.",
+        },
+    ]);
+
+    const handleSend = () => {
+        if (!message.trim()) return;
+
+        setMessages((prev) => [
+            ...prev,
+            {
+                id: Date.now(),
+                sender: "user",
+                name: "Tarun",
+                text: message,
+            },
+        ]);
+
+        setMessage("");
     };
 
     return (
@@ -558,6 +591,242 @@ const Page = () => {
                                 </div>
                             </div>
 
+                            <div className="pres-review">
+                                <div className="row">
+                                    <div className="col-lg-6">
+                                        <div className="attach-card">
+                                            <div className="card-head">
+                                                <i className="fa-solid fa-paperclip"></i>
+                                                <h4>Attach Prescription Document</h4>
+                                            </div>
+
+                                            <div className="document-list">
+                                                <div className="document-item">
+                                                    <div className="document-info">
+                                                        <div className="icon">
+                                                            <i className="fa-solid fa-image"></i>
+                                                        </div>
+                                                        <div className="text">
+                                                            <h6>Prescription.png <span>1.36MB</span></h6>
+                                                        </div>
+                                                    </div>
+                                                    <div className="document-preview">
+                                                        <img
+                                                            src="/assets/images/prescription.png"
+                                                            alt="Prescription document"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div className="document-item">
+                                                    <div className="document-info">
+                                                        <div className="icon">
+                                                            <i className="fa-solid fa-file-pdf"></i>
+                                                        </div>
+                                                        <div className="text">
+                                                            <h6>Prescription.png <span>1.36MB</span></h6>
+                                                        </div>
+                                                    </div>
+                                                    <div className="document-preview">
+                                                        <img
+                                                            src="/assets/images/prescription.png"
+                                                            alt="Prescription document"
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
+
+
+
+                                        </div>
+
+                                        <div className="review-card chat-card">
+                                            <div className="card-head">
+                                                <i className="fa-regular fa-comment-dots"></i>
+                                                <h4>Conversation with Lab team</h4>
+                                            </div>
+
+                                            <div className="chat-messages">
+
+                                                {messages.map((item) => (
+                                                    <div
+                                                        key={item.id}
+                                                        className={`chat-message ${item.sender === "user"
+                                                            ? "user-message"
+                                                            : "lab-message"
+                                                            }`}
+                                                    >
+
+                                                        {item.sender === "lab" && (
+                                                            <div className="lab-avatar">
+                                                                NH
+                                                            </div>
+                                                        )}
+
+                                                        <div className="message-content">
+                                                            <h6>{item.name}</h6>
+                                                            <p>{item.text}</p>
+                                                        </div>
+
+                                                        {item.sender === "user" && (
+                                                            <div className="user-avatar">
+                                                                <img
+                                                                    src="/assets/images/user2.png"
+                                                                    alt="User"
+                                                                />
+                                                            </div>
+                                                        )}
+
+                                                    </div>
+                                                ))}
+
+                                            </div>
+
+                                            {/* Message Input */}
+                                            <div className="chat-input-area">
+                                                <textarea
+                                                    value={message}
+                                                    onChange={(e) => setMessage(e.target.value)}
+                                                    placeholder="Message the lab team (e.g. 'Can we skip the Vitamin D test?')"
+                                                    className="form-control"
+                                                />
+                                                <div className="text-end mt-3">
+                                                    <button
+                                                        type="button"
+                                                        className="sec_btn border-0"
+                                                        onClick={handleSend}
+                                                    >
+                                                        Send
+                                                        <i className="fa-solid fa-paper-plane"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                    <div className="col-lg-6">
+                                        <div className="sugg-card">
+                                            <div className="inn-wrap">
+                                                <div className="card-head">
+                                                    <i className="fa-solid fa-cart-shopping"></i>
+                                                    <h4>Suggested Investigation</h4>
+                                                </div>
+                                                <div className="sugglist">
+                                                    <div className="sug-box">
+                                                        <div className="inv-heading">
+                                                            <div className="inv-icon">
+                                                                <img src="/assets/images/heart.png" alt="" />
+                                                            </div>
+                                                            <h5>Complete Blood Count (CBC)</h5>
+                                                        </div>
+                                                        <div className="btm-pnl">
+                                                            <div className="bt-box">
+                                                                <div className="icon">
+                                                                    <img src="/assets/images/report.svg" alt="" />
+                                                                    <h6>Reports in</h6>
+                                                                </div>
+                                                                <div className="text-block">
+                                                                    <h6>Same Day</h6>
+                                                                </div>
+                                                            </div>
+                                                            <div className="bt-box">
+                                                                <div className="icon">
+                                                                    <img src="/assets/images/ava.svg" alt="" />
+                                                                    <h6>Sample Type</h6>
+                                                                </div>
+                                                                <div className="text-block">
+                                                                    <h6>Serum</h6>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="inv-price">
+                                                            <div className="price-content">
+                                                                <h4><del>₹911</del> ₹ 2,599</h4>
+                                                            </div>
+                                                            <span className="is-discount">10% Off</span>
+                                                        </div>
+                                                    </div>
+                                                    <div className="sug-box">
+                                                        <div className="inv-heading">
+                                                            <div className="inv-icon">
+                                                                <img src="/assets/images/heart.png" alt="" />
+                                                            </div>
+                                                            <h5>Complete Blood Count (CBC)</h5>
+                                                        </div>
+                                                        <div className="btm-pnl">
+                                                            <div className="bt-box">
+                                                                <div className="icon">
+                                                                    <img src="/assets/images/report.svg" alt="" />
+                                                                    <h6>Reports in</h6>
+                                                                </div>
+                                                                <div className="text-block">
+                                                                    <h6>Same Day</h6>
+                                                                </div>
+                                                            </div>
+                                                            <div className="bt-box">
+                                                                <div className="icon">
+                                                                    <img src="/assets/images/ava.svg" alt="" />
+                                                                    <h6>Sample Type</h6>
+                                                                </div>
+                                                                <div className="text-block">
+                                                                    <h6>Serum</h6>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="inv-price">
+                                                            <div className="price-content">
+                                                                <h4><del>₹911</del> ₹ 2,599</h4>
+                                                            </div>
+                                                            <span className="is-discount">10% Off</span>
+                                                        </div>
+                                                    </div>
+                                                    <div className="sug-box">
+                                                        <div className="inv-heading">
+                                                            <div className="inv-icon">
+                                                                <img src="/assets/images/heart.png" alt="" />
+                                                            </div>
+                                                            <h5>Complete Blood Count (CBC)</h5>
+                                                        </div>
+                                                        <div className="btm-pnl">
+                                                            <div className="bt-box">
+                                                                <div className="icon">
+                                                                    <img src="/assets/images/report.svg" alt="" />
+                                                                    <h6>Reports in</h6>
+                                                                </div>
+                                                                <div className="text-block">
+                                                                    <h6>Same Day</h6>
+                                                                </div>
+                                                            </div>
+                                                            <div className="bt-box">
+                                                                <div className="icon">
+                                                                    <img src="/assets/images/ava.svg" alt="" />
+                                                                    <h6>Sample Type</h6>
+                                                                </div>
+                                                                <div className="text-block">
+                                                                    <h6>Serum</h6>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div className="inv-price">
+                                                            <div className="price-content">
+                                                                <h4><del>₹911</del> ₹ 2,599</h4>
+                                                            </div>
+                                                            <span className="is-discount">10% Off</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="text-end mt-3">
+                                                    <button className="cmn_btn">Add all Investigstion</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+
                         </div>
                     </div>
                 </div>
@@ -568,3 +837,4 @@ const Page = () => {
 };
 
 export default Page;
+
