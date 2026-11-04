@@ -24,15 +24,22 @@ function Blog() {
 
     responsive: [
       {
-        breakpoint: 1024,
+        breakpoint: 1199,
         settings: {
           slidesToShow: 2,
         },
       },
       {
-        breakpoint: 768,
+        breakpoint: 991,
         settings: {
           slidesToShow: 1,
+        },
+      },
+      {
+        breakpoint: 767,
+        settings: {
+          slidesToShow: 1,
+          centerPadding: "0",
         },
       },
     ],
@@ -170,6 +177,17 @@ function Blog() {
           ) : (
             <div>No blogs available.</div>
           )}
+        </div>
+        <div className="text-center is-exp-btn">
+          <button className="exp-btn" onClick={() =>
+              window.open(
+                "https://blog.nirnayanhealthcare.com/",
+                "_blank",
+                "noopener,noreferrer",
+              )
+            }>
+            Explore More <img src="/assets/images/exp-btn.svg" alt="" />
+          </button>
         </div>
       </div>
     </div>

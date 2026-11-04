@@ -114,7 +114,7 @@ function Awards({ section = "all", pageClass = "" }: AwardsProps) {
                 No awards available at the moment.
               </p>
             ) : (
-              <Slider {...awardsConfig} className="carousel is_slick_dot">
+              <Slider {...awardsConfig} className="carousel is_slick_dot is-award">
                 {awards.map((award) => (
                   <div className="item" key={award.id}>
                     <div className={`award_item ${styles.award_item}`}>

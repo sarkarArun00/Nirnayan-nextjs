@@ -9,3 +9,9 @@
 .img_block .text_block .lt_block p{ font-weight:300; color:var(--up-white); margin-bottom:0; display: -webkit-box; -webkit-box-orient: vertical; line-clamp:2; -webkit-line-clamp:2; overflow:hidden;  }
 .img_block .text_block .arrow_btn{ transform:scale(0.5); opacity:0; visibility:hidden; }
 .img_block:hover .text_block .arrow_btn{ transform:scale(1); opacity:1; visibility:visible; }
+
+@media screen and (max-width:1200px){
+    .img_block{ height:400px; }
+    .img_block .text_block{ padding:0 15px 20px; }
+
+}

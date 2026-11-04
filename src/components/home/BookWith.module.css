@@ -8,3 +8,16 @@
 .with_us .box .text-block{ position:relative; z-index:1; max-width:210px; padding:55px 0 0 20px; }
 .with_us .box .text-block h5{ font-weight:600; color:var(--up-black); }
 .with_us .box .text-block p{ color:var(--up-gray); margin-bottom:0; }
+
+
+@media screen and (max-width:1700px){
+    .with_us .box img{ position:absolute; right:-100px; bottom:-30px; opacity:0.3; }
+    .with_us .box .text-block p{ color:var(--up-black); text-shadow: 2px 2px 4px rgba(0,0,0,0.2); }
+}
+
+@media screen and (max-width:767px){
+    .with_us .box{ border-radius:25px; min-height:200px; }
+    .with_us .box .text-block{ max-width:80%; padding:40px 0 0 20px; }
+
+
+}

@@ -75,7 +75,7 @@ label span{ color:#FF0000; }
 /* Expant Btn Styles End */
 
 /* Mobile Explore Button Start */
-.is-exp-btn{ margin-top:25px; display:none; }
+.is-exp-btn{ padding-top:25px; display:none; }
 .exp-btn{ display:flex; align-items:center; gap:12px; height:48px; padding:0 25px; border:1px solid var(--up-black); border-radius:50px; background:var(--up-white); transition: all 0.4s; }
 
 /* Mobile Explore Button Start */
@@ -418,7 +418,9 @@ ol.breadcrumb li.active{ color:var(--up-black); }
   .cmn-right-align{ margin-right: calc(((100vw - 720px) / 2) * -1); }
   .accolades .slick-list:after{ display:none; }
   .accolades .slick-list:before{ display:none; }
-
+  .is-award.is_slick_dot .slick-list {
+    margin:0 !important;
+  }
 
   h2{ font-size:30px; }
 
@@ -470,13 +472,20 @@ ol.breadcrumb li.active{ color:var(--up-black); }
 
 
   h2{ font-size:24px; }
+  h3{ font-size:22px; }
   ul,li{ font-size:13px; }
   textarea,select,.form-control,.form-select,input{ font-size:14px; }
   .container{ width:100%; max-width:100%; }
   .cmn-right-align{ margin-right:0; }
   .cmn_margin{ margin:0 6px; }
   .cmn_padding{ padding:0 6px; }
-  .is_slick_dot .slick-list{ margin:0 -6px !important; } 
+  .is_slick_dot .slick-list{ margin:0 -6px !important; }
+  .is_slick_dot .slick-dots {
+    bottom: -27px;
+  }
+  .is_slick_dot {
+    margin-bottom: 27px !important;
+  } 
   .is-exp-btn{ display: flex; justify-content: center; }
   .cmn_btn {
     padding: 15px 20px;

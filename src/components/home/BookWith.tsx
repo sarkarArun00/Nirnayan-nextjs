@@ -14,9 +14,29 @@ function BookWith() {
         centerPadding: '60px',
         responsive: [
             {
-                breakpoint: 768,
+                breakpoint: 1600,
+                settings: {
+                    slidesToShow: 3,
+                },
+            },
+            {
+                breakpoint: 1199,
+                settings: {
+                    slidesToShow: 2,
+                },
+            },
+            {
+                breakpoint: 992,
+                settings: {
+                    slidesToShow: 2,
+                },
+            },
+            {
+                breakpoint: 767,
                 settings: {
                     slidesToShow: 1,
+                    centerPadding: '0',
+
                 },
             },
         ],
@@ -26,35 +46,34 @@ function BookWith() {
         {
             title: "Accurate Reports",
             description:
-                "Nirnayan delivers accurate test reports within the best TAT for the fastest treatment",
+                "Clear, accurate medical insights at a glance.",
             imgSrc: "/assets/images/with-icon1.png",
             bgColor: "#ECF3FE",
         },
         {
             title: "4000+ Lab Tests & Packages",
             description:
-                "Nirnayan has a vast range of blood tests menu with around 4000+ tests and test packages",
+                "Explore 4,000+ lab tests and packages for your healthcare needs.",
             imgSrc: "/assets/images/with-icon2.png",
             bgColor: "#D9F3E5",
         },
         {
             title: "Home Collection Facility",
             description:
-                "To avoid trouble with blood samples, Nirnayan provides a home blood collection facility with your preferred date and time",
+                "Blood sample collection at your preferred time, from home.",
             imgSrc: "/assets/images/with-icon3.png",
             bgColor: "#F2F2F2",
         },
         {
             title: "NABL Accredited Pathology",
             description:
-                "Nirnayan is an NABL-accredited pathology lab in Kolkata for its highest quality standards of pathology services",
+                "Trusted testing from a NABL-accredited Pathology laboratory.",
             imgSrc: "/assets/images/with-icon4.png",
             bgColor: "#EDE6F3",
         },
         {
             title: "Trained Phlebotomist",
-            description:
-                "Nirnayan has appointed trained phlebotomists for blood collection with excellent care",
+            description:"Skilled professionals for safe and comfortable sample collection.",
             imgSrc: "/assets/images/with-icon5.png",
             bgColor: "#FFFAE6",
         },
