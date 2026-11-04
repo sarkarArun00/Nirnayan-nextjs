@@ -160,8 +160,6 @@ span.is-lbl-text{ color:var(--up-gray) !important; }
 .sugg-card{ background:linear-gradient(143.81deg, #FAC801 0.98%, #FFFFFF 25.55%, #FFFFFF 70.76%, #00A651 99.26%); border-radius:15px; box-shadow:0px 0px 10px 0px rgba(200,200,200, 0.4); padding:1px; margin:0; }
 .sugg-card .inn-wrap{ background:var(--up-white); border-radius:15px; padding:25px; margin:0; }
 
-
-
 /* Suggested Investigation List */
 .sugglist{ display:flex; flex-direction:column; gap:20px; }
 .sugglist .sug-box{ padding:12px; border-radius:15px; background:linear-gradient(90deg, #FFFFFF 0%, #D9F3E5 100%); box-shadow:0px 0px 4px 0px rgba(0,0,0,0.25); }
@@ -180,17 +178,16 @@ span.is-lbl-text{ color:var(--up-gray) !important; }
 .sugglist .price-content h4{ display:flex; flex-direction:column; font-weight:600; color:var(--up-black); margin:0; }
 .sugglist .price-content h4 del{ font-size:15px; font-weight:400; color:var(--up-gray); }
 
-
-
-
-/* ==== Investigation end ==== */
-
-
-
-
-
-
-
-
-
 /* ==== View Details Modal Css End ==== */
+
+/* ==== Add new patienent Modal Css End ==== */
+.inp-box{ margin-bottom:15px; }
+.is-left-gap{ position:relative; }
+.is-left-gap input.form-control{ padding-left:92px; }
+.is-left-gap .is-abs{ position:absolute; left:8px; top:8px; width:70px; height:32px !important; background-color:var(--up-gray3); border-color:var(--up-gray3); padding:0 12px; }
+
+.gender-row{ display:flex; gap:0 12px; }
+.gender-row label{ height:43px; font-size:15px; line-height:1.2; font-weight:500; color:var(--up-black); display:flex; align-items:center; justify-content:center; gap:0 8px; border:1px solid var(--up-gray2); background:none; border-radius:35px; padding:0 15px; cursor:pointer; }
+.gender-row label.active{ background:var(--up-black); color:var(--up-white); border-color:var(--up-black); }
+.gender-row label input{ display:none; }
+/* ==== Add new patienent Modal Css End ==== */

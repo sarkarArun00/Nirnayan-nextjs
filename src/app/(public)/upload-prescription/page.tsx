@@ -65,6 +65,7 @@ const filters = [
 ];
 
 const Page = () => {
+    const [showAddPatient, setShowAddPatient] = useState(false);
     const [activeTab, setActiveTab] = useState("upload");
     const [files, setFiles] = useState<File[]>([]);
     const [isDragging, setIsDragging] = useState(false);
@@ -156,6 +157,10 @@ const Page = () => {
         setMessage("");
     };
 
+    const [newPatient, setNewPatient] = useState({
+        gender: "",
+    });
+
     return (
         <div className="prescription-page">
             <div className="container">
@@ -208,7 +213,7 @@ const Page = () => {
                                             <p>Choose the patient for whom the tests are being booked</p>
                                         </div>
                                     </div>
-                                    <button className="exp-btn">
+                                    <button className="exp-btn" onClick={() => setShowAddPatient(true)}>
                                         Add Patients <img src="/assets/images/pres-icon2.svg" alt="" />
                                     </button>
                                 </div>
@@ -824,13 +829,116 @@ const Page = () => {
                                     </div>
                                 </div>
                             </div>
-
-
-
                         </div>
                     </div>
                 </div>
                 {/* Modal Block End */}
+
+                {/* Add New Patienent Modal Start */}
+                <div
+                    className={`cmn-backdrop ${showAddPatient ? "active" : ""}`}
+                    onClick={() => setShowAddPatient(false)}
+                >
+                    <div className="inn" onClick={(e) => e.stopPropagation()}>
+                        <button
+                            type="button"
+                            className="closeBtn"
+                            onClick={() => setShowAddPatient(false)}
+                        >
+                            <i className="fa-solid fa-xmark"></i>
+                        </button>
+
+                        <div className="header">
+                            <h4 className="m-0">Add New Patient</h4>
+                        </div>
+
+                        <div className="content-area">
+                            <div className="row">
+                                <div className="col-lg-12 col-md-12 col-sm-12">
+                                    <div className="inp-box is-left-gap">
+                                        <label>First Name<span>*</span></label>
+                                        <div className="position-relative">
+                                            <input type="text" placeholder="Patient Name" className="form-control" />
+                                            <select className="form-control form-select is-abs">
+                                                <option>Mr.</option>
+                                                <option>Ms.</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="col-lg-6 col-md-12 col-sm-12">
+                                    <div className="inp-box">
+                                        <label>DOB<span>*</span></label>
+                                        <input type="date" className="form-control" />
+                                    </div>
+                                </div>
+
+                                <div className="col-lg-6 col-md-12 col-sm-12">
+                                    <div className="inp-box">
+                                        <label>Blood Group<span>*</span></label>
+                                        <select className="form-control form-select">
+                                            <option value="" disabled selected>Select Blood Group</option>
+                                            <option value="A+">A+</option>
+                                            <option value="A-">A-</option>
+                                            <option value="B+">B+</option>
+                                            <option value="B-">B-</option>
+                                            <option value="O+">O+</option>
+                                            <option value="O-">O-</option>
+                                            <option value="AB+">AB+</option>
+                                            <option value="AB-">AB-</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div className="col-lg-6 col-md-12 col-sm-12">
+                                    <div className="inp-box">
+                                        <label>Height<span>*</span></label>
+                                        <input type="text" placeholder="Height" className="form-control" />
+                                    </div>
+                                </div>
+
+                                <div className="col-lg-6 col-md-12 col-sm-12">
+                                    <div className="inp-box">
+                                        <label>Weight<span>*</span></label>
+                                        <input type="text" placeholder="Weight" className="form-control" />
+                                    </div>
+                                </div>
+
+                                <div className="col-lg-12 col-md-12 col-sm-12">
+                                    <div className="inp-box">
+                                        <label>Gender<span>*</span></label>
+                                        <div className="gender-row">
+
+                                            <label className={`gender-btn ${newPatient.gender === "Male" ? "active" : ""}`}>
+                                                <input type="radio" name="gender" value="Male" checked={newPatient.gender === "Male"} onChange={() => setNewPatient({ ...newPatient, gender: "Male" })} />
+                                                <i className="fa-solid fa-mars"></i> Male
+                                            </label>
+
+                                            <label className={`gender-btn ${newPatient.gender === "Female" ? "active" : ""}`}>
+                                                <input type="radio" name="gender" value="Female" checked={newPatient.gender === "Female"} onChange={() => setNewPatient({ ...newPatient, gender: "Female" })} />
+                                                <i className="fa-solid fa-venus"></i> Female
+                                            </label>
+
+                                            <label className={`gender-btn ${newPatient.gender === "Other" ? "active" : ""}`}>
+                                                <input type="radio" name="gender" value="Other" checked={newPatient.gender === "Other"} onChange={() => setNewPatient({ ...newPatient, gender: "Other" })} />
+                                                <i className="fa-solid fa-transgender"></i> Other
+                                            </label>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="col-lg-12 col-md-12 col-sm-12">
+                                    <button type="button" className="cmn_btn w-100">
+                                        Add Patient
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {/* Add New Patienent Modal End */}
             </div>
         </div>
     );

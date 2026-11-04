@@ -290,7 +290,7 @@ label span{ color:#FF0000; }
 .cmn-backdrop .header h4{ font-weight:600; color:var(--up-black); margin-bottom:10px; }
 .cmn-backdrop .header p{ font-weight:400; color:var(--up-gray); margin-bottom:0; }
 
-.content-area{ overflow-y:scroll; max-height:calc(550px - 70px); padding-right:5px; }
+.content-area{ overflow-y:auto; overflow-x:hidden; max-height:calc(550px - 70px); padding-right:5px; }
 .cmn-backdrop .inn.is-wide{ width:1200px; }
 .cmn-backdrop .inn.is-wide-lg{ width:800px; }
 .cmn-backdrop .inn.is-wide-sm{ width:600px; }
