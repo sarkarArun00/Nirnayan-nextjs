@@ -467,3 +467,39 @@ export async function deletePatientAddress(
         }
     );
 }
+
+export async function updateCartDetails(cartId: number, doctorName: string, files: File[]) {
+    const user = await getLoggedInUser();
+
+    if (!user?.id) {
+        throw new Error("User not logged in.");
+    }
+
+    const formData = new FormData();
+    if (doctorName) {
+        formData.append("doctorName", doctorName);
+    }
+    files.forEach((file) => {
+        formData.append("file", file);
+    });
+
+    const response = await fetch(`${getBaseUrl()}b2c/updateCartDetails/${cartId}`, {
+        method: "POST",
+        headers: {
+            Accept: "application/json",
+            user_id: String(user.id),
+        },
+        body: formData,
+        cache: "no-store",
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+        throw new Error(
+            result?.message || "Failed to update cart details."
+        );
+    }
+
+    return result;
+}

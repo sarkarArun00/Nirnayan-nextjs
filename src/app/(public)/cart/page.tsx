@@ -2,12 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import styles from "./page.module.css";
-import './page.css';
+import "./page.css";
 import Link from "next/link";
 import {
   getCartByUser,
   removeFromCart,
   getAllSlots,
+  updateCartDetails,
   getAllPatientAddresses,
   deletePatientAddress,
   type PatientAddress,
@@ -16,23 +17,13 @@ import {
 } from "@/services/cart.service";
 import AddressModal from "@/components/common/AddressModal/AddressModal";
 import { usePatientSelection } from "@/components/common/PatientSelectionModal/PatientSelectionProvider";
+
 type CartProduct = {
   id: number;
   name: string;
   productType: "test" | "package";
   price?: string;
 };
-
-type CartPatient = {
-  id: number | string;
-  name: string;
-  gender: string;
-  age?: number;
-  dob?: string;
-  bloodGroup?: string;
-  isNew: boolean;
-};
-
 
 type CartItemRef = {
   id: number;
@@ -44,18 +35,33 @@ type CartGroup = {
   items: CartItemRef[];
 };
 
-type PatientCartGroup = {
+// Updated to match the nested investigation structure from the new backend response
+export type InvestigationItem = {
+  bookingId: number;
+  item_id: number;
+  productType: "package" | "test";
+  test_name: string;
+  test_code: string;
+  tat: {
+    normalTat: { value: string; isHour: boolean };
+    urgentTat: { value: string; isHour: boolean };
+  };
+  homeCollection: boolean;
+  mrpAmount: number;
+  offerAmount: number | null;
+  finalAmount: number;
+  cartId?: number; // added optionally for tracking
+};
+
+export type PatientCartGroup = {
+  cartId: number;
   patientId: number;
   patient_name: string;
   patient_age: number;
   patient_gender: number;
-  items: CartItem[];
-};
-
-type PatientSelectionContextType = {
-  openPatientModal: (product: CartProduct) => void;
-  openAddPatientModal: () => void;
-  closePatientModal: () => void;
+  doctor_name: string | null;
+  attachments: any[];
+  investigation: InvestigationItem[];
 };
 
 const CART_KEY = "nirnayan_temp_cart";
@@ -64,22 +70,18 @@ function getBookingDateValue(date: Date): string {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
   const day = String(date.getDate()).padStart(2, "0");
-
   return `${year}-${month}-${day}`;
 }
 
 function formatSlotTime(time: string): string {
   const [hourText, minute] = time.split(":");
   const hour = Number(hourText);
-
-  return `${String(hour % 12 || 12).padStart(2, "0")}:${minute} ${hour >= 12 ? "PM" : "AM"
-    }`;
+  return `${String(hour % 12 || 12).padStart(2, "0")}:${minute} ${hour >= 12 ? "PM" : "AM"}`;
 }
 
 const BOOKING_WINDOW_DAYS = 15;
 
 export default function CartPage() {
-
   const [loading, setLoading] = useState(true);
   const [cart, setCart] = useState<CartGroup[]>([]);
 
@@ -101,22 +103,24 @@ export default function CartPage() {
   const [addressRefreshKey, setAddressRefreshKey] = useState(0);
 
   const [cartGroups, setCartGroups] = useState<PatientCartGroup[]>([]);
-
-
   const [loadingCart, setLoadingCart] = useState(false);
   const [showAddressModal, setShowAddressModal] = useState(false);
 
+  // Add this state inside your CartPage component
+  const [activePrescriptionModal, setActivePrescriptionModal] =
+    useState<PatientCartGroup | null>(null);
+  const [modalDoctorName, setModalDoctorName] = useState("");
+  const [modalFiles, setModalFiles] = useState<File[]>([]);
+
   const [removeTarget, setRemoveTarget] = useState<{
     patientId: number;
-    item: CartItem;
+    item: InvestigationItem;
   } | null>(null);
 
   const [deletingCartId, setDeletingCartId] = useState<number | null>(null);
-
   const [editingAddress, setEditingAddress] = useState<
     PatientAddress | undefined
   >(undefined);
-
   const [addressToDelete, setAddressToDelete] = useState<PatientAddress | null>(
     null,
   );
@@ -132,44 +136,33 @@ export default function CartPage() {
   const loadCart = async () => {
     try {
       setLoadingCart(true);
-
       const response = await getCartByUser();
 
       if (response?.status === 1 && Array.isArray(response.data)) {
-        const grouped = response.data.reduce<PatientCartGroup[]>(
-          (groups, item) => {
-            let patientGroup = groups.find(
-              (group) => group.patientId === item.patientId,
-            );
-
-            if (!patientGroup) {
-              patientGroup = {
-                patientId: item.patientId,
-
-                patient_name: item.patient_name,
-
-                patient_age: item.patient_age,
-                patient_gender: item.patient_gender,
-                items: [],
-              };
-
-              groups.push(patientGroup);
-            }
-
-            patientGroup.items.push(item);
-
-            return groups;
-          },
-          [],
+        // Since backend response is already grouped by patient with an 'investigation' array,
+        // we can directly set it into state, mapping cartId down or handling fields directly.
+        const mappedGroups: PatientCartGroup[] = response.data.map(
+          (group: any) => ({
+            cartId: group.cartId,
+            patientId: group.patientId,
+            patient_name: group.patient_name,
+            patient_age: group.patient_age,
+            patient_gender: group.patient_gender,
+            doctor_name: group.doctor_name,
+            attachments: group.attachments || [],
+            investigation: (group.investigation || []).map((inv: any) => ({
+              ...inv,
+              cartId: group.cartId, // Attach cartId reference for item removal/tracking if needed
+            })),
+          }),
         );
 
-        setCartGroups(grouped);
+        setCartGroups(mappedGroups);
       } else {
         setCartGroups([]);
       }
     } catch (error) {
       console.error("Get Cart Error:", error);
-
       setCartGroups([]);
     } finally {
       setLoadingCart(false);
@@ -187,19 +180,15 @@ export default function CartPage() {
       try {
         setLoadingSlots(true);
         setSlotError("");
-
         const response = await getAllSlots();
-
         if (cancelled) return;
 
         const activeSlots = response.data.filter(
           (slot) => slot.status === true,
         );
-
         setSlots(activeSlots);
       } catch (error: unknown) {
         if (cancelled) return;
-
         setSlots([]);
         setSlotError(
           error instanceof Error
@@ -214,7 +203,6 @@ export default function CartPage() {
     };
 
     void loadSlots();
-
     return () => {
       cancelled = true;
     };
@@ -222,51 +210,37 @@ export default function CartPage() {
 
   const getTotal = () => {
     return cartGroups.reduce((total, group) => {
-      const patientTotal = group.items.reduce(
+      const patientTotal = group.investigation.reduce(
         (sum, item) => sum + Number(item.finalAmount || item.mrpAmount || 0),
         0,
       );
-
       return total + patientTotal;
     }, 0);
   };
 
-  const handleRemoveItem = async (patientId: number, item: CartItem) => {
+  const handleRemoveItem = async (
+    patientId: number,
+    item: InvestigationItem,
+  ) => {
     const patientGroup = cartGroups.find(
       (group) => group.patientId === patientId,
     );
+    if (!patientGroup) return;
 
-    if (!patientGroup) {
-      return;
-    }
-
-    // More than one item:
-    // remove directly
-    if (patientGroup.items.length > 1) {
+    if (patientGroup.investigation.length > 1) {
       await deleteCartItem(patientId, item);
-
       return;
     }
 
-    // Last item:
-    // show confirmation popup
-    setRemoveTarget({
-      patientId,
-      item,
-    });
+    setRemoveTarget({ patientId, item });
   };
 
-  const deleteCartItem = async (patientId: number, item: CartItem) => {
+  const deleteCartItem = async (patientId: number, item: InvestigationItem) => {
     try {
-      setDeletingCartId(item.cartId);
-
+      setDeletingCartId(item.bookingId);
       const response = await removeFromCart(patientId, item.item_id);
-
       console.log("Remove Cart Response:", response);
-
-      // Reload latest cart from backend
       await loadCart();
-
       window.dispatchEvent(new Event("cartUpdated"));
     } catch (error) {
       console.error("Remove Cart Error:", error);
@@ -275,20 +249,14 @@ export default function CartPage() {
     }
   };
 
-
   const confirmRemoveLastItem = async () => {
-    if (!removeTarget) {
-      return;
-    }
-
+    if (!removeTarget) return;
     await deleteCartItem(removeTarget.patientId, removeTarget.item);
-
     setRemoveTarget(null);
   };
 
   const handleDeleteAddress = async () => {
     if (!addressToDelete || addressDeletePendingRef.current) return;
-
     const addressId = addressToDelete.id;
 
     try {
@@ -297,11 +265,9 @@ export default function CartPage() {
       setAddressDeleteError("");
 
       await deletePatientAddress(addressId);
-
       setSelectedAddressId((currentId) =>
         currentId === addressId ? null : currentId,
       );
-
       setAddressToDelete(null);
       setAddressRefreshKey((value) => value + 1);
     } catch (error: unknown) {
@@ -316,16 +282,43 @@ export default function CartPage() {
     }
   };
 
+  // Add states inside CartPage for tracking inputs per group if needed:
+  const [doctorNames, setDoctorNames] = useState<{ [key: number]: string }>({});
+  const [updatingCartId, setUpdatingCartId] = useState<number | null>(null);
+
+  // Handler to submit Doctor Name or Prescription updates
+  const handleUpdateCartDetails = async (
+    cartId: number,
+    doctorName?: string,
+    files?: File[],
+  ) => {
+    try {
+      setUpdatingCartId(cartId);
+      const currentDocName = doctorName ?? doctorNames[cartId] ?? "";
+      const selectedFiles = files ?? [];
+
+      const response = await updateCartDetails(
+        cartId,
+        currentDocName,
+        selectedFiles,
+      );
+      console.log("Cart details updated successfully:", response);
+
+      // Refresh the cart data to reflect updates from backend
+      await loadCart();
+    } catch (error) {
+      console.error("Error updating cart details:", error);
+    } finally {
+      setUpdatingCartId(null);
+    }
+  };
+
   useEffect(() => {
     try {
       const savedCart = localStorage.getItem(CART_KEY);
-
       if (savedCart) {
         const parsedCart = JSON.parse(savedCart) as CartGroup[];
-
         setCart(parsedCart);
-
-        console.log("Cart Page Data:", parsedCart);
       }
     } catch (error) {
       console.error("Cart load error:", error);
@@ -333,7 +326,6 @@ export default function CartPage() {
       setLoading(false);
     }
   }, []);
-
 
   useEffect(() => {
     const parts = new Intl.DateTimeFormat("en-GB", {
@@ -347,13 +339,13 @@ export default function CartPage() {
     const month = Number(parts.find((part) => part.type === "month")?.value);
     const day = Number(parts.find((part) => part.type === "day")?.value);
 
-    const visibleDays = Math.min(7, Math.max(0, BOOKING_WINDOW_DAYS - dateOffset));
-
+    const visibleDays = Math.min(
+      7,
+      Math.max(0, BOOKING_WINDOW_DAYS - dateOffset),
+    );
     const dates = Array.from({ length: visibleDays }, (_, index) => {
       return new Date(year, month - 1, day + dateOffset + index, 12);
     });
-
-    setBookingDates(dates);
 
     setBookingDates(dates);
   }, [dateOffset]);
@@ -365,9 +357,7 @@ export default function CartPage() {
       try {
         setLoadingAddresses(true);
         setAddressError("");
-
         const response = await getAllPatientAddresses();
-
         if (cancelled) return;
 
         const activeAddresses = response.data.filter(
@@ -376,8 +366,6 @@ export default function CartPage() {
         );
 
         setAddresses(activeAddresses);
-
-        // Preserve the selected address only while it remains in the list.
         setSelectedAddressId((currentId) =>
           activeAddresses.some((address) => address.id === currentId)
             ? currentId
@@ -385,7 +373,6 @@ export default function CartPage() {
         );
       } catch (error: unknown) {
         if (cancelled) return;
-
         setAddresses([]);
         setSelectedAddressId(null);
         setAddressError(
@@ -401,7 +388,6 @@ export default function CartPage() {
     };
 
     void loadAddresses();
-
     return () => {
       cancelled = true;
     };
@@ -409,19 +395,16 @@ export default function CartPage() {
 
   useEffect(() => {
     if (!addressToDelete) return;
-
     const dialog = addressDeleteDialogRef.current;
     const previousOverflow = document.body.style.overflow;
 
     if (dialog && !dialog.open) {
       dialog.showModal();
     }
-
     document.body.style.overflow = "hidden";
 
     return () => {
       document.body.style.overflow = previousOverflow;
-
       if (dialog?.open) {
         dialog.close();
       }
@@ -436,13 +419,10 @@ export default function CartPage() {
     switch (gender) {
       case 1:
         return "Male";
-
       case 2:
         return "Female";
-
       case 3:
         return "Other";
-
       default:
         return "N/A";
     }
@@ -466,8 +446,13 @@ export default function CartPage() {
           <div className="empty-cart text-center">
             <img src="/assets/images/empty-img1.svg" alt="" />
             <h3>No Tests Added Yet</h3>
-            <p>You haven’t added any lab tests yet. Browse our tests and book <span>your next health checkup.</span></p>
-            <Link href="/" className="cmn_btn">Add New Tests</Link>
+            <p>
+              You haven’t added any lab tests yet. Browse our tests and book{" "}
+              <span>your next health checkup.</span>
+            </p>
+            <Link href="/" className="cmn_btn">
+              Add New Tests
+            </Link>
           </div>
         ) : (
           <div className="row">
@@ -480,7 +465,7 @@ export default function CartPage() {
                     <h4>
                       Cart Item(s) (
                       {cartGroups.reduce(
-                        (count, group) => count + group.items.length,
+                        (count, group) => count + group.investigation.length,
                         0,
                       )}
                       )
@@ -513,58 +498,48 @@ export default function CartPage() {
                         <p>
                           <i className="fa-solid fa-venus-mars"></i>{" "}
                           {group.patient_age !== null &&
-                            group.patient_age !== undefined
+                          group.patient_age !== undefined
                             ? `${group.patient_age} Y`
                             : "Age N/A"}
                           {" • "}
                           {getGenderName(group.patient_gender)}
                         </p>
+
+                        {/* Display Doctor Name if updated */}
+                        {group.doctor_name && (
+                          <p className="mb-0 text-primary fw-medium small">
+                            <i className="fa-solid fa-user-doctor me-1"></i> Dr.{" "}
+                            {group.doctor_name}
+                          </p>
+                        )}
                       </div>
                     </div>
+
                     <div className="rt-side">
                       <button
                         type="button"
-                        className="add-doc"
-                        onClick={() =>
-                          setOpenDoctorIndex((prev) =>
-                            prev === index ? null : index,
-                          )
-                        }
-                      >
-                        + Add Doctor
-                      </button>
-                      {openDoctorIndex === index && (
-                        <div className="add-dv">
-                          <input
-                            type="text"
-                            placeholder="Doctor Name"
-                            className="form-control"
-                          />
-                        </div>
-                      )}
-                      <button
                         className="exp-btn"
-                        onClick={() => fileInputRef.current?.click()}
-                      >
-                        Upload Rx <img src="/assets/images/rx1.svg" alt="" />
-                      </button>
-                      <input
-                        type="file"
-                        ref={fileInputRef}
-                        accept=".pdf,.jpg,.jpeg,.png"
-                        hidden
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) {
-                            console.log("Selected file:", file);
-                          }
+                        onClick={() => {
+                          setActivePrescriptionModal(group);
+                          setModalDoctorName(group.doctor_name || "");
+                          setModalFiles([]);
                         }}
-                      />
+                      >
+                        {group.doctor_name ||
+                        (group.attachments && group.attachments.length > 0)
+                          ? "Edit Rx & Doctor"
+                          : "Upload Rx & Doctor"}
+                        <img
+                          src="/assets/images/rx1.svg"
+                          alt=""
+                          className="ms-1"
+                        />
+                      </button>
                     </div>
                   </div>
 
-                  {group.items.map((item) => (
-                    <div key={item.cartId} className="card-item">
+                  {group.investigation.map((item) => (
+                    <div key={item.bookingId} className="card-item">
                       <div className="lt-side">
                         <div className="icon">
                           <img src="/assets/images/laboratory1.svg" alt="" />
@@ -576,27 +551,29 @@ export default function CartPage() {
                           <h6>
                             ₹
                             {Number(
-                              item.offerAmount || item.mrpAmount || 0,
+                              item.offerAmount ??
+                                item.finalAmount ??
+                                item.mrpAmount ??
+                                0,
                             ).toFixed(2)}
-
-                            {item.offerAmount &&
+                            {item.offerAmount !== null &&
+                              item.offerAmount !== undefined &&
                               Number(item.offerAmount) <
-                              Number(item.mrpAmount) && (
-                                <del>
-                                  ₹{Number(item.mrpAmount).toFixed(2)}
-                                </del>
+                                Number(item.mrpAmount) && (
+                                <del>₹{Number(item.mrpAmount).toFixed(2)}</del>
                               )}
                           </h6>
                         </div>
 
-                        {item.offerAmount &&
+                        {item.offerAmount !== null &&
+                          item.offerAmount !== undefined &&
                           Number(item.offerAmount) < Number(item.mrpAmount) && (
                             <span className="is-discount">
                               {Math.round(
                                 ((Number(item.mrpAmount) -
                                   Number(item.offerAmount)) /
                                   Number(item.mrpAmount)) *
-                                100,
+                                  100,
                               )}
                               % Off
                             </span>
@@ -605,12 +582,12 @@ export default function CartPage() {
                         <button
                           type="button"
                           className="remove"
-                          disabled={deletingCartId === item.cartId}
+                          disabled={deletingCartId === item.bookingId}
                           onClick={() =>
                             handleRemoveItem(group.patientId, item)
                           }
                         >
-                          {deletingCartId === item.cartId ? (
+                          {deletingCartId === item.bookingId ? (
                             <i className="fa-solid fa-spinner fa-spin"></i>
                           ) : (
                             <i className="fa-solid fa-xmark"></i>
@@ -619,15 +596,59 @@ export default function CartPage() {
                       </div>
                     </div>
                   ))}
+
                   <div className="attach">
-                    <h6>Attach Prescription Document</h6>
+                    <h6>Attached Prescription Document(s)</h6>
                     <ul>
-                      <li>
-                        <img src="/assets/images/prescription.png" alt="" />
-                      </li>
-                      <li>
-                        <img src="/assets/images/prescription.png" alt="" />
-                      </li>
+                      {group.attachments && group.attachments.length > 0 ? (
+                        group.attachments.map((att, attIdx) => {
+                          const isPdf = att.toLowerCase().endsWith(".pdf");
+                          const fileUrl = att.startsWith("http")
+                            ? att
+                            : `${process.env.NEXT_PUBLIC_LIMS_API_BASE_URL?.replace(/\/$/, "")}/${att.replace(/^\//, "")}`;
+
+                          return (
+                            <li key={attIdx} style={{ position: "relative" }}>
+                              <a
+                                href={fileUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                title="View Prescription"
+                              >
+                                {isPdf ? (
+                                  <div
+                                    className="d-flex flex-column align-items-center justify-content-center bg-light border rounded"
+                                    style={{ width: "50px", height: "50px" }}
+                                  >
+                                    <i className="fa-solid fa-file-pdf text-danger fs-4"></i>
+                                    <small style={{ fontSize: "9px" }}>
+                                      PDF
+                                    </small>
+                                  </div>
+                                ) : (
+                                  <img
+                                    src={fileUrl}
+                                    alt="Prescription Attachment"
+                                    style={{
+                                      width: "50px",
+                                      height: "50px",
+                                      objectFit: "cover",
+                                      borderRadius: "6px",
+                                    }}
+                                  />
+                                )}
+                              </a>
+                            </li>
+                          );
+                        })
+                      ) : (
+                        <li>
+                          <img
+                            src="/assets/images/prescription.png"
+                            alt="Default Prescription Icon"
+                          />
+                        </li>
+                      )}
                     </ul>
                   </div>
                   <div className="text-center">
@@ -648,7 +669,6 @@ export default function CartPage() {
                       className={`fa-solid fa-calendar-days ${styles.booking_icon}`}
                       aria-hidden="true"
                     />
-
                     <div className="text-block">
                       <h4>Book Your Slot</h4>
                       <p>
@@ -667,7 +687,6 @@ export default function CartPage() {
                 </div>
 
                 <div className="date-nav-head">
-                  {/* <span>Select date</span> */}
                   <div className="date-nav">
                     <button
                       type="button"
@@ -716,8 +735,6 @@ export default function CartPage() {
                       <button
                         key={dateValue}
                         type="button"
-                        // className={`${styles.dateButton} ${isSelected ? styles.selectedDate : ""
-                        //   }`}
                         className={`dateButton ${isSelected ? "selectedDate" : ""}`}
                         aria-pressed={isSelected}
                         aria-label={date.toLocaleDateString("en-GB", {
@@ -736,20 +753,14 @@ export default function CartPage() {
                             weekday: "short",
                           })}
                         </span>
-
                         <strong>{date.getDate()}</strong>
-
                         <span>
-                          {date.toLocaleDateString("en-GB", {
-                            month: "short",
-                          })}
+                          {date.toLocaleDateString("en-GB", { month: "short" })}
                         </span>
                       </button>
                     );
                   })}
                 </div>
-
-                {/* <div className={styles.timeHeading}>Select time</div> */}
 
                 {loadingSlots ? (
                   <p className={styles.bookingMessage} role="status">
@@ -779,23 +790,22 @@ export default function CartPage() {
                       {slots.map((slot) => {
                         const isSelected = selectedSlotId === slot.id;
                         const isInactive = slot.threshold === 0;
-                        const timeLabel = `${formatSlotTime(
-                          slot.start_time,
-                        )} - ${formatSlotTime(slot.end_time)}`;
+                        const timeLabel = `${formatSlotTime(slot.start_time)} - ${formatSlotTime(
+                          slot.end_time,
+                        )}`;
 
                         return (
                           <button
                             key={slot.id}
                             type="button"
-                            // className={`${styles.timeSlotButton} ${isSelected && !isInactive
-                            //   ? styles.selectedTimeSlot
-                            //   : ""
-                            //   }`}
-                            className={`timeSlotButton ${isSelected && !isInactive ? "active" : ""}`}
+                            className={`timeSlotButton ${
+                              isSelected && !isInactive ? "active" : ""
+                            }`}
                             disabled={!selectedBookingDate || isInactive}
                             aria-pressed={isSelected && !isInactive}
-                            aria-label={`${slot.slot_label}, ${timeLabel}${isInactive ? ", unavailable" : ""
-                              }`}
+                            aria-label={`${slot.slot_label}, ${timeLabel}${
+                              isInactive ? ", unavailable" : ""
+                            }`}
                             onClick={() => setSelectedSlotId(slot.id)}
                           >
                             {timeLabel}
@@ -841,7 +851,6 @@ export default function CartPage() {
                 ) : addressError ? (
                   <div className={styles.addressError}>
                     <p role="alert">{addressError}</p>
-
                     <button
                       type="button"
                       className={styles.addressRetryButton}
@@ -862,7 +871,6 @@ export default function CartPage() {
                   >
                     {addresses.map((address) => {
                       const isSelected = selectedAddressId === address.id;
-
                       const addressText = [
                         address.addressLine_1,
                         address.addressLine_2,
@@ -875,20 +883,9 @@ export default function CartPage() {
                       return (
                         <article
                           key={address.id}
-                          // className={`${styles.addressCard} ${isSelected ? styles.selectedAddress : ""
-                          //   }`}
                           className={`add-card ${isSelected ? "selectedAddress" : ""}`}
                         >
                           <label className="add-box">
-                            {/* <span
-                              className={styles.addressAvatar}
-                              aria-hidden="true"
-                            >
-                              {address.fullName
-                                .trim()
-                                .charAt(0)
-                                .toUpperCase()}
-                            </span> */}
                             <div className="icon">
                               <img alt="" src="/assets/images/user2.png" />
                             </div>
@@ -971,15 +968,9 @@ export default function CartPage() {
             </div>
 
             {/* RIGHT SIDE */}
-            {/* Coupons */}
             <div className="col-lg-4 col-md-12 col-sm-12">
               <div className="coupon">
                 <div className="inn">
-                  <div className="has-no-coupon text-center d-none">
-                    <img src="/assets/images/empty-img2.svg" alt="" />
-                    <h3>Sorry! no coupons available</h3>
-                    <p>Sorry no coupons available at the moment</p>
-                  </div>
                   <div className="coupon-head">
                     <div className="icon">
                       <img src="/assets/images/coupon-icon.svg" alt="" />
@@ -1011,54 +1002,6 @@ export default function CartPage() {
                       <button className="cmn_btn">Apply</button>
                       <span className="dis-tag">HEALTH20</span>
                     </div>
-                    <div className="box">
-                      <div className="left-sec">
-                        <div className="lt-side">
-                          <div className="icon">
-                            <img src="/assets/images/coupon.svg" alt="" />
-                          </div>
-                          <div className="text">
-                            <h4>20% Off</h4>
-                            <p>Complete health screening package</p>
-                          </div>
-                        </div>
-                        <h6>Upto Rs. 250 on minimum purchase of Rs. 300.</h6>
-                      </div>
-                      <button className="cmn_btn">Apply</button>
-                      <span className="dis-tag">HEALTH20</span>
-                    </div>
-                    <div className="box">
-                      <div className="left-sec">
-                        <div className="lt-side">
-                          <div className="icon">
-                            <img src="/assets/images/coupon.svg" alt="" />
-                          </div>
-                          <div className="text">
-                            <h4>20% Off</h4>
-                            <p>Complete health screening package</p>
-                          </div>
-                        </div>
-                        <h6>Upto Rs. 250 on minimum purchase of Rs. 300.</h6>
-                      </div>
-                      <button className="cmn_btn">Apply</button>
-                      <span className="dis-tag">HEALTH20</span>
-                    </div>
-                    <div className="box">
-                      <div className="left-sec">
-                        <div className="lt-side">
-                          <div className="icon">
-                            <img src="/assets/images/coupon.svg" alt="" />
-                          </div>
-                          <div className="text">
-                            <h4>20% Off</h4>
-                            <p>Complete health screening package</p>
-                          </div>
-                        </div>
-                        <h6>Upto Rs. 250 on minimum purchase of Rs. 300.</h6>
-                      </div>
-                      <button className="cmn_btn">Apply</button>
-                      <span className="dis-tag">HEALTH20</span>
-                    </div>
                   </div>
                 </div>
               </div>
@@ -1071,21 +1014,12 @@ export default function CartPage() {
                     </div>
                     <h4>Your Price Summary</h4>
                   </div>
-                  {/* <span>Patients</span>
-                  <span>{cartGroups.length}</span>
-                  <span>Items</span>
-                  <span>
-                    {cartGroups.reduce(
-                      (count, group) => count + group.items.length,
-                      0,
-                    )}
-                  </span> */}
                   <ul className="amt">
                     <li>
-                      <span>Gross Amount</span> ₹ 2,500.00
+                      <span>Gross Amount</span> ₹ {getTotal().toFixed(2)}
                     </li>
                     <li>
-                      <span>Net Amount</span> ₹ 414.00
+                      <span>Net Amount</span> ₹ {getTotal().toFixed(2)}
                     </li>
                     <li>
                       <span>Offer Discount</span> ₹ 0.00
@@ -1125,13 +1059,11 @@ export default function CartPage() {
             className={styles.removeModal}
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Delete Icon */}
             <div className={styles.deleteIcon}>
               <i className="fa-solid fa-trash-can"></i>
             </div>
 
             <h2>Are You Sure?</h2>
-
             <p className={styles.removeMessage}>
               Are you sure you want to{" "}
               <strong>
@@ -1140,25 +1072,21 @@ export default function CartPage() {
               from the cart?
             </p>
 
-            {/* Patient */}
             <div className={styles.removePatientCard}>
               <div className={styles.removePatientLeft}>
                 <div className={styles.removeAvatar}>P</div>
-
                 <div>
                   <h4>{removePatient.patient_name}</h4>
-
                   <p>Patient details will be loaded from server</p>
                 </div>
               </div>
 
               <span className={styles.testCountBadge}>
-                {removePatient.items.length}{" "}
-                {removePatient.items.length === 1 ? "Item" : "Items"}
+                {removePatient.investigation.length}{" "}
+                {removePatient.investigation.length === 1 ? "Item" : "Items"}
               </span>
             </div>
 
-            {/* Buttons */}
             <div className={styles.removeActions}>
               <button
                 type="button"
@@ -1204,14 +1132,12 @@ export default function CartPage() {
           aria-describedby="delete-address-description"
           onCancel={(event) => {
             event.preventDefault();
-
             if (!addressDeletePendingRef.current) {
               setAddressToDelete(null);
             }
           }}
         >
           <h2 id="delete-address-heading">Delete Address?</h2>
-
           <p id="delete-address-description">
             Remove the <strong>{addressToDelete.addressName}</strong> address
             for <strong>{addressToDelete.fullName}</strong>?
@@ -1244,8 +1170,200 @@ export default function CartPage() {
           </div>
         </dialog>
       )}
+
+      {activePrescriptionModal && (
+        <div
+          className={styles.removeModalBackdrop}
+          onClick={() => setActivePrescriptionModal(null)}
+        >
+          <div
+            className={styles.removeModal}
+            onClick={(e) => e.stopPropagation()}
+            style={{ maxWidth: "450px", width: "100%" }}
+          >
+            <div className="d-flex justify-content-between align-items-center mb-3">
+              <h4 className="m-0">Add Prescription & Doctor</h4>
+              <button
+                type="button"
+                className="btn-close shadow-none"
+                onClick={() => setActivePrescriptionModal(null)}
+              ></button>
+            </div>
+
+            <div className="mb-3 text-start">
+              <label className="form-label fw-bold small">Doctor's Name</label>
+              <input
+                type="text"
+                placeholder="Enter doctor's name (e.g. Dr. Sharma)"
+                className="form-control"
+                value={modalDoctorName}
+                onChange={(e) => setModalDoctorName(e.target.value)}
+              />
+            </div>
+
+            <div className="mb-4 text-start">
+              <label className="form-label fw-bold small">
+                Upload Prescription (PDF, JPG, PNG)
+              </label>
+              <input
+                type="file"
+                multiple
+                accept=".pdf,.jpg,.jpeg,.png"
+                className="form-control"
+                onChange={(e) => {
+                  const files = Array.from(e.target.files || []);
+                  setModalFiles(files);
+                }}
+              />
+              {modalFiles.length > 0 && (
+                <small className="text-success mt-1 d-block">
+                  {modalFiles.length} file(s) selected
+                </small>
+              )}
+            </div>
+
+            <div className="d-flex gap-2 justify-content-end">
+              <button
+                type="button"
+                className="btn btn-light border px-3"
+                onClick={() => setActivePrescriptionModal(null)}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="cmn_btn px-4"
+                disabled={updatingCartId === activePrescriptionModal.cartId}
+                onClick={async () => {
+                  await handleUpdateCartDetails(
+                    activePrescriptionModal.cartId,
+                    modalDoctorName,
+                    modalFiles,
+                  );
+                  setActivePrescriptionModal(null);
+                }}
+              >
+                {updatingCartId === activePrescriptionModal.cartId
+                  ? "Saving..."
+                  : "Save Details"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {activePrescriptionModal && (
+        <div
+          className={styles.removeModalBackdrop}
+          onClick={() => setActivePrescriptionModal(null)}
+        >
+          <div
+            className={styles.removeModal}
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              maxWidth: "480px",
+              width: "90%",
+              padding: "24px",
+              textAlign: "left",
+            }}
+          >
+            {/* Header */}
+            <div className="d-flex justify-content-between align-items-center mb-4">
+              <h4
+                className="m-0 fw-bold"
+                style={{ fontSize: "1.25rem", color: "#222" }}
+              >
+                Add Prescription & Doctor
+              </h4>
+              <button
+                type="button"
+                className="btn-close shadow-none"
+                aria-label="Close"
+                onClick={() => setActivePrescriptionModal(null)}
+                style={{
+                  background: "none",
+                  border: "0",
+                  fontSize: "1.2rem",
+                  cursor: "pointer",
+                }}
+              >
+                <i className="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+
+            {/* Doctor Name Field */}
+            <div className="mb-3">
+              <label className="form-label fw-semibold small text-secondary mb-1">
+                Doctor's Name
+              </label>
+              <input
+                type="text"
+                placeholder="Enter doctor's name (e.g. Dr. Sharma)"
+                className="form-control form-control-lg"
+                style={{ fontSize: "0.95rem", padding: "10px 14px" }}
+                value={modalDoctorName}
+                onChange={(e) => setModalDoctorName(e.target.value)}
+              />
+            </div>
+
+            {/* File Upload Field */}
+            <div className="mb-4">
+              <label className="form-label fw-semibold small text-secondary mb-1">
+                Upload Prescription (PDF, JPG, PNG)
+              </label>
+              <div className="input-group">
+                <input
+                  type="file"
+                  multiple
+                  accept=".pdf,.jpg,.jpeg,.png"
+                  className="form-control form-control-lg"
+                  style={{ fontSize: "0.95rem", padding: "9px 14px" }}
+                  onChange={(e) => {
+                    const files = Array.from(e.target.files || []);
+                    setModalFiles(files);
+                  }}
+                />
+              </div>
+              {modalFiles.length > 0 && (
+                <small className="text-success fw-medium mt-1 d-block">
+                  <i className="fa-solid fa-check-circle me-1"></i>{" "}
+                  {modalFiles.length} file(s) selected
+                </small>
+              )}
+            </div>
+
+            {/* Action Buttons */}
+            <div className="d-flex gap-3 justify-content-end pt-2">
+              <button
+                type="button"
+                className="btn btn-light border px-4 py-2 fw-medium"
+                onClick={() => setActivePrescriptionModal(null)}
+                style={{ borderRadius: "8px" }}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="cmn_btn px-4 py-2 fw-medium border-0"
+                disabled={updatingCartId === activePrescriptionModal.cartId}
+                onClick={async () => {
+                  await handleUpdateCartDetails(
+                    activePrescriptionModal.cartId,
+                    modalDoctorName,
+                    modalFiles,
+                  );
+                  setActivePrescriptionModal(null);
+                }}
+                style={{ borderRadius: "8px" }}
+              >
+                {updatingCartId === activePrescriptionModal.cartId
+                  ? "Saving..."
+                  : "Save Details"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
-
-
 }
