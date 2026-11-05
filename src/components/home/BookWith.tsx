@@ -14,21 +14,21 @@ function BookWith() {
         centerPadding: '60px',
         responsive: [
             {
-                breakpoint: 1600,
+                breakpoint: 1700,
                 settings: {
                     slidesToShow: 3,
                 },
             },
             {
-                breakpoint: 1199,
+                breakpoint: 1200,
                 settings: {
                     slidesToShow: 2,
                 },
             },
             {
-                breakpoint: 992,
+                breakpoint: 991,
                 settings: {
-                    slidesToShow: 2,
+                    slidesToShow: 1,
                 },
             },
             {
@@ -73,7 +73,7 @@ function BookWith() {
         },
         {
             title: "Trained Phlebotomist",
-            description:"Skilled professionals for safe and comfortable sample collection.",
+            description: "Skilled professionals for safe and comfortable sample collection.",
             imgSrc: "/assets/images/with-icon5.png",
             bgColor: "#FFFAE6",
         },
@@ -120,6 +120,11 @@ function BookWith() {
                                 </div>
                             ))}
                         </Slider>
+                    </div>
+                    <div className="text-center is-exp-btn">
+                        <button className="exp-btn">
+                            Explore More <img src="/assets/images/exp-btn.svg" alt="" />
+                        </button>
                     </div>
                 </div>
             </div>
