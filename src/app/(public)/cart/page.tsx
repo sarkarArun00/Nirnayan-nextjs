@@ -495,23 +495,25 @@ export default function CartPage() {
                       </div>
                       <div className="text">
                         <h6>{group.patient_name}</h6>
-                        <p>
-                          <i className="fa-solid fa-venus-mars"></i>{" "}
-                          {group.patient_age !== null &&
-                          group.patient_age !== undefined
-                            ? `${group.patient_age} Y`
-                            : "Age N/A"}
-                          {" • "}
-                          {getGenderName(group.patient_gender)}
-                        </p>
-
-                        {/* Display Doctor Name if updated */}
-                        {group.doctor_name && (
-                          <p className="mb-0 text-primary fw-medium small">
-                            <i className="fa-solid fa-user-doctor me-1"></i> Dr.{" "}
-                            {group.doctor_name}
+                        <div className="d-flex gap-2">
+                          <p>
+                            <i className="fa-solid fa-venus-mars"></i>{" "}
+                            {group.patient_age !== null &&
+                              group.patient_age !== undefined
+                              ? `${group.patient_age} Y`
+                              : "Age N/A"}
+                            {" • "}
+                            {getGenderName(group.patient_gender)}
                           </p>
-                        )}
+
+                          {/* Display Doctor Name if updated */}
+                          {group.doctor_name && (
+                            <h5 className="mb-0">
+                              <i className="fa-solid fa-user-doctor"></i> Dr.{" "}
+                              {group.doctor_name}
+                            </h5>
+                          )}
+                        </div>
                       </div>
                     </div>
 
@@ -526,7 +528,7 @@ export default function CartPage() {
                         }}
                       >
                         {group.doctor_name ||
-                        (group.attachments && group.attachments.length > 0)
+                          (group.attachments && group.attachments.length > 0)
                           ? "Edit Rx & Doctor"
                           : "Upload Rx & Doctor"}
                         <img
@@ -552,14 +554,14 @@ export default function CartPage() {
                             ₹
                             {Number(
                               item.offerAmount ??
-                                item.finalAmount ??
-                                item.mrpAmount ??
-                                0,
+                              item.finalAmount ??
+                              item.mrpAmount ??
+                              0,
                             ).toFixed(2)}
                             {item.offerAmount !== null &&
                               item.offerAmount !== undefined &&
                               Number(item.offerAmount) <
-                                Number(item.mrpAmount) && (
+                              Number(item.mrpAmount) && (
                                 <del>₹{Number(item.mrpAmount).toFixed(2)}</del>
                               )}
                           </h6>
@@ -573,7 +575,7 @@ export default function CartPage() {
                                 ((Number(item.mrpAmount) -
                                   Number(item.offerAmount)) /
                                   Number(item.mrpAmount)) *
-                                  100,
+                                100,
                               )}
                               % Off
                             </span>
@@ -616,38 +618,42 @@ export default function CartPage() {
                                 title="View Prescription"
                               >
                                 {isPdf ? (
-                                  <div
-                                    className="d-flex flex-column align-items-center justify-content-center bg-light border rounded"
-                                    style={{ width: "50px", height: "50px" }}
-                                  >
-                                    <i className="fa-solid fa-file-pdf text-danger fs-4"></i>
-                                    <small style={{ fontSize: "9px" }}>
+                                  <>
+                                    <i className="fa-solid fa-file-pdf"></i>
+                                    <h6>
                                       PDF
-                                    </small>
-                                  </div>
+                                    </h6>
+                                  </>
                                 ) : (
-                                  <img
-                                    src={fileUrl}
-                                    alt="Prescription Attachment"
-                                    style={{
-                                      width: "50px",
-                                      height: "50px",
-                                      objectFit: "cover",
-                                      borderRadius: "6px",
-                                    }}
-                                  />
+                                  <>
+                                    <i className="fa-solid fa-image"></i>
+                                    <h6>IMAGE</h6>
+                                    <img
+                                      src={fileUrl}
+                                      alt="Prescription Attachment"
+                                      className="d-none"
+                                      style={{
+                                        width: "50px",
+                                        height: "50px",
+                                        objectFit: "cover",
+                                        borderRadius: "6px",
+                                      }}
+                                    />
+                                  </>
                                 )}
                               </a>
                             </li>
                           );
                         })
                       ) : (
+                        <>
                         <li>
-                          <img
-                            src="/assets/images/prescription.png"
-                            alt="Default Prescription Icon"
-                          />
+                          <a href="#">
+                            <i className="fa-solid fa-file-circle-plus"></i>
+                            <h6>Add File</h6>
+                          </a>
                         </li>
+                        </>
                       )}
                     </ul>
                   </div>
@@ -798,14 +804,12 @@ export default function CartPage() {
                           <button
                             key={slot.id}
                             type="button"
-                            className={`timeSlotButton ${
-                              isSelected && !isInactive ? "active" : ""
-                            }`}
+                            className={`timeSlotButton ${isSelected && !isInactive ? "active" : ""
+                              }`}
                             disabled={!selectedBookingDate || isInactive}
                             aria-pressed={isSelected && !isInactive}
-                            aria-label={`${slot.slot_label}, ${timeLabel}${
-                              isInactive ? ", unavailable" : ""
-                            }`}
+                            aria-label={`${slot.slot_label}, ${timeLabel}${isInactive ? ", unavailable" : ""
+                              }`}
                             onClick={() => setSelectedSlotId(slot.id)}
                           >
                             {timeLabel}
@@ -1173,25 +1177,24 @@ export default function CartPage() {
 
       {activePrescriptionModal && (
         <div
-          className={styles.removeModalBackdrop}
+          className="cmn-backdrop active"
           onClick={() => setActivePrescriptionModal(null)}
         >
           <div
-            className={styles.removeModal}
+            className="inn"
             onClick={(e) => e.stopPropagation()}
-            style={{ maxWidth: "450px", width: "100%" }}
           >
-            <div className="d-flex justify-content-between align-items-center mb-3">
+            <div className="header">
               <h4 className="m-0">Add Prescription & Doctor</h4>
-              <button
-                type="button"
-                className="btn-close shadow-none"
-                onClick={() => setActivePrescriptionModal(null)}
-              ></button>
             </div>
+            <button
+              type="button"
+              className="closeBtn"
+              onClick={() => setActivePrescriptionModal(null)}
+            ></button>
 
-            <div className="mb-3 text-start">
-              <label className="form-label fw-bold small">Doctor's Name</label>
+            <div className="mb-3">
+              <label>Doctor's Name</label>
               <input
                 type="text"
                 placeholder="Enter doctor's name (e.g. Dr. Sharma)"
@@ -1201,8 +1204,8 @@ export default function CartPage() {
               />
             </div>
 
-            <div className="mb-4 text-start">
-              <label className="form-label fw-bold small">
+            <div className="mb-3">
+              <label>
                 Upload Prescription (PDF, JPG, PNG)
               </label>
               <input
@@ -1223,16 +1226,16 @@ export default function CartPage() {
             </div>
 
             <div className="d-flex gap-2 justify-content-end">
-              <button
+              {/* <button
                 type="button"
                 className="btn btn-light border px-3"
                 onClick={() => setActivePrescriptionModal(null)}
               >
                 Cancel
-              </button>
+              </button> */}
               <button
                 type="button"
-                className="cmn_btn px-4"
+                className="cmn_btn"
                 disabled={updatingCartId === activePrescriptionModal.cartId}
                 onClick={async () => {
                   await handleUpdateCartDetails(
@@ -1254,46 +1257,31 @@ export default function CartPage() {
 
       {activePrescriptionModal && (
         <div
-          className={styles.removeModalBackdrop}
+          className="cmn-backdrop active"
           onClick={() => setActivePrescriptionModal(null)}
         >
           <div
-            className={styles.removeModal}
+            className="inn"
             onClick={(e) => e.stopPropagation()}
-            style={{
-              maxWidth: "480px",
-              width: "90%",
-              padding: "24px",
-              textAlign: "left",
-            }}
+
           >
             {/* Header */}
-            <div className="d-flex justify-content-between align-items-center mb-4">
-              <h4
-                className="m-0 fw-bold"
-                style={{ fontSize: "1.25rem", color: "#222" }}
-              >
-                Add Prescription & Doctor
-              </h4>
-              <button
-                type="button"
-                className="btn-close shadow-none"
-                aria-label="Close"
-                onClick={() => setActivePrescriptionModal(null)}
-                style={{
-                  background: "none",
-                  border: "0",
-                  fontSize: "1.2rem",
-                  cursor: "pointer",
-                }}
-              >
-                <i className="fa-solid fa-xmark"></i>
-              </button>
+            <button
+              type="button"
+              className="closeBtn"
+              aria-label="Close"
+              onClick={() => setActivePrescriptionModal(null)}
+            >
+              <i className="fa-solid fa-xmark"></i>
+            </button>
+            <div className="header">
+              <h4>Add Prescription & Doctor</h4>
             </div>
+
 
             {/* Doctor Name Field */}
             <div className="mb-3">
-              <label className="form-label fw-semibold small text-secondary mb-1">
+              <label>
                 Doctor's Name
               </label>
               <input
@@ -1307,8 +1295,8 @@ export default function CartPage() {
             </div>
 
             {/* File Upload Field */}
-            <div className="mb-4">
-              <label className="form-label fw-semibold small text-secondary mb-1">
+            <div className="mb-3">
+              <label>
                 Upload Prescription (PDF, JPG, PNG)
               </label>
               <div className="input-group">
@@ -1334,17 +1322,17 @@ export default function CartPage() {
 
             {/* Action Buttons */}
             <div className="d-flex gap-3 justify-content-end pt-2">
-              <button
+              {/* <button
                 type="button"
                 className="btn btn-light border px-4 py-2 fw-medium"
                 onClick={() => setActivePrescriptionModal(null)}
                 style={{ borderRadius: "8px" }}
               >
                 Cancel
-              </button>
+              </button> */}
               <button
                 type="button"
-                className="cmn_btn px-4 py-2 fw-medium border-0"
+                className="cmn_btn"
                 disabled={updatingCartId === activePrescriptionModal.cartId}
                 onClick={async () => {
                   await handleUpdateCartDetails(
@@ -1354,7 +1342,6 @@ export default function CartPage() {
                   );
                   setActivePrescriptionModal(null);
                 }}
-                style={{ borderRadius: "8px" }}
               >
                 {updatingCartId === activePrescriptionModal.cartId
                   ? "Saving..."
