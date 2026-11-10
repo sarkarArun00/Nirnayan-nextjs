@@ -11,6 +11,10 @@ interface NewPatient {
 
 function page() {
     const [files, setFiles] = useState<File[]>([]);
+    const [newPatient, setNewPatient] = useState({
+        gender: "",
+    });
+
     const [isDragging, setIsDragging] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
     // Handle File Upload
@@ -31,9 +35,7 @@ function page() {
         setFiles((prev) => prev.filter((_, i) => i !== index));
     };
 
-    const [newPatient, setNewPatient] = useState({
-        gender: "",
-    });
+
     return (
         <div className="find-centre">
             <div className="breadcrumb-wrap">
@@ -81,23 +83,145 @@ function page() {
                                             <p>Kolkata, West Bengal, India</p>
                                         </div>
                                     </div>
-                                    <div className="in-cent">
-                                        <div className="center-address">
-                                            <i className="fa-solid fa-location-dot"></i>
-                                            <p>145, Rajarhat Road Jyangra, 24 Paraganas North Kolkata - 700059, West Bengal, India</p>
+                                    <div className="mid-center">
+                                        <div className="left">
+                                            <div className="center-add">
+                                                <i className="fa-solid fa-location-dot"></i>
+                                                <p>145, Rajarhat Road Jyangra, 24 Paraganas North Kolkata - 700059, West Bengal, India</p>
+                                            </div>
+                                            <div className="center-bottom">
+                                                <div className="cent-box">
+                                                    <i className="fa-regular fa-clock"></i>
+                                                    <p>Everyday 12 P.M - 12 A.M</p>
+                                                </div>
+                                                <div className="cent-box">
+                                                    <i className="fa-solid fa-phone"></i>
+                                                    <p>(033) 25700075</p>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div className="center-bottom">
-                                            <div className="cent-box">
-                                                <i className="fa-regular fa-clock"></i>
-                                                <p>Everyday 12 P.M - 12 A.M</p>
-                                            </div>
-                                            <div className="cent-box">
-                                                <i className="fa-solid fa-phone"></i>
-                                                <p>(033) 25700075</p>
-                                            </div>
+                                        <button className="share-btn"><i className="fa-solid fa-share-nodes"></i></button>
+                                    </div>
+                                </div>
+                                <div className="box">
+                                    <div className="top-block">
+                                        <div className="icon">
+                                            <img src="/assets/images/center.svg" alt="" />
+                                        </div>
+                                        <div className="info">
+                                            <h3>Central Lab Unit 1</h3>
+                                            <p>Kolkata, West Bengal, India</p>
                                         </div>
                                     </div>
-                                    <button><i className="fa-solid fa-share-nodes"></i></button>
+                                    <div className="mid-center">
+                                        <div className="left">
+                                            <div className="center-add">
+                                                <i className="fa-solid fa-location-dot"></i>
+                                                <p>145, Rajarhat Road Jyangra, 24 Paraganas North Kolkata - 700059, West Bengal, India</p>
+                                            </div>
+                                            <div className="center-bottom">
+                                                <div className="cent-box">
+                                                    <i className="fa-regular fa-clock"></i>
+                                                    <p>Everyday 12 P.M - 12 A.M</p>
+                                                </div>
+                                                <div className="cent-box">
+                                                    <i className="fa-solid fa-phone"></i>
+                                                    <p>(033) 25700075</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button className="share-btn"><i className="fa-solid fa-share-nodes"></i></button>
+                                    </div>
+                                </div>
+                                <div className="box">
+                                    <div className="top-block">
+                                        <div className="icon">
+                                            <img src="/assets/images/center.svg" alt="" />
+                                        </div>
+                                        <div className="info">
+                                            <h3>Central Lab Unit 1</h3>
+                                            <p>Kolkata, West Bengal, India</p>
+                                        </div>
+                                    </div>
+                                    <div className="mid-center">
+                                        <div className="left">
+                                            <div className="center-add">
+                                                <i className="fa-solid fa-location-dot"></i>
+                                                <p>145, Rajarhat Road Jyangra, 24 Paraganas North Kolkata - 700059, West Bengal, India</p>
+                                            </div>
+                                            <div className="center-bottom">
+                                                <div className="cent-box">
+                                                    <i className="fa-regular fa-clock"></i>
+                                                    <p>Everyday 12 P.M - 12 A.M</p>
+                                                </div>
+                                                <div className="cent-box">
+                                                    <i className="fa-solid fa-phone"></i>
+                                                    <p>(033) 25700075</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button className="share-btn"><i className="fa-solid fa-share-nodes"></i></button>
+                                    </div>
+                                </div>
+                                <div className="box">
+                                    <div className="top-block">
+                                        <div className="icon">
+                                            <img src="/assets/images/center.svg" alt="" />
+                                        </div>
+                                        <div className="info">
+                                            <h3>Central Lab Unit 1</h3>
+                                            <p>Kolkata, West Bengal, India</p>
+                                        </div>
+                                    </div>
+                                    <div className="mid-center">
+                                        <div className="left">
+                                            <div className="center-add">
+                                                <i className="fa-solid fa-location-dot"></i>
+                                                <p>145, Rajarhat Road Jyangra, 24 Paraganas North Kolkata - 700059, West Bengal, India</p>
+                                            </div>
+                                            <div className="center-bottom">
+                                                <div className="cent-box">
+                                                    <i className="fa-regular fa-clock"></i>
+                                                    <p>Everyday 12 P.M - 12 A.M</p>
+                                                </div>
+                                                <div className="cent-box">
+                                                    <i className="fa-solid fa-phone"></i>
+                                                    <p>(033) 25700075</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button className="share-btn"><i className="fa-solid fa-share-nodes"></i></button>
+                                    </div>
+                                </div>
+                                <div className="box">
+                                    <div className="top-block">
+                                        <div className="icon">
+                                            <img src="/assets/images/center.svg" alt="" />
+                                        </div>
+                                        <div className="info">
+                                            <h3>Central Lab Unit 1</h3>
+                                            <p>Kolkata, West Bengal, India</p>
+                                        </div>
+                                    </div>
+                                    <div className="mid-center">
+                                        <div className="left">
+                                            <div className="center-add">
+                                                <i className="fa-solid fa-location-dot"></i>
+                                                <p>145, Rajarhat Road Jyangra, 24 Paraganas North Kolkata - 700059, West Bengal, India</p>
+                                            </div>
+                                            <div className="center-bottom">
+                                                <div className="cent-box">
+                                                    <i className="fa-regular fa-clock"></i>
+                                                    <p>Everyday 12 P.M - 12 A.M</p>
+                                                </div>
+                                                <div className="cent-box">
+                                                    <i className="fa-solid fa-phone"></i>
+                                                    <p>(033) 25700075</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button className="share-btn"><i className="fa-solid fa-share-nodes"></i></button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -180,7 +304,7 @@ function page() {
                                         <div className="col-lg-6 col-md-12 col-sm-12">
                                             <div className="inp-box">
                                                 <label>Mobile Number <span>*</span></label>
-                                                <input type="text" placeholder='Your Name' className='form-control' />
+                                                <input type="text" placeholder='Phone Number' className='form-control' />
                                             </div>
                                         </div>
                                         <div className="col-lg-6 col-md-12 col-sm-12">
