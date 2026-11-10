@@ -1,20 +1,15 @@
 "use client";
-
-import { useCallback,useEffect, useRef, useState } from "react";
-
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
-
 import { getLoggedInUser } from "@/actions/session.actions";
-
 import {
   getAllPatients,
   PatientItem,
   GetPatientPayload,
   deletePatient,
 } from "@/services/patient.service";
-
 import styles from "./Profile.module.css";
-
+import './page.css';
 import AddressModal from "@/components/common/AddressModal/AddressModal";
 import {
   deletePatientAddress,
@@ -63,8 +58,8 @@ export default function ProfilePage() {
   const [addressToDelete, setAddressToDelete] = useState<PatientAddress | null>(
     null,
   );
-    const addressDeleteDialogRef = useRef<HTMLDialogElement>(null);
-    const addressDeletePendingRef = useRef(false);
+  const addressDeleteDialogRef = useRef<HTMLDialogElement>(null);
+  const addressDeletePendingRef = useRef(false);
   const [deletingAddress, setDeletingAddress] = useState(false);
   const [addressDeleteError, setAddressDeleteError] = useState("");
 
@@ -79,45 +74,82 @@ export default function ProfilePage() {
   const patientDeleteDialogRef = useRef<HTMLDialogElement>(null);
   const patientDeletePendingRef = useRef(false);
 
-  
+
   const [editingAddress, setEditingAddress] = useState<
     PatientAddress | undefined
   >(undefined);
-  
+
   const loadPatients = useCallback(async () => {
-      try {
-        setPatientLoading(true);
+    try {
+      setPatientLoading(true);
 
-        /*
-        * IMPORTANT:
-        * Use the SAME payload that you are
-        * currently passing in your patient modal.
-        */
-        const user = await getLoggedInUser();
-            if (!user?.id) {
-              throw new Error("User not logged in.");
-            }
-
-          const userId = Number(user.id);
-        const payload: GetPatientPayload = {
-          user_id: userId,
-        };
-
-        const response = await getAllPatients(payload);
-
-        if (response?.data && Array.isArray(response.data)) {
-          setPatients(response.data);
-        } else {
-          setPatients([]);
-        }
-      } catch (error) {
-        console.error("Patient list error:", error);
-
-        setPatients([]);
-      } finally {
-        setPatientLoading(false);
+      /*
+      * IMPORTANT:
+      * Use the SAME payload that you are
+      * currently passing in your patient modal.
+      */
+      const user = await getLoggedInUser();
+      if (!user?.id) {
+        throw new Error("User not logged in.");
       }
-    }, []);
+
+      const userId = Number(user.id);
+      const payload: GetPatientPayload = {
+        user_id: userId,
+      };
+
+      const response = await getAllPatients(payload);
+
+      if (response?.data && Array.isArray(response.data)) {
+        setPatients(response.data);
+      } else {
+        setPatients([]);
+      }
+    } catch (error) {
+      console.error("Patient list error:", error);
+
+      setPatients([]);
+    } finally {
+      setPatientLoading(false);
+    }
+  }, []);
+
+  // Sticky header Start
+  useEffect(() => {
+    if (loading || !user) return;
+    const profileSection = document.querySelector(".is-profile");
+    const header = document.querySelector("header");
+    if (!profileSection || !header) {
+      console.warn("Sticky header: profile section or header not found.");
+      return;
+    }
+    const handleScroll = () => {
+      const headerHeight = header.getBoundingClientRect().height;
+      const headerBottom = header.getBoundingClientRect().bottom;
+      const profileTop = profileSection.getBoundingClientRect().top;
+      // Update sticky bar position for desktop and mobile
+      document.documentElement.style.setProperty(
+        "--profile-sticky-top",
+        `${headerHeight}px`
+      );
+      // Activate when profile section touches header
+      document.body.classList.toggle(
+        "active",
+        profileTop <= headerBottom
+      );
+    };
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleScroll);
+      document.body.classList.remove("active");
+      document.documentElement.style.removeProperty("--profile-sticky-top");
+    };
+  }, [loading, user]);
+  // Sticky header End
 
   const loadDefaultPatient = useCallback((userId: number) => {
     try {
@@ -219,33 +251,33 @@ export default function ProfilePage() {
     window.dispatchEvent(new Event("defaultPatientUpdated"));
   };
 
-    const handleDeleteAddress = async () => {
-      if (!addressToDelete || addressDeletePendingRef.current) return;
-  
-      const addressId = addressToDelete.id;
-  
-      try {
-        addressDeletePendingRef.current = true;
-        setDeletingAddress(true);
-        setAddressDeleteError("");
-  
-        await deletePatientAddress(addressId);
+  const handleDeleteAddress = async () => {
+    if (!addressToDelete || addressDeletePendingRef.current) return;
 
-  
-        setAddressToDelete(null);
-        setAddressRefreshKey((value) => value + 1);
-      } catch (error: unknown) {
-        setAddressDeleteError(
-          error instanceof Error
-            ? error.message
-            : "Unable to delete the address. Please try again.",
-        );
-      } finally {
-        addressDeletePendingRef.current = false;
-        setDeletingAddress(false);
-      }
-    };
-  
+    const addressId = addressToDelete.id;
+
+    try {
+      addressDeletePendingRef.current = true;
+      setDeletingAddress(true);
+      setAddressDeleteError("");
+
+      await deletePatientAddress(addressId);
+
+
+      setAddressToDelete(null);
+      setAddressRefreshKey((value) => value + 1);
+    } catch (error: unknown) {
+      setAddressDeleteError(
+        error instanceof Error
+          ? error.message
+          : "Unable to delete the address. Please try again.",
+      );
+    } finally {
+      addressDeletePendingRef.current = false;
+      setDeletingAddress(false);
+    }
+  };
+
   useEffect(() => {
     let cancelled = false;
 
@@ -287,27 +319,27 @@ export default function ProfilePage() {
     };
   }, [addressRefreshKey]);
 
-    useEffect(() => {
-      if (!addressToDelete) return;
+  useEffect(() => {
+    if (!addressToDelete) return;
 
-      const dialog = addressDeleteDialogRef.current;
-      const previousOverflow = document.body.style.overflow;
+    const dialog = addressDeleteDialogRef.current;
+    const previousOverflow = document.body.style.overflow;
 
-      if (dialog && !dialog.open) {
-        dialog.showModal();
+    if (dialog && !dialog.open) {
+      dialog.showModal();
+    }
+
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+
+      if (dialog?.open) {
+        dialog.close();
       }
+    };
+  }, [addressToDelete]);
 
-      document.body.style.overflow = "hidden";
-
-      return () => {
-        document.body.style.overflow = previousOverflow;
-
-        if (dialog?.open) {
-          dialog.close();
-        }
-      };
-    }, [addressToDelete]);
-  
   useEffect(() => {
     const initializeProfile = async () => {
       try {
@@ -348,7 +380,7 @@ export default function ProfilePage() {
       window.removeEventListener("patientsUpdated", handlePatientsUpdated);
     };
   }, [loadPatients, loadDefaultPatient, user?.id]);
-  
+
   useEffect(() => {
     if (!patientToDelete) return;
 
@@ -448,145 +480,335 @@ export default function ProfilePage() {
   }
 
   return (
-    <section className={styles.profilePage}>
-      <div className="container">
-        {/* Breadcrumb */}
-        <div className={styles.breadcrumb}>
-          <Link href="/">Home</Link>
+    <section className="profile-page">
 
-          <span>/</span>
-
-          <strong>My Profile</strong>
-        </div>
-
-        <div className={styles.pageHeader}>
-          <div>
-            <h1>My Profile</h1>
-
-            <p>
-              Manage your personal information, patients and saved addresses.
-            </p>
-          </div>
-        </div>
-
-        {/* =====================
-            PROFILE DETAILS
-        ====================== */}
-
-        <div className={styles.profileCard}>
-          <div className={styles.profileAvatar}>
-            {user.first_name?.charAt(0).toUpperCase()}
-          </div>
-
-          <div className={styles.profileInfo}>
-            <h2>
-              {user.first_name} {user.last_name}
-            </h2>
-
-            <div className={styles.profileMeta}>
-              <span>
-                <i className="fa-regular fa-envelope"></i>
-
-                {user.email || "No email"}
-              </span>
-
-              <span>
-                <i className="fa-solid fa-phone"></i>
-
-                {user.mobile_number || "No mobile number"}
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* =====================
-            PATIENT SECTION
-        ====================== */}
-
-        <div className={styles.sectionCard}>
-          <div className={styles.sectionHeader}>
-            <div>
-              <h3>Patients</h3>
-
-              <p>Manage patients and choose your default patient.</p>
+      <div className="sticky-bar">
+        <div className="container">
+          <div className="pro-head">
+            <div className="pro-info">
+              <div className="img">
+                <img src="/assets/images/pkg-img1.png" alt="Profile" />
+              </div>
+              <div className="text">
+                <div className="flex-dv">
+                  <h3>Tarun Sana</h3>
+                  <span className="pro-badge">Male, 26 yrs</span>
+                </div>
+                <p>Last Updated 3 days ago</p>
+              </div>
             </div>
 
-            <button
-              type="button"
-              className={styles.addAddressBtn}
-              onClick={openAddPatientModal}
-            >
-              + Add Patient
-            </button>
+            <div className="progres">
+              <div className="inn">
+                <div className="img">
+                  <img src="/assets/images/pkg-img1.png" alt="Profile" />
+                </div>
+                <div className="text">
+                  <p>Complete Profile <span>50%</span></p>
+                  <div className="progress-track">
+                    <div className="progress-fill"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
 
-          {defaultPatient && (
-            <div className={styles.defaultInfo}>
-              <div>
-                <span className={styles.defaultIcon}>✓</span>
+          <ul>
+            <li><Link href="#">Personal Information</Link></li>
+            <li><Link href="#">Saved Patient</Link></li>
+            <li><Link href="#">Saved Address</Link></li>
+            <li><Link href="#">My Reports</Link></li>
+            <li><Link href="#">My Prescription</Link></li>
+          </ul>
+        </div>
+      </div>
 
-                <div>
-                  <strong>Default Patient</strong>
+      <div className="is-profile">
+        <div className="container">
+          <nav aria-label="breadcrumb">
+            <ol className="breadcrumb">
+              <li className="breadcrumb-item"><a href="/">Home</a></li>
+              <li className="breadcrumb-item active" aria-current="page">Profile</li>
+            </ol>
+          </nav>
 
+          {/* ==== PROFILE DETAILS ==== */}
+          <div className="profile-card">
+            <div className="row">
+              <div className="col-lg-7 col-md-7 col-sm-12">
+                <div className="profile-progress">
+                  <div className="profile-progress-circle">
+                    <svg className="progress-ring" viewBox="0 0 120 120">
+                      <circle className="progress-bg" cx="60" cy="60" r="54" />
+                      <circle
+                        className="progress-fill"
+                        cx="60"
+                        cy="60"
+                        r="54"
+                        style={{ "--progress": "12" } as React.CSSProperties}
+                      />
+                    </svg>
+
+                    <div className="profile-avatar">
+                      {/* {user.profile_image ? (
+        <img src={user.profile_image} alt="Profile" />
+      ) : ( */}
+                      <span>{user.first_name?.charAt(0).toUpperCase()}</span>
+                      {/* )} */}
+                    </div>
+                  </div>
+
+                  <div className="profile-percentage">92%</div>
+                </div>
+                <div className="text-block">
+                  <h2>
+                    {user.first_name} {user.last_name} <span>Male, 26 yrs </span>
+                  </h2>
+                  <p>Kolkata, INDIA</p>
                   <p>
-                    {defaultPatient.name} will be selected automatically while
-                    adding tests or packages.
+                    <i className="fa-regular fa-envelope"></i>
+                    {user.email || "No email"}
+                  </p>
+                  <p>
+                    <i className="fa-solid fa-phone"></i>
+                    {user.mobile_number || "No mobile number"}
                   </p>
                 </div>
               </div>
+              <div className="col-lg-5 col-md-5 col-sm-12">
+                <div className="questaions">
+                  <h3>Still Have Question?</h3>
+                  <p>If you need to reach us, please contact us at</p>
+                  <Link href="#" className="cmn_btn">Get In Touch</Link>
+                </div>
+              </div>
+            </div>
+            <img src="/assets/images/hand.png" alt="" />
+          </div>
 
-              <button type="button" onClick={handleRemoveDefaultPatient}>
-                Remove Default
+          {/* ==== PATIENT SECTION ==== */}
+          <div className={styles.sectionCard}>
+            <div className={styles.sectionHeader}>
+              <div>
+                <h3>Patients</h3>
+
+                <p>Manage patients and choose your default patient.</p>
+              </div>
+
+              <button
+                type="button"
+                className={styles.addAddressBtn}
+                onClick={openAddPatientModal}
+              >
+                + Add Patient
               </button>
             </div>
-          )}
 
-          {patientLoading ? (
-            <div className={styles.loadingBox}>Loading patients...</div>
-          ) : patients.length > 0 ? (
-            <div className={styles.patientList}>
-              {patients.map((patient) => {
-                const isDefault =
-                  String(defaultPatient?.id) === String(patient.id);
+            {defaultPatient && (
+              <div className={styles.defaultInfo}>
+                <div>
+                  <span className={styles.defaultIcon}>✓</span>
 
-                return (
-                  <div
-                    key={patient.id}
-                    className={`${styles.patientCard} ${
-                      isDefault ? styles.defaultCard : ""
-                    }`}
-                  >
-                    <div className={styles.patientLeft}>
-                      <div className={styles.patientAvatar}>
-                        {patient.patient_name?.charAt(0).toUpperCase()}
-                      </div>
+                  <div>
+                    <strong>Default Patient</strong>
 
-                      <div className={styles.patientDetails}>
-                        <div className={styles.patientName}>
-                          <h4>{patient.patient_name}</h4>
+                    <p>
+                      {defaultPatient.name} will be selected automatically while
+                      adding tests or packages.
+                    </p>
+                  </div>
+                </div>
 
-                          {isDefault && <span>Default</span>}
+                <button type="button" onClick={handleRemoveDefaultPatient}>
+                  Remove Default
+                </button>
+              </div>
+            )}
+
+            {patientLoading ? (
+              <div className={styles.loadingBox}>Loading patients...</div>
+            ) : patients.length > 0 ? (
+              <div className={styles.patientList}>
+                {patients.map((patient) => {
+                  const isDefault =
+                    String(defaultPatient?.id) === String(patient.id);
+
+                  return (
+                    <div
+                      key={patient.id}
+                      className={`${styles.patientCard} ${isDefault ? styles.defaultCard : ""
+                        }`}
+                    >
+                      <div className={styles.patientLeft}>
+                        <div className={styles.patientAvatar}>
+                          {patient.patient_name?.charAt(0).toUpperCase()}
                         </div>
 
-                        <p>
-                          {getGenderName(patient.gender)}
+                        <div className={styles.patientDetails}>
+                          <div className={styles.patientName}>
+                            <h4>{patient.patient_name}</h4>
 
-                          {patient.dob &&
-                            ` · ${calculateAge(patient.dob)} Years`}
-                        </p>
+                            {isDefault && <span>Default</span>}
+                          </div>
 
-                        {patient.phoneNumber && (
-                          <small>{patient.phoneNumber}</small>
+                          <p>
+                            {getGenderName(patient.gender)}
+
+                            {patient.dob &&
+                              ` · ${calculateAge(patient.dob)} Years`}
+                          </p>
+
+                          {patient.phoneNumber && (
+                            <small>{patient.phoneNumber}</small>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className={styles.patientActions}>
+                        <button
+                          type="button"
+                          className={styles.editPatientBtn}
+                          disabled={deletingPatient}
+                          onClick={() => openEditPatientModal(patient)}
+                        >
+                          <i className="fa-solid fa-pen" aria-hidden="true" />
+                          Edit
+                        </button>
+
+                        <button
+                          type="button"
+                          className={styles.deletePatientBtn}
+                          disabled={deletingPatient}
+                          onClick={() => {
+                            setPatientDeleteError("");
+                            setPatientToDelete(patient);
+                          }}
+                        >
+                          <i className="fa-solid fa-trash" aria-hidden="true" />
+                          Delete
+                        </button>
+
+                        {isDefault ? (
+                          <button
+                            type="button"
+                            className={styles.removeDefaultBtn}
+                            onClick={handleRemoveDefaultPatient}
+                          >
+                            Remove Default
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            className={styles.defaultBtn}
+                            onClick={() => handleSetDefaultPatient(patient)}
+                          >
+                            Make Default
+                          </button>
                         )}
                       </div>
+                      {/* <button
+                          type="button"
+                          className={styles.editPatientBtn}
+                          onClick={() => openEditPatientModal(patient)}
+                        >
+                          <i className="fa-solid fa-pen" aria-hidden="true" />
+                          Edit
+                        </button> */}
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className={styles.emptyState}>
+                <h4>No patients found</h4>
+
+                <p>Your registered patients will appear here.</p>
+              </div>
+            )}
+          </div>
+
+          {/* ==== ADDRESS SECTION ==== */}
+          <div className={styles.sectionCard}>
+            <div className={styles.sectionHeader}>
+              <div>
+                <h3>Saved Addresses</h3>
+                <p>Manage addresses for home sample collection.</p>
+              </div>
+
+              <button
+                type="button"
+                className={styles.addAddressBtn}
+                onClick={() => setShowAddressModal(true)}
+              >
+                + Add Address
+              </button>
+            </div>
+
+            {loadingAddresses ? (
+              <div className={styles.emptyState} role="status">
+                <p>Loading saved addresses...</p>
+              </div>
+            ) : addressError ? (
+              <div className={styles.emptyState}>
+                <p role="alert">{addressError}</p>
+
+                <button
+                  type="button"
+                  className={styles.addAddressBtn}
+                  onClick={() => setAddressRefreshKey((value) => value + 1)}
+                >
+                  Try Again
+                </button>
+              </div>
+            ) : addresses.length === 0 ? (
+              <div className={styles.emptyState}>
+                <div className={styles.addressIcon}>
+                  <i className="fa-solid fa-location-dot" aria-hidden="true" />
+                </div>
+
+                <h4>No saved addresses</h4>
+                <p>Your saved collection addresses will appear here.</p>
+              </div>
+            ) : (
+              <div className={styles.savedAddressGrid}>
+                {addresses.map((address) => (
+                  <article key={address.id} className={styles.savedAddressCard}>
+                    <div className={styles.savedAddressHeader}>
+                      <h4>{address.fullName}</h4>
+
+                      <span className={styles.savedAddressType}>
+                        {address.addressName}
+                      </span>
                     </div>
 
-                    <div className={styles.patientActions}>
+                    <p className={styles.savedAddressText}>
+                      {[
+                        address.addressLine_1,
+                        address.addressLine_2,
+                        address.landMark,
+                        address.pinCode,
+                      ]
+                        .filter(Boolean)
+                        .join(", ")}
+                    </p>
+
+                    <a
+                      href={`tel:${address.contactNumber}`}
+                      className={styles.savedAddressPhone}
+                    >
+                      <i className="fa-solid fa-phone" aria-hidden="true" />
+                      {address.contactNumber}
+                    </a>
+
+                    <div className={styles.savedAddressActions}>
                       <button
                         type="button"
-                        className={styles.editPatientBtn}
-                        disabled={deletingPatient}
-                        onClick={() => openEditPatientModal(patient)}
+                        className={styles.savedAddressEditBtn}
+                        disabled={deletingAddress}
+                        onClick={() => {
+                          setEditingAddress(address);
+                          setShowAddressModal(true);
+                        }}
                       >
                         <i className="fa-solid fa-pen" aria-hidden="true" />
                         Edit
@@ -594,179 +816,38 @@ export default function ProfilePage() {
 
                       <button
                         type="button"
-                        className={styles.deletePatientBtn}
-                        disabled={deletingPatient}
+                        className={styles.savedAddressDeleteBtn}
+                        disabled={deletingAddress}
                         onClick={() => {
-                          setPatientDeleteError("");
-                          setPatientToDelete(patient);
+                          setAddressDeleteError("");
+                          setAddressToDelete(address);
                         }}
                       >
                         <i className="fa-solid fa-trash" aria-hidden="true" />
                         Delete
                       </button>
-
-                      {isDefault ? (
-                        <button
-                          type="button"
-                          className={styles.removeDefaultBtn}
-                          onClick={handleRemoveDefaultPatient}
-                        >
-                          Remove Default
-                        </button>
-                      ) : (
-                        <button
-                          type="button"
-                          className={styles.defaultBtn}
-                          onClick={() => handleSetDefaultPatient(patient)}
-                        >
-                          Make Default
-                        </button>
-                      )}
                     </div>
-                    {/* <button
-                      type="button"
-                      className={styles.editPatientBtn}
-                      onClick={() => openEditPatientModal(patient)}
-                    >
-                      <i className="fa-solid fa-pen" aria-hidden="true" />
-                      Edit
-                    </button> */}
-                  </div>
-                );
-              })}
-            </div>
-          ) : (
-            <div className={styles.emptyState}>
-              <h4>No patients found</h4>
-
-              <p>Your registered patients will appear here.</p>
-            </div>
-          )}
-        </div>
-
-        {/* =====================
-            ADDRESS SECTION
-        ====================== */}
-
-        <div className={styles.sectionCard}>
-          <div className={styles.sectionHeader}>
-            <div>
-              <h3>Saved Addresses</h3>
-              <p>Manage addresses for home sample collection.</p>
-            </div>
-
-            <button
-              type="button"
-              className={styles.addAddressBtn}
-              onClick={() => setShowAddressModal(true)}
-            >
-              + Add Address
-            </button>
-          </div>
-
-          {loadingAddresses ? (
-            <div className={styles.emptyState} role="status">
-              <p>Loading saved addresses...</p>
-            </div>
-          ) : addressError ? (
-            <div className={styles.emptyState}>
-              <p role="alert">{addressError}</p>
-
-              <button
-                type="button"
-                className={styles.addAddressBtn}
-                onClick={() => setAddressRefreshKey((value) => value + 1)}
-              >
-                Try Again
-              </button>
-            </div>
-          ) : addresses.length === 0 ? (
-            <div className={styles.emptyState}>
-              <div className={styles.addressIcon}>
-                <i className="fa-solid fa-location-dot" aria-hidden="true" />
+                  </article>
+                ))}
               </div>
+            )}
 
-              <h4>No saved addresses</h4>
-              <p>Your saved collection addresses will appear here.</p>
-            </div>
-          ) : (
-            <div className={styles.savedAddressGrid}>
-              {addresses.map((address) => (
-                <article key={address.id} className={styles.savedAddressCard}>
-                  <div className={styles.savedAddressHeader}>
-                    <h4>{address.fullName}</h4>
-
-                    <span className={styles.savedAddressType}>
-                      {address.addressName}
-                    </span>
-                  </div>
-
-                  <p className={styles.savedAddressText}>
-                    {[
-                      address.addressLine_1,
-                      address.addressLine_2,
-                      address.landMark,
-                      address.pinCode,
-                    ]
-                      .filter(Boolean)
-                      .join(", ")}
-                  </p>
-
-                  <a
-                    href={`tel:${address.contactNumber}`}
-                    className={styles.savedAddressPhone}
-                  >
-                    <i className="fa-solid fa-phone" aria-hidden="true" />
-                    {address.contactNumber}
-                  </a>
-
-                  <div className={styles.savedAddressActions}>
-                    <button
-                      type="button"
-                      className={styles.savedAddressEditBtn}
-                      disabled={deletingAddress}
-                      onClick={() => {
-                        setEditingAddress(address);
-                        setShowAddressModal(true);
-                      }}
-                    >
-                      <i className="fa-solid fa-pen" aria-hidden="true" />
-                      Edit
-                    </button>
-
-                    <button
-                      type="button"
-                      className={styles.savedAddressDeleteBtn}
-                      disabled={deletingAddress}
-                      onClick={() => {
-                        setAddressDeleteError("");
-                        setAddressToDelete(address);
-                      }}
-                    >
-                      <i className="fa-solid fa-trash" aria-hidden="true" />
-                      Delete
-                    </button>
-                  </div>
-                </article>
-              ))}
-            </div>
-          )}
-
-          {showAddressModal && (
-            <AddressModal
-              key={editingAddress?.id ?? "new-address"}
-              address={editingAddress}
-              onClose={() => {
-                setShowAddressModal(false);
-                setEditingAddress(undefined);
-              }}
-              onSaved={() => {
-                setShowAddressModal(false);
-                setEditingAddress(undefined);
-                setAddressRefreshKey((value) => value + 1);
-              }}
-            />
-          )}
+            {showAddressModal && (
+              <AddressModal
+                key={editingAddress?.id ?? "new-address"}
+                address={editingAddress}
+                onClose={() => {
+                  setShowAddressModal(false);
+                  setEditingAddress(undefined);
+                }}
+                onSaved={() => {
+                  setShowAddressModal(false);
+                  setEditingAddress(undefined);
+                  setAddressRefreshKey((value) => value + 1);
+                }}
+              />
+            )}
+          </div>
         </div>
       </div>
 
@@ -917,6 +998,7 @@ export default function ProfilePage() {
           </div>
         </dialog>
       )}
+
     </section>
   );
 }
