@@ -26,29 +26,90 @@ body.active .sticky-bar{ opacity:1; visibility:visible; pointer-events:auto; tra
 .sticky-bar ul li.active a:after{ position:absolute; content:""; left:0; bottom:0; width:100%; height:2px; background:var(--up-theme); }
 
 /* ==== Profile Card Start ==== */
-.profile-card{ position:relative; background:url(/assets/images/profilebg.jpg) right top / cover; border-radius:25px; padding:40px 50px; margin-bottom:205px; }
-.profile-card img{ position:absolute; right:0; bottom:0; }
-
-.profile-progress{ width:140px; height:140px; position:relative; display:flex; align-items:center; justify-content:center; background:#e9f8f1; border-radius:50%; }
+.profile-card{ position:relative; background:url(/assets/images/profilebg.jpg) right top / cover; border-radius:25px; padding:40px 50px; margin-bottom:25px; }
+.profile-card img.hand-img{ position:absolute; right:0; bottom:0; }
+.profile-progress{ position:relative; display:flex; align-items:center; justify-content:flex-start; border-radius:50%; width:max-content; }
 .profile-progress-circle{ width:120px; height:120px; position:relative; display:flex; align-items:center; justify-content:center; }
 .progress-ring{ position:absolute; width:100%; height:100%; transform:rotate(-90deg); }
 .progress-ring circle{ fill:none; stroke-width:4; }
-.progress-bg{ stroke:#d5eee1; }
+.progress-bg{ stroke:var(--up-white); }
 .progress-fill{ stroke:#00a957; stroke-linecap:round; stroke-dasharray:339.3; stroke-dashoffset:calc(339.3 - (339.3 * var(--progress) / 100)); transition:stroke-dashoffset .6s ease; }
-.profile-avatar{ width:96px; height:96px; border:4px solid #fff; border-radius:50%; overflow:hidden; display:flex; align-items:center; justify-content:center; background:#e5f5ec; }
+.profile-avatar{ width:96px; height:96px; border-radius:50%; overflow:hidden; display:flex; align-items:center; justify-content:center; background:#000; }
 .profile-avatar img{ width:100%; height:100%; object-fit:cover; }
-.profile-avatar span{ font-size:36px; font-weight:600; color:#00a957; }
-.profile-percentage{ position:absolute; bottom:0; left:50%; transform:translateX(-50%); background:#00b85a; color:#000; font-size:14px; font-weight:600; line-height:22px; padding:0 8px; border-radius:20px; z-index:2; }
-
+.profile-avatar span{ font-size:36px; font-weight:600; color:var(--up-white); }
+.profile-percentage{ position:absolute; bottom:0; left:50%; transform:translateX(-50%); background:#00b85a; color:var(--up-black); font-size:14px; font-weight:600; line-height:22px; padding:0 8px; border-radius:20px; z-index:2; }
 .profile-card .text-block{ width:calc(100% - 120px); padding-left:30px; }
 .profile-card .text-block h2{ font-weight:600; color:var(--up-black); display:flex; align-items:center; gap:0 10px; }
 .profile-card .text-block h2 span{ font-size:15px; line-height:1; color:var(--up-white); font-weight:400; background:var(--up-theme); border-radius:15px; display:inline-block; padding:5px 12px; }
 .profile-card .text-block p{ color:var(--up-black); font-weight:400; margin-bottom:15px; }
 .profile-card .text-block p i{ padding-right:8px; }
+.profile-card .text-block p img{ padding-left:6px; }
 .profile-card .text-block p:last-child{ margin-bottom:0; }
-
-
 .profile-card .questaions{ box-sizing:border-box; background:linear-gradient(180deg, rgba(255,255,255,0.2) 0%, rgba(0,166,81,0.2) 100%); border:1px solid rgba(255,255,255,0.4); border-radius:25px; padding:25px 30px; }
 .profile-card .questaions h3{ font-weight:600; color:var(--up-black); margin-bottom:15px; }
 .profile-card .questaions p{ color:var(--up-black); }
 /* ==== Profile Card End ==== */
+
+/* ==== Personal Information Start ==== */
+.info-box{ background:var(--up-white); border-radius:25px; box-shadow:0px 2px 10px 0px #D9D9D9; padding:30px; margin-bottom:25px; }
+.info-box .title{ display:flex; align-items:center; margin-bottom:25px; }
+.info-box .title .left{ display:flex; align-items:center; flex:1; }
+.info-box .title .left img{ max-width:25px; width:100%; flex-shrink:0; }
+.info-box .title h4{ flex:1; font-weight:600; color:var(--up-black); padding-left:10px; margin-bottom:0; }
+.info-box .inp-box{ margin-bottom:25px; }
+.subscription-item{ display:flex; align-items:center; gap:10px; width:100%; cursor:pointer; }
+.subscription-checkbox{ position:relative; appearance:none; -webkit-appearance:none; width:20px !important; height:20px !important; border-color:var(--up-gray); border-radius:50%; background:var(--up-white); cursor:pointer; margin:0; padding:0; }
+.subscription-checkbox:checked{ background:var(--up-theme); border-color:var(--up-theme); }
+.subscription-checkbox:checked:after{ content:"\f00c"; position:absolute; left:4px; top:4px; font-family:Fontawesome; font-size:11px; line-height:1; color:var(--up-white); }
+.subscription-content h6{ font-weight:500; color:var(--up-black); margin-bottom:2px; }
+.subscription-content p{ font-size:14px; line-height:1.2; font-weight:400; color:var(--up-gray); margin:0; }
+/* ==== Personal Information End ==== */
+
+/* ==== Saved Patient Start ==== */
+.patient-list{ display:grid; grid-template-columns:repeat(3, 1fr); grid-row-gap:20px; grid-column-gap:20px; }
+.patient-card{ position:relative; isolation:isolate; display:flex; align-items:center; border:1px solid var(--up-gray2); border-radius:10px; cursor:pointer; padding:30px 15px; }
+.patient-card:before{ content:""; position:absolute; right:0; top:0; z-index:-1; background:linear-gradient(85.75deg, #FFFFFF 29.6%, rgba(250,200,1,0.3) 100%); border-radius:10px; opacity:0; transition:all .5s ease; width:0%; height:100%; }
+.patient-card:hover:before{ opacity:1; width:100%; }
+.patient-card.active:before{ opacity:1; width:100%; }
+.patient-card .patient-left{ display:flex; align-items:center; flex:1; }
+.patient-card .icon{ width:55px; height:55px; display:flex; align-items:center; justify-content:center; background:#FFF6D3; border-radius:50%; }
+.patient-card .icon h3{ color:#A18000; font-weight:600; margin-bottom:0; }
+.patient-card .patient-dtl{ width:calc(100% - 55px); padding-left:10px; }
+.patient-card .patient-dtl h4{ font-weight:600; color:var(--up-black); margin-bottom:5px; }
+.patient-card .patient-dtl p{ color:var(--up-gray); margin-bottom:5px; }
+.patient-card .patient-dtl p i{ padding-right:5px; }
+.patient-card .patient-action-area{ position:relative; }
+.patient-card .patient-action-area .patient-toggle-btn{ font-size:20px; border:0; background:none; padding:4px; }
+.patient-card .patient-action-area .patient-actions-wrap{ width:150px; position:absolute; right:15px; top:0; background:var(--up-white); border:1px solid var(--up-gray2); border-radius:10px; padding:6px; transform:scale(0.5); opacity:0; pointer-events:none; transition:all 0.4s; box-shadow:0px 0px 4px 0px rgba(0,0,0,0.15); }
+.patient-card .patient-action-area .patient-actions-wrap.show{ transform:scale(1); opacity:1; pointer-events:fill; }
+.patient-card .patient-action-area .patient-actions-wrap button{ width:100%; font-size:14px; line-height:1.2; font-weight:400; color:var(--up-black); text-align:left; border:0; background:none; padding:10px 10px; transition:all 0.4s; border-radius:6px; }
+.patient-card .patient-action-area .patient-actions-wrap button:hover{ background:var(--up-black); color:var(--up-white); }
+
+/* Default State */
+.default-info{ display:flex; align-items:center; justify-content:space-between; gap:20px; padding:15px 15px; margin-bottom:20px; background:linear-gradient(110deg,#f0faf3,#f8fcf9); border:1px solid #d9efdf; border-radius:12px; }
+.default-info .left{ display:flex; align-items:center; gap:13px; }
+.default-info .icon{ width:38px; height:38px; min-width:38px; display:flex; align-items:center; justify-content:center; background:#D9F3E5; color:var(--up-theme); border:1px solid #c5e9d1; border-radius:50%; font-size:16px; }
+.default-info .text-block h6{ color:var(--up-theme); font-weight:600; margin-bottom:5px; }
+.default-info .text-block p{ font-size:14px; color:var(--up-gray); margin-bottom:0; }
+.default-info button{ flex-shrink:0; padding:8px 14px; border:1px solid var(--up-gray); border-radius:25px; background:var(--up-white); color:var(--up-gray); font-size:12px; font-weight:600; cursor:pointer; transition:all .25s ease; }
+.default-info button:hover{ background:#fff0f0; border-color:#f2caca; color:var(--is-red); }
+/* ==== Saved Patient End ==== */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

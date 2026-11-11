@@ -73,7 +73,7 @@ export default function ProfilePage() {
 
   const patientDeleteDialogRef = useRef<HTMLDialogElement>(null);
   const patientDeletePendingRef = useRef(false);
-
+  const [expandedPatientId, setExpandedPatientId] = useState<string | number | null>(null);
 
   const [editingAddress, setEditingAddress] = useState<
     PatientAddress | undefined
@@ -536,43 +536,46 @@ export default function ProfilePage() {
           <div className="profile-card">
             <div className="row">
               <div className="col-lg-7 col-md-7 col-sm-12">
-                <div className="profile-progress">
-                  <div className="profile-progress-circle">
-                    <svg className="progress-ring" viewBox="0 0 120 120">
-                      <circle className="progress-bg" cx="60" cy="60" r="54" />
-                      <circle
-                        className="progress-fill"
-                        cx="60"
-                        cy="60"
-                        r="54"
-                        style={{ "--progress": "12" } as React.CSSProperties}
-                      />
-                    </svg>
+                <div className="d-flex align-items-center">
+                  <div className="profile-progress">
+                    <div className="profile-progress-circle">
+                      <svg className="progress-ring" viewBox="0 0 120 120">
+                        <circle className="progress-bg" cx="60" cy="60" r="54" />
+                        <circle
+                          className="progress-fill"
+                          cx="60"
+                          cy="60"
+                          r="54"
+                          style={{ "--progress": "12" } as React.CSSProperties}
+                        />
+                      </svg>
 
-                    <div className="profile-avatar">
-                      {/* {user.profile_image ? (
-        <img src={user.profile_image} alt="Profile" />
-      ) : ( */}
-                      <span>{user.first_name?.charAt(0).toUpperCase()}</span>
-                      {/* )} */}
+                      <div className="profile-avatar">
+                        {/* {user.profile_image ? (
+          <img src={user.profile_image} alt="Profile" />
+        ) : ( */}
+                        <span>{user.first_name?.charAt(0).toUpperCase()}</span>
+                        {/* )} */}
+                      </div>
                     </div>
+                    <div className="profile-percentage">92%</div>
                   </div>
-
-                  <div className="profile-percentage">92%</div>
-                </div>
-                <div className="text-block">
-                  <h2>
-                    {user.first_name} {user.last_name} <span>Male, 26 yrs </span>
-                  </h2>
-                  <p>Kolkata, INDIA</p>
-                  <p>
-                    <i className="fa-regular fa-envelope"></i>
-                    {user.email || "No email"}
-                  </p>
-                  <p>
-                    <i className="fa-solid fa-phone"></i>
-                    {user.mobile_number || "No mobile number"}
-                  </p>
+                  <div className="text-block">
+                    <h2>
+                      {user.first_name} {user.last_name} <span>Male, 26 yrs </span>
+                    </h2>
+                    <p>Kolkata, INDIA</p>
+                    <p>
+                      <i className="fa-regular fa-envelope"></i>
+                      {user.email || "No email"}
+                      <img src="/assets/images/verified.svg" alt="" />
+                    </p>
+                    <p>
+                      <i className="fa-solid fa-phone"></i>
+                      {user.mobile_number || "No mobile number"}
+                      <img src="/assets/images/verified.svg" alt="" />
+                    </p>
+                  </div>
                 </div>
               </div>
               <div className="col-lg-5 col-md-5 col-sm-12">
@@ -583,39 +586,87 @@ export default function ProfilePage() {
                 </div>
               </div>
             </div>
-            <img src="/assets/images/hand.png" alt="" />
+            <img className="hand-img" src="/assets/images/hand.png" alt="" />
+          </div>
+
+          {/* ==== PERSONAL INFORMATION ==== */}
+          <div className="info-box">
+            <div className="title">
+              <div className="left">
+                <img src="/assets/images/profile-icon1.svg" alt="" />
+                <h4>Personal Information</h4>
+              </div>
+            </div>
+            <div className="row">
+              <div className="col-lg-6 col-md-6 col-sm-12">
+                <div className="inp-box">
+                  <label>First Name<span>*</span></label>
+                  <input type="text" placeholder="Your Name" className="form-control" />
+                </div>
+              </div>
+              <div className="col-lg-6 col-md-6 col-sm-12">
+                <div className="inp-box">
+                  <label>Last Name<span>*</span></label>
+                  <input type="text" placeholder="Your Last Name" className="form-control" />
+                </div>
+              </div>
+              <div className="col-lg-6 col-md-6 col-sm-12">
+                <div className="inp-box">
+                  <label>DOB<span>*</span></label>
+                  <input type="date" placeholder="" className="form-control" />
+                </div>
+              </div>
+              <div className="col-lg-6 col-md-6 col-sm-12">
+                <div className="inp-box">
+                  <label>Alternate Email (Optional)</label>
+                  <input type="text" placeholder="Your Email" className="form-control" />
+                </div>
+              </div>
+              <div className="col-lg-12 col-md-12 col-sm-12">
+                <div className="inf-box-footer d-flex align-items-center justify-content-between">
+                  <label className="subscription-item">
+                    <input type="checkbox" className="subscription-checkbox" defaultChecked />
+                    <div className="subscription-content">
+                      <h6>Email Subscription</h6>
+                      <p>Receive digital test reports, invoices, and health insights directly to banni@yopmail.com</p>
+                    </div>
+                  </label>
+                  <div className="btn-block d-flex gap-2">
+                    <button className="sec_btn border-0">Discard</button>
+                    <button className="cmn_btn">Update</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
           </div>
 
           {/* ==== PATIENT SECTION ==== */}
-          <div className={styles.sectionCard}>
-            <div className={styles.sectionHeader}>
-              <div>
-                <h3>Patients</h3>
-
-                <p>Manage patients and choose your default patient.</p>
+          <div className="info-box">
+            <div className="title">
+              <div className="left">
+                <img src="/assets/images/profile-icon2.svg" alt="" />
+                <h4>Saved Patient</h4>
               </div>
 
               <button
                 type="button"
-                className={styles.addAddressBtn}
+                className="exp-btn"
                 onClick={openAddPatientModal}
               >
-                + Add Patient
+                Add Patient <img src="/assets/images/profile-icon3.svg" alt="" />
               </button>
             </div>
 
             {defaultPatient && (
-              <div className={styles.defaultInfo}>
-                <div>
-                  <span className={styles.defaultIcon}>✓</span>
-
-                  <div>
-                    <strong>Default Patient</strong>
-
-                    <p>
-                      {defaultPatient.name} will be selected automatically while
-                      adding tests or packages.
-                    </p>
+              <div className="default-info">
+                <div className="left">
+                  <div className="icon">
+                    <i className="fa-solid fa-check"></i>
+                  </div>
+                  <div className="text-block">
+                    <h6>Default Patient</h6>
+                    <p><strong>{defaultPatient.name}</strong> will be selected automatically while adding tests or packages.</p>
                   </div>
                 </div>
 
@@ -626,9 +677,9 @@ export default function ProfilePage() {
             )}
 
             {patientLoading ? (
-              <div className={styles.loadingBox}>Loading patients...</div>
+              <div className="loadingBox">Loading patients...</div>
             ) : patients.length > 0 ? (
-              <div className={styles.patientList}>
+              <div className="patient-list">
                 {patients.map((patient) => {
                   const isDefault =
                     String(defaultPatient?.id) === String(patient.id);
@@ -636,92 +687,107 @@ export default function ProfilePage() {
                   return (
                     <div
                       key={patient.id}
-                      className={`${styles.patientCard} ${isDefault ? styles.defaultCard : ""
-                        }`}
+                      className={`patient-card ${isDefault ? "active" : ""}`}
                     >
-                      <div className={styles.patientLeft}>
-                        <div className={styles.patientAvatar}>
-                          {patient.patient_name?.charAt(0).toUpperCase()}
+                      <div className="patient-left">
+                        <div className="icon">
+                          <h3>{patient.patient_name?.charAt(0).toUpperCase()}</h3>
                         </div>
+                        <div className="patient-dtl">
+                          <h4>{patient.patient_name}</h4>
+                          {/* {isDefault && <span>Default</span>} */}
 
-                        <div className={styles.patientDetails}>
-                          <div className={styles.patientName}>
-                            <h4>{patient.patient_name}</h4>
-
-                            {isDefault && <span>Default</span>}
-                          </div>
-
-                          <p>
+                          <p className="patient-gender">
+                            <i
+                              className={`fa-solid ${patient.gender === 1
+                                ? "fa-mars"
+                                : patient.gender === 2
+                                  ? "fa-venus"
+                                  : "fa-genderless"
+                                }`}
+                              aria-hidden="true"
+                            />
                             {getGenderName(patient.gender)}
-
-                            {patient.dob &&
-                              ` · ${calculateAge(patient.dob)} Years`}
+                            {patient.dob && ` · ${calculateAge(patient.dob)} Years`}
                           </p>
 
-                          {patient.phoneNumber && (
-                            <small>{patient.phoneNumber}</small>
+                          {/* {patient.phoneNumber && <p>{patient.phoneNumber}</p>} */}
+                        </div>
+                      </div>
+
+                      <div className="patient-action-area">
+                        <button
+                          type="button"
+                          className="patient-toggle-btn"
+                          aria-expanded={expandedPatientId === patient.id}
+                          onClick={() =>
+                            setExpandedPatientId((current) =>
+                              current === patient.id ? null : patient.id
+                            )
+                          }
+                        >
+                          <i className="fa-solid fa-ellipsis-vertical" aria-hidden="true" />
+                        </button>
+
+                        <div
+                          className={`patient-actions-wrap ${expandedPatientId === patient.id ? "show" : ""
+                            }`}
+                        >
+                          <button
+                            type="button"
+                            disabled={deletingPatient}
+                            onClick={() => {
+                              setExpandedPatientId(null);
+                              openEditPatientModal(patient);
+                            }}
+                          >
+                            {/* <i className="fa-solid fa-pen" aria-hidden="true" /> */}
+                            Edit
+                          </button>
+
+                          <button
+                            type="button"
+                            disabled={deletingPatient}
+                            onClick={() => {
+                              setExpandedPatientId(null);
+                              setPatientDeleteError("");
+                              setPatientToDelete(patient);
+                            }}
+                          >
+                            {/* <i className="fa-solid fa-trash" aria-hidden="true" /> */}
+                            Delete
+                          </button>
+
+                          {isDefault ? (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                handleRemoveDefaultPatient();
+                                setExpandedPatientId(null);
+                              }}
+                            >
+                              Remove Default
+                            </button>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                handleSetDefaultPatient(patient);
+                                setExpandedPatientId(null);
+                              }}
+                            >
+                              Make Default
+                            </button>
                           )}
                         </div>
                       </div>
-
-                      <div className={styles.patientActions}>
-                        <button
-                          type="button"
-                          className={styles.editPatientBtn}
-                          disabled={deletingPatient}
-                          onClick={() => openEditPatientModal(patient)}
-                        >
-                          <i className="fa-solid fa-pen" aria-hidden="true" />
-                          Edit
-                        </button>
-
-                        <button
-                          type="button"
-                          className={styles.deletePatientBtn}
-                          disabled={deletingPatient}
-                          onClick={() => {
-                            setPatientDeleteError("");
-                            setPatientToDelete(patient);
-                          }}
-                        >
-                          <i className="fa-solid fa-trash" aria-hidden="true" />
-                          Delete
-                        </button>
-
-                        {isDefault ? (
-                          <button
-                            type="button"
-                            className={styles.removeDefaultBtn}
-                            onClick={handleRemoveDefaultPatient}
-                          >
-                            Remove Default
-                          </button>
-                        ) : (
-                          <button
-                            type="button"
-                            className={styles.defaultBtn}
-                            onClick={() => handleSetDefaultPatient(patient)}
-                          >
-                            Make Default
-                          </button>
-                        )}
-                      </div>
-                      {/* <button
-                          type="button"
-                          className={styles.editPatientBtn}
-                          onClick={() => openEditPatientModal(patient)}
-                        >
-                          <i className="fa-solid fa-pen" aria-hidden="true" />
-                          Edit
-                        </button> */}
                     </div>
                   );
                 })}
               </div>
             ) : (
-              <div className={styles.emptyState}>
+              <div className="empty-state text-center">
                 <h4>No patients found</h4>
-
                 <p>Your registered patients will appear here.</p>
               </div>
             )}
