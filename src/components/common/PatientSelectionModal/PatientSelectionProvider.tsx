@@ -550,7 +550,7 @@ const [isPatientOnlyMode, setIsPatientOnlyMode] = useState(false);
             {/* Close */}
             <button
               type="button"
-              className={styles.closeBtn}
+              className="closeBtn"
               onClick={closePatientModal}
             >
               <i className="fa-solid fa-xmark"></i>

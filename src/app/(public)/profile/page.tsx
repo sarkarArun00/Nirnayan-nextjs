@@ -36,45 +36,118 @@ type DefaultPatient = {
   isNew: boolean;
 };
 
+const reportPatients = [
+  { id: 1, name: "Tarun Sana", count: 2 },
+  { id: 2, name: "Ambar Ghosh", count: 1 },
+  { id: 3, name: "Sayanta Dutta", count: 2 },
+];
+
+type ReportInvestigation = {
+  id: number;
+  name: string;
+  gender: string;
+  age: number;
+  investigationId: string;
+  date: string;
+  time: string;
+  tests: string[];
+  more: string;
+};
+
+const investigations: Record<number, ReportInvestigation[]> = {
+  1: [
+    {
+      id: 101,
+      name: "Tarun Sana",
+      gender: "Male",
+      age: 26,
+      investigationId: "INV-0000",
+      date: "24 Oct 2026",
+      time: "4:15 PM",
+      tests: ["Hemoglobin (Hb)", "Liver Function Tests (LFT)"],
+      more: "6+ More",
+    },
+    {
+      id: 102,
+      name: "Tarun Sana",
+      gender: "Male",
+      age: 26,
+      investigationId: "INV-0000",
+      date: "24 Oct 2026",
+      time: "4:15 PM",
+      tests: ["Hemoglobin (Hb)", "Liver Function Tests (LFT)"],
+      more: "6+ More",
+    },
+  ],
+  2: [
+    {
+      id: 201,
+      name: "Ambar Ghosh",
+      gender: "Male",
+      age: 32,
+      investigationId: "INV-0001",
+      date: "23 Oct 2026",
+      time: "2:30 PM",
+      tests: ["Complete Blood Count", "Thyroid Profile"],
+      more: "3+ More",
+    },
+  ],
+  3: [
+    {
+      id: 301,
+      name: "Sayanta Dutta",
+      gender: "Male",
+      age: 28,
+      investigationId: "INV-0002",
+      date: "22 Oct 2026",
+      time: "11:45 AM",
+      tests: ["Hemoglobin (Hb)", "Liver Function Tests (LFT)"],
+      more: "6+ More",
+    },
+    {
+      id: 302,
+      name: "Sayanta Dutta",
+      gender: "Male",
+      age: 28,
+      investigationId: "INV-0003",
+      date: "20 Oct 2026",
+      time: "10:15 AM",
+      tests: ["Blood Sugar", "Kidney Function Test"],
+      more: "4+ More",
+    },
+  ],
+};
+
+const sectionIds = ["information", "patient", "address", "report"];
+
 export default function ProfilePage() {
   const [user, setUser] = useState<LoginUser | null>(null);
-
   const [patients, setPatients] = useState<PatientItem[]>([]);
-
   const [loading, setLoading] = useState(true);
-
   const [patientLoading, setPatientLoading] = useState(true);
-
-  const [defaultPatient, setDefaultPatient] = useState<DefaultPatient | null>(
-    null,
-  );
+  const [defaultPatient, setDefaultPatient] = useState<DefaultPatient | null>(null,);
   const { openAddPatientModal, openEditPatientModal } = usePatientSelection();
-
+  const [expandedAddressId, setExpandedAddressId] = useState<string | number | null>(null);
+  const [activePatient, setActivePatient] = useState(1);
+  const handleView = (item: ReportInvestigation) => {
+    alert(`Investigation ID: ${item.investigationId}`);
+  };
   const [addresses, setAddresses] = useState<PatientAddress[]>([]);
   const [loadingAddresses, setLoadingAddresses] = useState(true);
   const [addressError, setAddressError] = useState("");
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [addressRefreshKey, setAddressRefreshKey] = useState(0);
-  const [addressToDelete, setAddressToDelete] = useState<PatientAddress | null>(
-    null,
-  );
+  const [addressToDelete, setAddressToDelete] = useState<PatientAddress | null>(null,);
   const addressDeleteDialogRef = useRef<HTMLDialogElement>(null);
   const addressDeletePendingRef = useRef(false);
   const [deletingAddress, setDeletingAddress] = useState(false);
   const [addressDeleteError, setAddressDeleteError] = useState("");
-
-
-  const [patientToDelete, setPatientToDelete] = useState<PatientItem | null>(
-    null,
-  );
-
+  const [patientToDelete, setPatientToDelete] = useState<PatientItem | null>(null,);
   const [deletingPatient, setDeletingPatient] = useState(false);
   const [patientDeleteError, setPatientDeleteError] = useState("");
-
   const patientDeleteDialogRef = useRef<HTMLDialogElement>(null);
   const patientDeletePendingRef = useRef(false);
   const [expandedPatientId, setExpandedPatientId] = useState<string | number | null>(null);
-
   const [editingAddress, setEditingAddress] = useState<
     PatientAddress | undefined
   >(undefined);
@@ -149,6 +222,38 @@ export default function ProfilePage() {
       document.documentElement.style.removeProperty("--profile-sticky-top");
     };
   }, [loading, user]);
+
+  // for ul li click thing Start
+  const [activeSection, setActiveSection] = useState("information");
+  const stickyBarRef = useRef<HTMLDivElement>(null);
+
+  const handleStickyNavigation = (id: string) => {
+    const section = document.getElementById(id);
+    if (!section) return;
+    const offset = stickyBarRef.current?.getBoundingClientRect().bottom ?? 0;
+    setActiveSection(id);
+    window.scrollTo({
+      top: window.scrollY + section.getBoundingClientRect().top - offset - 10,
+      behavior: "smooth",
+    });
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const offset = (stickyBarRef.current?.getBoundingClientRect().bottom ?? 0) + 10;
+      const current = [...sectionIds].reverse().find((id) => {
+        const section = document.getElementById(id);
+        return section && section.getBoundingClientRect().top <= offset;
+      });
+
+      if (current) setActiveSection(current);
+    };
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+  // for ul li click thing End
+
   // Sticky header End
 
   const loadDefaultPatient = useCallback((userId: number) => {
@@ -482,13 +587,16 @@ export default function ProfilePage() {
   return (
     <section className="profile-page">
 
-      <div className="sticky-bar">
+
+      <div className="sticky-bar" ref={stickyBarRef}>
         <div className="container">
+
           <div className="pro-head">
             <div className="pro-info">
               <div className="img">
                 <img src="/assets/images/pkg-img1.png" alt="Profile" />
               </div>
+
               <div className="text">
                 <div className="flex-dv">
                   <h3>Tarun Sana</h3>
@@ -503,6 +611,7 @@ export default function ProfilePage() {
                 <div className="img">
                   <img src="/assets/images/pkg-img1.png" alt="Profile" />
                 </div>
+
                 <div className="text">
                   <p>Complete Profile <span>50%</span></p>
                   <div className="progress-track">
@@ -514,14 +623,34 @@ export default function ProfilePage() {
           </div>
 
           <ul>
-            <li><Link href="#">Personal Information</Link></li>
-            <li><Link href="#">Saved Patient</Link></li>
-            <li><Link href="#">Saved Address</Link></li>
-            <li><Link href="#">My Reports</Link></li>
-            <li><Link href="#">My Prescription</Link></li>
+            <li className={activeSection === "information" ? "active" : ""}>
+              <button type="button" onClick={() => handleStickyNavigation("information")}>
+                Personal Information
+              </button>
+            </li>
+
+            <li className={activeSection === "patient" ? "active" : ""}>
+              <button type="button" onClick={() => handleStickyNavigation("patient")}>
+                Saved Patient
+              </button>
+            </li>
+
+            <li className={activeSection === "address" ? "active" : ""}>
+              <button type="button" onClick={() => handleStickyNavigation("address")}>
+                Saved Address
+              </button>
+            </li>
+
+            <li className={activeSection === "report" ? "active" : ""}>
+              <button type="button" onClick={() => handleStickyNavigation("report")}>
+                My Reports
+              </button>
+            </li>
           </ul>
+
         </div>
       </div>
+
 
       <div className="is-profile">
         <div className="container">
@@ -590,7 +719,7 @@ export default function ProfilePage() {
           </div>
 
           {/* ==== PERSONAL INFORMATION ==== */}
-          <div className="info-box">
+          <div className="info-box" id="information">
             <div className="title">
               <div className="left">
                 <img src="/assets/images/profile-icon1.svg" alt="" />
@@ -642,7 +771,7 @@ export default function ProfilePage() {
           </div>
 
           {/* ==== PATIENT SECTION ==== */}
-          <div className="info-box">
+          <div className="info-box" id="patient">
             <div className="title">
               <div className="left">
                 <img src="/assets/images/profile-icon2.svg" alt="" />
@@ -794,104 +923,125 @@ export default function ProfilePage() {
           </div>
 
           {/* ==== ADDRESS SECTION ==== */}
-          <div className={styles.sectionCard}>
-            <div className={styles.sectionHeader}>
-              <div>
-                <h3>Saved Addresses</h3>
-                <p>Manage addresses for home sample collection.</p>
+          <div className="info-box" id="address">
+            <div className="title">
+              <div className="left">
+                <img src="/assets/images/profile-icon4.svg" alt="" />
+                <h4>Saved Addresses</h4>
               </div>
 
               <button
                 type="button"
-                className={styles.addAddressBtn}
+                className="exp-btn"
                 onClick={() => setShowAddressModal(true)}
               >
-                + Add Address
+                Add Address
+                <img src="/assets/images/profile-icon5.svg" alt="" />
               </button>
             </div>
 
             {loadingAddresses ? (
-              <div className={styles.emptyState} role="status">
+              <div className="empty-state" role="status">
                 <p>Loading saved addresses...</p>
               </div>
             ) : addressError ? (
-              <div className={styles.emptyState}>
-                <p role="alert">{addressError}</p>
+              <div className="empty-state">
+                <h4 role="alert">{addressError}</h4>
 
                 <button
                   type="button"
-                  className={styles.addAddressBtn}
+                  className="sec_btn border-0"
                   onClick={() => setAddressRefreshKey((value) => value + 1)}
                 >
                   Try Again
                 </button>
               </div>
             ) : addresses.length === 0 ? (
-              <div className={styles.emptyState}>
-                <div className={styles.addressIcon}>
-                  <i className="fa-solid fa-location-dot" aria-hidden="true" />
+              <div className="empty-state text-center">
+                <div className="icon">
+                  <i className="fa-solid fa-location-dot"></i>
                 </div>
-
                 <h4>No saved addresses</h4>
                 <p>Your saved collection addresses will appear here.</p>
               </div>
             ) : (
-              <div className={styles.savedAddressGrid}>
+              <div className="patient-list">
                 {addresses.map((address) => (
-                  <article key={address.id} className={styles.savedAddressCard}>
-                    <div className={styles.savedAddressHeader}>
-                      <h4>{address.fullName}</h4>
-
-                      <span className={styles.savedAddressType}>
-                        {address.addressName}
-                      </span>
+                  <article key={address.id} className="patient-card">
+                    <div className="patient-left">
+                      <div className="icon">
+                        <h3>
+                          {address.fullName
+                            ? (() => {
+                              const names = address.fullName.trim().split(/\s+/);
+                              const firstInitial = names[0]?.charAt(0) || "";
+                              const lastInitial = names.length > 1 ? names[names.length - 1].charAt(0) : "";
+                              return (firstInitial + lastInitial).toUpperCase();
+                            })()
+                            : ""}
+                        </h3>
+                      </div>
+                      <div className="patient-dtl">
+                        <h4>{address.fullName}</h4>
+                        <span className="add-type">{address.addressName}</span>
+                        <p>
+                          {[
+                            address.addressLine_1,
+                            address.addressLine_2,
+                            address.landMark,
+                            address.pinCode,
+                          ]
+                            .filter(Boolean)
+                            .join(", ")}
+                        </p>
+                        <p><a href={`tel:${address.contactNumber}`}>
+                          <i className="fa-solid fa-phone" aria-hidden="true" />
+                          {address.contactNumber}
+                        </a></p>
+                      </div>
                     </div>
-
-                    <p className={styles.savedAddressText}>
-                      {[
-                        address.addressLine_1,
-                        address.addressLine_2,
-                        address.landMark,
-                        address.pinCode,
-                      ]
-                        .filter(Boolean)
-                        .join(", ")}
-                    </p>
-
-                    <a
-                      href={`tel:${address.contactNumber}`}
-                      className={styles.savedAddressPhone}
-                    >
-                      <i className="fa-solid fa-phone" aria-hidden="true" />
-                      {address.contactNumber}
-                    </a>
-
-                    <div className={styles.savedAddressActions}>
+                    <div className="patient-action-area">
                       <button
                         type="button"
-                        className={styles.savedAddressEditBtn}
-                        disabled={deletingAddress}
-                        onClick={() => {
-                          setEditingAddress(address);
-                          setShowAddressModal(true);
-                        }}
+                        className="patient-toggle-btn"
+                        aria-expanded={expandedAddressId === address.id}
+                        onClick={() =>
+                          setExpandedAddressId((current) =>
+                            current === address.id ? null : address.id
+                          )
+                        }
                       >
-                        <i className="fa-solid fa-pen" aria-hidden="true" />
-                        Edit
+                        <i className="fa-solid fa-ellipsis-vertical" aria-hidden="true"></i>
                       </button>
 
-                      <button
-                        type="button"
-                        className={styles.savedAddressDeleteBtn}
-                        disabled={deletingAddress}
-                        onClick={() => {
-                          setAddressDeleteError("");
-                          setAddressToDelete(address);
-                        }}
+                      <div
+                        className={`patient-actions-wrap ${expandedAddressId === address.id ? "show" : ""
+                          }`}
                       >
-                        <i className="fa-solid fa-trash" aria-hidden="true" />
-                        Delete
-                      </button>
+                        <button
+                          type="button"
+                          disabled={deletingAddress}
+                          onClick={() => {
+                            setExpandedAddressId(null);
+                            setEditingAddress(address);
+                            setShowAddressModal(true);
+                          }}
+                        >
+                          Edit
+                        </button>
+
+                        <button
+                          type="button"
+                          disabled={deletingAddress}
+                          onClick={() => {
+                            setExpandedAddressId(null);
+                            setAddressDeleteError("");
+                            setAddressToDelete(address);
+                          }}
+                        >
+                          Delete
+                        </button>
+                      </div>
                     </div>
                   </article>
                 ))}
@@ -914,10 +1064,81 @@ export default function ProfilePage() {
               />
             )}
           </div>
+
+          {/* ==== My Report Section ==== */}
+          <div className="info-box" id="report">
+            <div className="title">
+              <div className="left">
+                <img src="/assets/images/profile-icon6.svg" alt="" />
+                <h4>My Reports</h4>
+              </div>
+            </div>
+            <div className="inv-tabs">
+              {reportPatients.map((patient) => (
+                <button
+                  type="button"
+                  key={patient.id}
+                  className={`investigation-tab ${activePatient === patient.id ? "active" : ""
+                    }`}
+                  onClick={() => setActivePatient(patient.id)}
+                >
+                  {patient.name} ({patient.count})
+                </button>
+              ))}
+            </div>
+            <div className="inv-grid">
+              {(investigations[activePatient] || []).map((item) => (
+                <div className="inv-card" key={item.id}>
+                  <div className="inv-top">
+                    <div className="inv-user">
+                      <div className="inv-icon">
+                        <img src="/assets/images/profile-icon7.svg" alt="" />
+                      </div>
+                      <div className="inv-user-info">
+                        <div className="flex-dv">
+                          <h4>{item.name}</h4>
+                          <span className="patient-age">
+                            {item.gender}, {item.age} yrs
+                          </span>
+                        </div>
+                        <p>Investigation ID : <span>{item.investigationId}</span></p>
+                      </div>
+                    </div>
+                    <div className="inv-date">
+                      <h6>{item.date} • {item.time}</h6>
+                    </div>
+                  </div>
+                  <div className="inv-bottom">
+                    <div className="inv-details">
+                      <h6>Investigation Details</h6>
+                      <div className="inv-tags">
+                        {item.tests.map((test, index) => (
+                          <span key={index}>{test}</span>
+                        ))}
+                        <span>{item.more}</span>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      className="cmn_btn"
+                      onClick={() => handleView(item)}
+                    >
+                      View
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div className="text-center">
+              <button className="sec_btn border-0">Load More</button>
+            </div>
+          </div>
+
         </div>
       </div>
 
-      {addressToDelete && (
+      {/* {addressToDelete && (
         <dialog
           ref={addressDeleteDialogRef}
           className={styles.addressDeleteDialog}
@@ -964,7 +1185,7 @@ export default function ProfilePage() {
             </button>
           </div>
         </dialog>
-      )}
+      )} */}
 
       {addressToDelete && (
         <dialog
