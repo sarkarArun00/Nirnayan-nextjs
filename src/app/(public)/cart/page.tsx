@@ -4,38 +4,56 @@ import { useEffect, useRef, useState } from "react";
 import styles from "./page.module.css";
 import "./page.css";
 import Link from "next/link";
+
 import {
   getCartByUser,
   removeFromCart,
   getAllSlots,
+  getSelectedStateId,
   updateCartDetails,
   getAllPatientAddresses,
   deletePatientAddress,
   type PatientAddress,
-  type CartItem,
   type BookingSlot,
 } from "@/services/cart.service";
 import AddressModal from "@/components/common/AddressModal/AddressModal";
 import { usePatientSelection } from "@/components/common/PatientSelectionModal/PatientSelectionProvider";
 
-type CartProduct = {
-  id: number;
+import { useAlert } from "@/components/common/Alert/AlertProvider";
+
+import {
+  createCheckoutOrder,
+  processToCheckout,
+  type CheckoutBookingDetails,
+  type RazorpayPaymentResult,
+} from "@/actions/checkout.actions";
+import Script from "next/script";
+
+type RazorpayResult = RazorpayPaymentResult;
+
+type PendingCheckout = {
+  details: CheckoutBookingDetails;
+  payment: RazorpayResult;
+};
+
+type RazorpayOptions = {
+  key: string;
+  order_id: string;
+  amount: number;
+  currency: "INR";
   name: string;
-  productType: "test" | "package";
-  price?: string;
+  description: string;
+  theme: { color: string };
+  handler: (result: RazorpayResult) => void;
+  modal: { ondismiss: () => void };
 };
 
-type CartItemRef = {
-  id: number;
-  productType: "test" | "package";
-};
+declare global {
+  interface Window {
+    Razorpay?: new (options: RazorpayOptions) => { open(): void };
+  }
+}
 
-type CartGroup = {
-  patientId: number | string;
-  items: CartItemRef[];
-};
-
-// Updated to match the nested investigation structure from the new backend response
 export type InvestigationItem = {
   bookingId: number;
   item_id: number;
@@ -50,21 +68,22 @@ export type InvestigationItem = {
   mrpAmount: number;
   offerAmount: number | null;
   finalAmount: number;
-  cartId?: number; // added optionally for tracking
 };
 
 export type PatientCartGroup = {
   cartId: number;
   patientId: number;
   patient_name: string;
-  patient_age: number;
-  patient_gender: number;
+  patient_age: number | null;
+  patient_gender: number | null;
   doctor_name: string | null;
-  attachments: any[];
+  attachments: string[];
   investigation: InvestigationItem[];
 };
 
-const CART_KEY = "nirnayan_temp_cart";
+function getItemPrice(item: InvestigationItem): number {
+  return Number(item.finalAmount ?? item.offerAmount ?? item.mrpAmount ?? 0);
+}
 
 function getBookingDateValue(date: Date): string {
   const year = date.getFullYear();
@@ -80,11 +99,12 @@ function formatSlotTime(time: string): string {
 }
 
 const BOOKING_WINDOW_DAYS = 15;
+const checkoutCurrency = new Intl.NumberFormat("en-IN", {
+  style: "currency",
+  currency: "INR",
+});
 
 export default function CartPage() {
-  const [loading, setLoading] = useState(true);
-  const [cart, setCart] = useState<CartGroup[]>([]);
-
   const [slots, setSlots] = useState<BookingSlot[]>([]);
   const [loadingSlots, setLoadingSlots] = useState(true);
   const [slotError, setSlotError] = useState("");
@@ -103,21 +123,29 @@ export default function CartPage() {
   const [addressRefreshKey, setAddressRefreshKey] = useState(0);
 
   const [cartGroups, setCartGroups] = useState<PatientCartGroup[]>([]);
-  const [loadingCart, setLoadingCart] = useState(false);
+  const [loadingCart, setLoadingCart] = useState(true);
+  const [cartLoadError, setCartLoadError] = useState("");
   const [showAddressModal, setShowAddressModal] = useState(false);
 
-  // Add this state inside your CartPage component
   const [activePrescriptionModal, setActivePrescriptionModal] =
     useState<PatientCartGroup | null>(null);
   const [modalDoctorName, setModalDoctorName] = useState("");
   const [modalFiles, setModalFiles] = useState<File[]>([]);
+  const [paymentBusy, setPaymentBusy] = useState(false);
+  const [paymentMessage, setPaymentMessage] = useState("");
+  const { confirm } = useAlert();
+  const { showAlert } = useAlert();
+
+  const paymentBusyRef = useRef(false);
 
   const [removeTarget, setRemoveTarget] = useState<{
     patientId: number;
     item: InvestigationItem;
   } | null>(null);
 
-  const [deletingCartId, setDeletingCartId] = useState<number | null>(null);
+  const [deletingBookingId, setDeletingBookingId] = useState<number | null>(
+    null,
+  );
   const [editingAddress, setEditingAddress] = useState<
     PatientAddress | undefined
   >(undefined);
@@ -130,40 +158,46 @@ export default function CartPage() {
 
   const addressDeleteDialogRef = useRef<HTMLDialogElement>(null);
   const addressDeletePendingRef = useRef(false);
-  const [openDoctorIndex, setOpenDoctorIndex] = useState<number | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const checkoutPreviewRef = useRef<HTMLDialogElement>(null);
+
+  const [pendingPayment, setPendingPayment] = useState<PendingCheckout | null>(
+    null,
+  );
 
   const loadCart = async () => {
     try {
       setLoadingCart(true);
-      const response = await getCartByUser();
+      setCartLoadError("");
 
-      if (response?.status === 1 && Array.isArray(response.data)) {
-        // Since backend response is already grouped by patient with an 'investigation' array,
-        // we can directly set it into state, mapping cartId down or handling fields directly.
-        const mappedGroups: PatientCartGroup[] = response.data.map(
-          (group: any) => ({
-            cartId: group.cartId,
-            patientId: group.patientId,
-            patient_name: group.patient_name,
-            patient_age: group.patient_age,
-            patient_gender: group.patient_gender,
-            doctor_name: group.doctor_name,
-            attachments: group.attachments || [],
-            investigation: (group.investigation || []).map((inv: any) => ({
-              ...inv,
-              cartId: group.cartId, // Attach cartId reference for item removal/tracking if needed
-            })),
-          }),
-        );
+      const response: unknown = await getCartByUser();
 
-        setCartGroups(mappedGroups);
-      } else {
-        setCartGroups([]);
+      if (typeof response !== "object" || response === null) {
+        throw new Error("Invalid cart response.");
       }
-    } catch (error) {
-      console.error("Get Cart Error:", error);
-      setCartGroups([]);
+
+      if (!("status" in response) || response.status !== 1) {
+        const message = "message" in response ? response.message : undefined;
+        throw new Error(
+          typeof message === "string" ? message : "Unable to load your cart.",
+        );
+      }
+
+      if (!("data" in response) || !Array.isArray(response.data)) {
+        throw new Error("Invalid cart response.");
+      }
+
+      const groups = response.data as PatientCartGroup[];
+      if (
+        groups.some((group) => !group || !Array.isArray(group.investigation))
+      ) {
+        throw new Error("Cart response is missing grouped investigations.");
+      }
+
+      setCartGroups(groups);
+    } catch (error: unknown) {
+      setCartLoadError(
+        error instanceof Error ? error.message : "Unable to load your cart.",
+      );
     } finally {
       setLoadingCart(false);
     }
@@ -208,15 +242,46 @@ export default function CartPage() {
     };
   }, []);
 
-  const getTotal = () => {
-    return cartGroups.reduce((total, group) => {
-      const patientTotal = group.investigation.reduce(
-        (sum, item) => sum + Number(item.finalAmount || item.mrpAmount || 0),
-        0,
-      );
-      return total + patientTotal;
-    }, 0);
-  };
+  const investigations = cartGroups.flatMap((group) => group.investigation);
+  const grossAmount = investigations.reduce(
+    (sum, item) => sum + Number(item.mrpAmount ?? 0),
+    0,
+  );
+  const totalAmount = investigations.reduce(
+    (sum, item) => sum + getItemPrice(item),
+    0,
+  );
+  const offerDiscount = Math.max(0, grossAmount - totalAmount);
+  const checkoutDate = selectedBookingDate
+    ? new Date(`${selectedBookingDate}T00:00:00+05:30`).toLocaleDateString(
+        "en-IN",
+        { dateStyle: "full", timeZone: "Asia/Kolkata" },
+      )
+    : null;
+  const checkoutSlot = slots.find(
+    (slot) => slot.id === selectedSlotId && slot.threshold !== 0,
+  );
+  const checkoutAddress = addresses.find(
+    (address) => address.id === selectedAddressId,
+  );
+
+  const missingCheckoutFields: string[] = [];
+
+  if (!checkoutDate) {
+    missingCheckoutFields.push("a collection date and time slot");
+  } else if (!checkoutSlot) {
+    missingCheckoutFields.push("an available time slot");
+  }
+
+  if (!checkoutAddress) {
+    missingCheckoutFields.push("a collection address");
+  }
+
+  const canCheckout =
+    investigations.length > 0 &&
+    !loadingSlots &&
+    !loadingAddresses &&
+    missingCheckoutFields.length === 0;
 
   const handleRemoveItem = async (
     patientId: number,
@@ -237,7 +302,7 @@ export default function CartPage() {
 
   const deleteCartItem = async (patientId: number, item: InvestigationItem) => {
     try {
-      setDeletingCartId(item.bookingId);
+      setDeletingBookingId(item.bookingId);
       const response = await removeFromCart(patientId, item.item_id);
       console.log("Remove Cart Response:", response);
       await loadCart();
@@ -245,7 +310,7 @@ export default function CartPage() {
     } catch (error) {
       console.error("Remove Cart Error:", error);
     } finally {
-      setDeletingCartId(null);
+      setDeletingBookingId(null);
     }
   };
 
@@ -282,8 +347,6 @@ export default function CartPage() {
     }
   };
 
-  // Add states inside CartPage for tracking inputs per group if needed:
-  const [doctorNames, setDoctorNames] = useState<{ [key: number]: string }>({});
   const [updatingCartId, setUpdatingCartId] = useState<number | null>(null);
 
   // Handler to submit Doctor Name or Prescription updates
@@ -294,7 +357,7 @@ export default function CartPage() {
   ) => {
     try {
       setUpdatingCartId(cartId);
-      const currentDocName = doctorName ?? doctorNames[cartId] ?? "";
+      const currentDocName = doctorName ?? "";
       const selectedFiles = files ?? [];
 
       const response = await updateCartDetails(
@@ -313,19 +376,104 @@ export default function CartPage() {
     }
   };
 
-  useEffect(() => {
+  const handlePayNow = async () => {
+    if (paymentBusyRef.current) return;
+
+    let proof = pendingPayment;
+    paymentBusyRef.current = true;
+    setPaymentBusy(true);
+    setPaymentMessage("");
+
     try {
-      const savedCart = localStorage.getItem(CART_KEY);
-      if (savedCart) {
-        const parsedCart = JSON.parse(savedCart) as CartGroup[];
-        setCart(parsedCart);
+      if (!proof) {
+        if (!canCheckout || !checkoutSlot || !checkoutAddress) {
+          setPaymentMessage(
+            "Select a collection date, time slot, and address.",
+          );
+          return;
+        }
+
+        const Razorpay = window.Razorpay;
+        if (!Razorpay) {
+          setPaymentMessage("Payment is still loading. Please try again.");
+          return;
+        }
+
+        const order = await createCheckoutOrder(
+          {
+            cartIds: cartGroups.map((group) => group.cartId),
+            patientIds: [
+              ...new Set(cartGroups.map((group) => group.patientId)),
+            ],
+            slot_date: selectedBookingDate,
+            slot_id: checkoutSlot.id,
+            address_id: checkoutAddress.id,
+          },
+          getSelectedStateId(),
+        );
+
+        if (order.amount !== Math.round(totalAmount * 100)) {
+          setPaymentMessage(
+            "Your total changed. Refresh the cart and review it again.",
+          );
+          return;
+        }
+
+        // Close the native dialog before opening Razorpay's overlay.
+        checkoutPreviewRef.current?.close();
+
+        const result = await new Promise<RazorpayResult | null>((resolve) => {
+          const checkout = new Razorpay({
+            key: order.keyId,
+            order_id: order.orderId,
+            amount: order.amount,
+            currency: order.currency,
+            name: "Nirnayan Healthcare",
+            description: "Diagnostic test booking",
+            theme: { color: "#00A651" },
+            handler: resolve,
+            modal: { ondismiss: () => resolve(null) },
+          });
+
+          checkout.open();
+        });
+
+        if (!result) {
+          setPaymentMessage("Payment window closed.");
+          checkoutPreviewRef.current?.showModal();
+          return;
+        }
+
+        proof = { details: order.details, payment: result };
+        setPendingPayment(proof);
       }
+
+      await processToCheckout(proof.details, proof.payment);
+
+      setPendingPayment(null);
+      checkoutPreviewRef.current?.close();
+
+      await loadCart();
+      window.dispatchEvent(new Event("cartUpdated"));
+      window.alert("Your booking is confirmed.");
     } catch (error) {
-      console.error("Cart load error:", error);
+      const fallbackMessage = proof
+        ? "Booking confirmation is pending. Use Retry Confirmation."
+        : "Unable to open payment. Please try again.";
+
+      setPaymentMessage(
+        process.env.NODE_ENV === "development" && error instanceof Error
+          ? error.message
+          : fallbackMessage,
+      );
+
+      const dialog = checkoutPreviewRef.current;
+      if (dialog && !dialog.open) dialog.showModal();
     } finally {
-      setLoading(false);
+      paymentBusyRef.current = false;
+      setPaymentBusy(false);
     }
-  }, []);
+  };
 
   useEffect(() => {
     const parts = new Intl.DateTimeFormat("en-GB", {
@@ -415,7 +563,7 @@ export default function CartPage() {
     return <div className="container py-5">Loading cart...</div>;
   }
 
-  const getGenderName = (gender: number) => {
+  const getGenderName = (gender: number | null) => {
     switch (gender) {
       case 1:
         return "Male";
@@ -442,7 +590,18 @@ export default function CartPage() {
           <li className="breadcrumb-item active">Cart</li>
         </ol>
 
-        {cartGroups.length === 0 ? (
+        {cartLoadError ? (
+          <div className="text-center py-5" role="alert">
+            <p>{cartLoadError}</p>
+            <button
+              type="button"
+              className="cmn_btn"
+              onClick={() => void loadCart()}
+            >
+              Try Again
+            </button>
+          </div>
+        ) : cartGroups.length === 0 ? (
           <div className="empty-cart text-center">
             <img src="/assets/images/empty-img1.svg" alt="" />
             <h3>No Tests Added Yet</h3>
@@ -462,14 +621,7 @@ export default function CartPage() {
                 <div className="left">
                   <i className="fa-solid fa-cart-shopping"></i>
                   <div className="text-block">
-                    <h4>
-                      Cart Item(s) (
-                      {cartGroups.reduce(
-                        (count, group) => count + group.investigation.length,
-                        0,
-                      )}
-                      )
-                    </h4>
+                    <h4>Cart Item(s) ({investigations.length})</h4>
                     <p>
                       Review the items you’ve added to your cart and make any
                       changes before proceeding to checkout.
@@ -486,8 +638,8 @@ export default function CartPage() {
                 </button>
               </div>
 
-              {cartGroups.map((group, index) => (
-                <div key={group.patientId} className="pt-card">
+              {cartGroups.map((group) => (
+                <div key={group.cartId} className="pt-card">
                   <div className="pt-head">
                     <div className="lt-side">
                       <div className="icon">
@@ -499,7 +651,7 @@ export default function CartPage() {
                           <p>
                             <i className="fa-solid fa-venus-mars"></i>{" "}
                             {group.patient_age !== null &&
-                              group.patient_age !== undefined
+                            group.patient_age !== undefined
                               ? `${group.patient_age} Y`
                               : "Age N/A"}
                             {" • "}
@@ -528,7 +680,7 @@ export default function CartPage() {
                         }}
                       >
                         {group.doctor_name ||
-                          (group.attachments && group.attachments.length > 0)
+                        (group.attachments && group.attachments.length > 0)
                           ? "Edit Rx & Doctor"
                           : "Upload Rx & Doctor"}
                         <img
@@ -540,64 +692,65 @@ export default function CartPage() {
                     </div>
                   </div>
 
-                  {group.investigation.map((item) => (
-                    <div key={item.bookingId} className="card-item">
-                      <div className="lt-side">
-                        <div className="icon">
-                          <img src="/assets/images/laboratory1.svg" alt="" />
-                        </div>
-                        <h6>{item.test_name}</h6>
-                      </div>
-                      <div className="rt-side">
-                        <div className="d-flex align-items-center gap-2">
-                          <h6>
-                            ₹
-                            {Number(
-                              item.offerAmount ??
-                              item.finalAmount ??
-                              item.mrpAmount ??
-                              0,
-                            ).toFixed(2)}
-                            {item.offerAmount !== null &&
-                              item.offerAmount !== undefined &&
-                              Number(item.offerAmount) <
-                              Number(item.mrpAmount) && (
-                                <del>₹{Number(item.mrpAmount).toFixed(2)}</del>
-                              )}
-                          </h6>
+                  {group.investigation.map((item) => {
+                    const price = getItemPrice(item);
+                    const hasDiscount =
+                      item.mrpAmount > 0 && price < item.mrpAmount;
+
+                    return (
+                      <div key={item.bookingId} className="card-item">
+                        <div className="lt-side">
+                          <div className="icon">
+                            <img src="/assets/images/laboratory1.svg" alt="" />
+                          </div>
+                          <h6>{item.test_name}</h6>
                         </div>
 
-                        {item.offerAmount !== null &&
-                          item.offerAmount !== undefined &&
-                          Number(item.offerAmount) < Number(item.mrpAmount) && (
+                        <div className="rt-side">
+                          <div className="d-flex align-items-center gap-2">
+                            <h6>
+                              ₹{price.toFixed(2)}
+                              {hasDiscount && (
+                                <del>₹{item.mrpAmount.toFixed(2)}</del>
+                              )}
+                            </h6>
+                          </div>
+
+                          {hasDiscount && (
                             <span className="is-discount">
                               {Math.round(
-                                ((Number(item.mrpAmount) -
-                                  Number(item.offerAmount)) /
-                                  Number(item.mrpAmount)) *
-                                100,
+                                ((item.mrpAmount - price) / item.mrpAmount) *
+                                  100,
                               )}
                               % Off
                             </span>
                           )}
 
-                        <button
-                          type="button"
-                          className="remove"
-                          disabled={deletingCartId === item.bookingId}
-                          onClick={() =>
-                            handleRemoveItem(group.patientId, item)
-                          }
-                        >
-                          {deletingCartId === item.bookingId ? (
-                            <i className="fa-solid fa-spinner fa-spin"></i>
-                          ) : (
-                            <i className="fa-solid fa-xmark"></i>
-                          )}
-                        </button>
+                          <button
+                            type="button"
+                            className="remove"
+                            aria-label={`Remove ${item.test_name}`}
+                            disabled={deletingBookingId === item.bookingId}
+                            onClick={() =>
+                              handleRemoveItem(group.patientId, item)
+                            }
+                          >
+                            {deletingBookingId === item.bookingId ? (
+                              <i
+                                className="fa-solid fa-spinner fa-spin"
+                                aria-hidden="true"
+                              />
+                            ) : (
+                              <i
+                                className="fa-solid fa-xmark"
+                                aria-hidden="true"
+                              />
+                            )}
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
 
                   <div className="attach">
                     <h6>Attached Prescription Document(s)</h6>
@@ -620,9 +773,7 @@ export default function CartPage() {
                                 {isPdf ? (
                                   <>
                                     <i className="fa-solid fa-file-pdf"></i>
-                                    <h6>
-                                      PDF
-                                    </h6>
+                                    <h6>PDF</h6>
                                   </>
                                 ) : (
                                   <>
@@ -647,12 +798,18 @@ export default function CartPage() {
                         })
                       ) : (
                         <>
-                        <li>
-                          <a href="#">
-                            <i className="fa-solid fa-file-circle-plus"></i>
-                            <h6>Add File</h6>
-                          </a>
-                        </li>
+                          <li>
+                            <a
+                              onClick={() => {
+                                setActivePrescriptionModal(group);
+                                setModalDoctorName(group.doctor_name || "");
+                                setModalFiles([]);
+                              }}
+                            >
+                              <i className="fa-solid fa-file-circle-plus"></i>
+                              <h6>Add File</h6>
+                            </a>
+                          </li>
                         </>
                       )}
                     </ul>
@@ -804,12 +961,14 @@ export default function CartPage() {
                           <button
                             key={slot.id}
                             type="button"
-                            className={`timeSlotButton ${isSelected && !isInactive ? "active" : ""
-                              }`}
+                            className={`timeSlotButton ${
+                              isSelected && !isInactive ? "active" : ""
+                            }`}
                             disabled={!selectedBookingDate || isInactive}
                             aria-pressed={isSelected && !isInactive}
-                            aria-label={`${slot.slot_label}, ${timeLabel}${isInactive ? ", unavailable" : ""
-                              }`}
+                            aria-label={`${slot.slot_label}, ${timeLabel}${
+                              isInactive ? ", unavailable" : ""
+                            }`}
                             onClick={() => setSelectedSlotId(slot.id)}
                           >
                             {timeLabel}
@@ -1020,13 +1179,13 @@ export default function CartPage() {
                   </div>
                   <ul className="amt">
                     <li>
-                      <span>Gross Amount</span> ₹ {getTotal().toFixed(2)}
+                      <span>Gross Amount</span> ₹ {grossAmount.toFixed(2)}
                     </li>
                     <li>
-                      <span>Net Amount</span> ₹ {getTotal().toFixed(2)}
+                      <span>Net Amount</span> ₹ {totalAmount.toFixed(2)}
                     </li>
                     <li>
-                      <span>Offer Discount</span> ₹ 0.00
+                      <span>Offer Discount</span> ₹ {offerDiscount.toFixed(2)}
                     </li>
                     <li>
                       <span>Coupon Discount</span> Apply Coupon
@@ -1035,10 +1194,30 @@ export default function CartPage() {
                   <div className="total-amount">
                     <div className="lt-side">
                       <h6>Total Amount</h6>
-                      <h4>₹{getTotal().toFixed(2)}</h4>
+                      <h4>₹{totalAmount.toFixed(2)}</h4>
                     </div>
                     <div className="rt-side">
-                      <button type="button" className="cmn_btn">
+                      <button
+                        type="button"
+                        className="cmn_btn"
+                        aria-haspopup="dialog"
+                        aria-controls="cart-checkout-preview"
+                        disabled={
+                          investigations.length === 0 ||
+                          loadingSlots ||
+                          loadingAddresses
+                        }
+                        onClick={() => {
+                          if (!canCheckout) {
+                            window.alert(
+                              `Please select ${missingCheckoutFields.join(" and ")}.`,
+                            );
+                            return;
+                          }
+
+                          checkoutPreviewRef.current?.showModal();
+                        }}
+                      >
                         Proceed to Checkout
                       </button>
                       <div className="d-flex justify-content-center align-items-center gap-2 mt-2">
@@ -1053,6 +1232,164 @@ export default function CartPage() {
           </div>
         )}
       </div>
+
+      <dialog
+        id="cart-checkout-preview"
+        ref={checkoutPreviewRef}
+        aria-labelledby="checkout-preview-heading"
+        aria-describedby="checkout-preview-description"
+        className="border-0 rounded-4 shadow p-0"
+        style={{
+          width: "min(680px, calc(100% - 32px))",
+          maxWidth: "none",
+          maxHeight: "calc(100dvh - 32px)",
+          margin: "auto",
+        }}
+      >
+        <div
+          className="d-flex flex-column bg-white"
+          style={{ maxHeight: "calc(100dvh - 32px)" }}
+        >
+          <header className="d-flex justify-content-between align-items-start gap-3 border-bottom p-4">
+            <div>
+              <h2 id="checkout-preview-heading" className="h4 mb-1">
+                Review Your Booking
+              </h2>
+              <p
+                id="checkout-preview-description"
+                className="small text-muted mb-0"
+              >
+                Review your tests, packages, and collection details.
+              </p>
+            </div>
+            <button
+              type="button"
+              className="btn btn-sm btn-light border"
+              aria-label="Close checkout preview"
+              onClick={() => checkoutPreviewRef.current?.close()}
+            >
+              <i className="fa-solid fa-xmark" aria-hidden="true" />
+            </button>
+          </header>
+
+          <div className="overflow-auto p-4">
+            <h3 className="h6 mb-3">
+              Patients and Tests ({investigations.length})
+            </h3>
+
+            {cartGroups.map((group) => (
+              <section key={group.cartId} className="rounded-3 border p-3 mb-3">
+                <h4 className="h6 mb-1">{group.patient_name}</h4>
+                <p className="small text-muted mb-2">
+                  {group.patient_age != null && `${group.patient_age} Y · `}
+                  {getGenderName(group.patient_gender)}
+                </p>
+                {group.doctor_name && (
+                  <p className="small mb-2">Doctor: {group.doctor_name}</p>
+                )}
+                <ul className="list-unstyled mb-0">
+                  {group.investigation.map((item) => (
+                    <li
+                      key={item.bookingId}
+                      className="d-flex justify-content-between align-items-start gap-3 border-top py-2"
+                    >
+                      <div>
+                        <span className="d-block">{item.test_name}</span>
+                        <small className="text-muted">
+                          {item.productType === "package"
+                            ? "Health package"
+                            : "Test"}
+                        </small>
+                      </div>
+                      <strong className="text-nowrap">
+                        {checkoutCurrency.format(getItemPrice(item))}
+                      </strong>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ))}
+
+            <div className="row g-3 mt-1">
+              <section className="col-12 col-sm-6">
+                <div className="border rounded-3 p-3 h-100">
+                  <h3 className="h6 mb-2">Collection Slot</h3>
+                  <p className="small mb-1">
+                    {checkoutDate ?? "No date selected"}
+                  </p>
+                  <p className="small mb-0">
+                    {checkoutSlot
+                      ? `${formatSlotTime(checkoutSlot.start_time)} – ${formatSlotTime(checkoutSlot.end_time)}`
+                      : "No time slot selected"}
+                  </p>
+                </div>
+              </section>
+              <section className="col-12 col-sm-6">
+                <div className="border rounded-3 p-3 h-100">
+                  <h3 className="h6 mb-2">Collection Address</h3>
+                  {checkoutAddress ? (
+                    <>
+                      <p className="small fw-semibold mb-1">
+                        {checkoutAddress.fullName} ·{" "}
+                        {checkoutAddress.addressName}
+                      </p>
+                      <p className="small mb-1">
+                        {[
+                          checkoutAddress.addressLine_1,
+                          checkoutAddress.addressLine_2,
+                          checkoutAddress.landMark,
+                          checkoutAddress.pinCode,
+                        ]
+                          .filter(Boolean)
+                          .join(", ")}
+                      </p>
+                      <p className="small mb-0">
+                        {checkoutAddress.contactNumber}
+                      </p>
+                    </>
+                  ) : (
+                    <p className="small mb-0">No address selected</p>
+                  )}
+                </div>
+              </section>
+            </div>
+
+            {offerDiscount > 0 && (
+              <p className="small mb-0 mt-3" style={{ color: "#08783f" }}>
+                Offer savings: {checkoutCurrency.format(offerDiscount)}
+              </p>
+            )}
+          </div>
+
+          <footer className="d-flex justify-content-between align-items-center flex-wrap gap-3 border-top p-4">
+            <div>
+              <span className="d-block small text-muted">Total Amount</span>
+              <strong className="h4 mb-0" style={{ color: "#08783f" }}>
+                {checkoutCurrency.format(totalAmount)}
+              </strong>
+            </div>
+            <form method="dialog" className="m-0">
+              <button
+                type="button"
+                className="cmn_btn"
+                disabled={paymentBusy}
+                onClick={() => void handlePayNow()}
+              >
+                {paymentBusy
+                  ? "Processing…"
+                  : pendingPayment
+                    ? "Retry Confirmation"
+                    : "Pay Now"}
+              </button>
+              {paymentMessage && (
+                <p className="small text-danger px-4 mb-3" role="alert">
+                  {paymentMessage}
+                </p>
+              )}
+            </form>
+          </footer>
+        </div>
+      </dialog>
 
       {removeTarget && removePatient && (
         <div
@@ -1180,91 +1517,7 @@ export default function CartPage() {
           className="cmn-backdrop active"
           onClick={() => setActivePrescriptionModal(null)}
         >
-          <div
-            className="inn"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="header">
-              <h4 className="m-0">Add Prescription & Doctor</h4>
-            </div>
-            <button
-              type="button"
-              className="closeBtn"
-              onClick={() => setActivePrescriptionModal(null)}
-            ></button>
-
-            <div className="mb-3">
-              <label>Doctor's Name</label>
-              <input
-                type="text"
-                placeholder="Enter doctor's name (e.g. Dr. Sharma)"
-                className="form-control"
-                value={modalDoctorName}
-                onChange={(e) => setModalDoctorName(e.target.value)}
-              />
-            </div>
-
-            <div className="mb-3">
-              <label>
-                Upload Prescription (PDF, JPG, PNG)
-              </label>
-              <input
-                type="file"
-                multiple
-                accept=".pdf,.jpg,.jpeg,.png"
-                className="form-control"
-                onChange={(e) => {
-                  const files = Array.from(e.target.files || []);
-                  setModalFiles(files);
-                }}
-              />
-              {modalFiles.length > 0 && (
-                <small className="text-success mt-1 d-block">
-                  {modalFiles.length} file(s) selected
-                </small>
-              )}
-            </div>
-
-            <div className="d-flex gap-2 justify-content-end">
-              {/* <button
-                type="button"
-                className="btn btn-light border px-3"
-                onClick={() => setActivePrescriptionModal(null)}
-              >
-                Cancel
-              </button> */}
-              <button
-                type="button"
-                className="cmn_btn"
-                disabled={updatingCartId === activePrescriptionModal.cartId}
-                onClick={async () => {
-                  await handleUpdateCartDetails(
-                    activePrescriptionModal.cartId,
-                    modalDoctorName,
-                    modalFiles,
-                  );
-                  setActivePrescriptionModal(null);
-                }}
-              >
-                {updatingCartId === activePrescriptionModal.cartId
-                  ? "Saving..."
-                  : "Save Details"}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {activePrescriptionModal && (
-        <div
-          className="cmn-backdrop active"
-          onClick={() => setActivePrescriptionModal(null)}
-        >
-          <div
-            className="inn"
-            onClick={(e) => e.stopPropagation()}
-
-          >
+          <div className="inn" onClick={(e) => e.stopPropagation()}>
             {/* Header */}
             <button
               type="button"
@@ -1278,12 +1531,9 @@ export default function CartPage() {
               <h4>Add Prescription & Doctor</h4>
             </div>
 
-
             {/* Doctor Name Field */}
             <div className="mb-3">
-              <label>
-                Doctor's Name
-              </label>
+              <label>Doctor's Name</label>
               <input
                 type="text"
                 placeholder="Enter doctor's name (e.g. Dr. Sharma)"
@@ -1296,9 +1546,7 @@ export default function CartPage() {
 
             {/* File Upload Field */}
             <div className="mb-3">
-              <label>
-                Upload Prescription (PDF, JPG, PNG)
-              </label>
+              <label>Upload Prescription (PDF, JPG, PNG)</label>
               <div className="input-group">
                 <input
                   type="file"
@@ -1351,6 +1599,15 @@ export default function CartPage() {
           </div>
         </div>
       )}
+
+      <Script
+        id="razorpay-checkout"
+        src="https://checkout.razorpay.com/v1/checkout.js"
+        strategy="afterInteractive"
+        onError={() =>
+          console.error("[Checkout] Razorpay script failed to load")
+        }
+      />
     </section>
   );
 }

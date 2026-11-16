@@ -503,3 +503,5 @@ export async function updateCartDetails(cartId: number, doctorName: string, file
 
     return result;
 }
+
+export { getSelectedStateId };

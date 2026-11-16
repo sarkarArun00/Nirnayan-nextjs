@@ -107,31 +107,38 @@ const [isPatientOnlyMode, setIsPatientOnlyMode] = useState(false);
 
   const [makeDefaultPatient, setMakeDefaultPatient] = useState(false);
 
+  const [patientLoadError, setPatientLoadError] = useState("");
+
   const STATIC_SCHEMA_NAME = "nir1691144565";
   const STATIC_CENTRE_ID = 13;
 
   const loadPatients = async () => {
+    setPatientLoading(true);
+    setPatientLoadError("");
+    setSelectedPatientId(null);
+
     try {
-      setPatientLoading(true);
       const user = await getLoggedInUser();
-      if (!user?.id) {
-        throw new Error("User not logged in.");
-      }
+      const userId = Number(user?.id);
 
-      const userId = Number(user.id);
-      const response = await getAllPatients({ user_id: userId });
-
-      console.log("Patient API Response:", response);
-
-      if (response?.data && Array.isArray(response.data)) {
-        setPatients(response.data);
-      } else {
+      if (!Number.isSafeInteger(userId) || userId <= 0) {
+        setLoggedInUserId(null);
         setPatients([]);
+        setPatientLoadError("Please sign in to select a saved patient.");
+        return;
       }
-    } catch (error) {
-      console.error("Patient API Error:", error);
 
+      setLoggedInUserId(userId);
+
+      const response = await getAllPatients({ user_id: userId });
+      setPatients(Array.isArray(response?.data) ? response.data : []);
+    } catch (error) {
       setPatients([]);
+      setPatientLoadError(
+        error instanceof Error
+          ? error.message
+          : "Unable to load saved patients. Please try again.",
+      );
     } finally {
       setPatientLoading(false);
     }
