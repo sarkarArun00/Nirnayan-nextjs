@@ -77,8 +77,9 @@ label span{ color:#FF0000; }
 
 /* Mobile Explore Button Start */
 .is-exp-btn{ padding-top:25px; display:none; }
-.exp-btn{ display:flex; align-items:center; gap:12px; height:48px; padding:0 25px; border:1px solid var(--up-black); border-radius:50px; background:var(--up-white); transition: all 0.4s; }
-
+.exp-btn{ font-size:15px; line-height:1.2; color:var(--up-black); display:flex; align-items:center; gap:12px; height:48px; padding:0 25px; border:1px solid var(--up-black); border-radius:50px; background:var(--up-white); transition: all 0.4s; }
+.exp-btn.is-white{ background:transparent; border-color:var(--up-white); color:var(--up-white); }
+.exp-btn.is-white img{ filter:brightness(0) invert(1); }
 /* Mobile Explore Button Start */
 
 /* Header Css Start */
@@ -399,7 +400,15 @@ ol.breadcrumb li.active{ color:var(--up-black); }
 /* ==== Empty State Css Start ==== */
 
 
-
+/* ==== Order Status ==== */
+.order-status{ font-size:15px; line-height:1.2; font-weight:600; color:var(--up-white); display:inline-block; padding:13px 24px; border-radius:30px; }
+.order-status.placed{ background:var(--up-theme); }
+.order-status.transit{ background:#60CF96; }
+.order-status.collected{ background:#1CC1E6; }
+.order-status.assigned{ background:#F37900; }
+.order-status.processing{ background:#B9AC77; }
+.order-status.ready{ background:#77ABB9; }
+/* ==== Order Status ==== */
 
 
 
@@ -439,7 +448,7 @@ ol.breadcrumb li.active{ color:var(--up-black); }
   }
 
   h2{ font-size:30px; }
-
+  .arrow-btn{ width:40px; height:40px; }
 }
 
 @media screen and (max-width:767px){

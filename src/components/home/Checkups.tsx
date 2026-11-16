@@ -15,11 +15,25 @@ function Checkups() {
         centerPadding: '60px',
         responsive: [
             {
-                breakpoint: 768,
+                breakpoint: 1400,
+                settings: {
+                    slidesToShow: 3,
+                }
+            },
+            {
+                breakpoint: 1199,
+                settings: {
+                    slidesToShow: 2,
+                    centerPadding: '30px',
+                }
+            },
+            {
+                breakpoint: 767,
                 settings: {
                     slidesToShow: 1,
-                },
-            },
+                    centerPadding: '0',
+                }
+            }
         ],
     };
 
@@ -34,7 +48,7 @@ function Checkups() {
                         </div>
                         <button className="expand-btn">
                             <span className="icon">
-                               <img src="/assets/images/exp-btn.svg" alt="" />
+                                <img src="/assets/images/exp-btn.svg" alt="" />
                             </span>
                             <span className="btn-text">View More</span>
                         </button>

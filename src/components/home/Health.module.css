@@ -10,3 +10,8 @@
 .img_block .text_block .arrow_btn{ transform:scale(0.5); opacity:0; visibility:hidden; }
 .img_block:hover .text_block .arrow_btn{ transform:scale(1); opacity:1; visibility:visible; }
 
+@media screen and (max-width:768px){
+    .img_block .text_block .lt_block{ flex:1; padding-right:10px; }
+    .img_block{ height:330px; border-radius:25px; }
+
+}

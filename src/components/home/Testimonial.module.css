@@ -3,7 +3,7 @@
 
 .testimonial{ background: url(/assets/images/packagebg.jpg) no-repeat left top / cover; border-radius:0; padding:var(--cmngap-btm) 0; }
 /* .testimonial h2{ font-weight:600; color:var(--up-white); margin-bottom:45px; } */
-.testimonial .feed_box{ position:relative; z-index:1  ; min-height:360px; display:flex; flex-direction:column; justify-content:space-between; background:var(--up-white); border-radius:25px; overflow:hidden; padding:25px; }
+.testimonial .feed_box{ position:relative; z-index:1 ; min-height:360px; display:flex; flex-direction:column; justify-content:space-between; background:var(--up-white); border-radius:25px; overflow:hidden; padding:25px; }
 .testimonial .feed_box .is_img{ position:absolute; inset:0; z-index:-1; }
 .testimonial .feed_box .is_img img{ width:100%; height:100%; object-fit:cover; }
 .testimonial .feed_box .is_img .play_btn{ position:absolute; left:50%; top:50%; transform:translate(-50%, -50%); width:56px; height:56px; border-radius:50%; cursor:pointer; animation: pulse-animation 2s infinite; }
@@ -50,3 +50,15 @@
 
 .offer_banner{ padding:0; margin:0; }
 .offer_banner img{ width:100%; }
+
+@media screen and (max-width:1400px){
+    .testimonial .feed_box{ padding:20px; }
+    .testimonial .feed_box .btm_block .vid_block h6{ font-weight:600; font-size:13px;}
+
+}
+
+@media screen and (max-width:991px){
+    .testimonial .feed_box .btm_block .user_block{ flex-direction:column-reverse; gap:10px 0; }
+    .testimonial .feed_box .btm_block .user_block .left_block{ width:100%; }
+    .testimonial .feed_box .btm_block .vid_block{ width:100%; }
+}   

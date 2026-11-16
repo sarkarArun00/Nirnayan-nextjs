@@ -50,13 +50,26 @@ function LifestylePackages() {
     autoplaySpeed: 3000,
     responsive: [
       {
-        breakpoint: 768,
+        breakpoint: 1400,
+        settings: {
+          slidesToShow: 3,
+        }
+      },
+      {
+        breakpoint: 1199,
+        settings: {
+          slidesToShow: 2,
+          centerPadding: '30px',
+        }
+      },
+      {
+        breakpoint: 767,
         settings: {
           slidesToShow: 1,
-          centerMode: true
+          centerPadding: '0',
         }
       }
-    ]
+    ],
   };
 
   return (
@@ -95,6 +108,11 @@ function LifestylePackages() {
               </div>
             ))}
           </Slider>
+        </div>
+        <div className="text-center is-exp-btn">
+          <button className="exp-btn">
+            Explore More <img src="/assets/images/exp-btn.svg" alt="" />
+          </button>
         </div>
       </div>
     </div>

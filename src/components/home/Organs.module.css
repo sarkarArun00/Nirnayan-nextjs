@@ -14,3 +14,9 @@
 
 .life_style{ overflow:hidden; }
 .life_style img{ width:100%; border-radius:30px; }
+
+@media screen and (max-width:767px){
+    .explore_organ .box .text_block .left{ padding-right:10px; }
+    .life_style img{ border-radius:10px; }
+
+}

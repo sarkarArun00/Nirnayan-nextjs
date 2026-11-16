@@ -27,12 +27,14 @@ function Blog() {
         breakpoint: 1199,
         settings: {
           slidesToShow: 2,
+          centerPadding: '30px',
         },
       },
       {
         breakpoint: 991,
         settings: {
-          slidesToShow: 1,
+          slidesToShow: 2,
+          centerPadding: '30px',
         },
       },
       {

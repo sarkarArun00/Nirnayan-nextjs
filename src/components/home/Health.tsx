@@ -18,155 +18,159 @@ type SpecialityItem = {
 
 
 function Health() {
-    const [specialities, setSpecialities] = useState<SpecialityItem[]>([]);
-    const [loading, setLoading] = useState(true);
+  const [specialities, setSpecialities] = useState<SpecialityItem[]>([]);
+  const [loading, setLoading] = useState(true);
 
-    const settings = {
-        dots: true,
-        arrows: false,
-        infinite: true,
-        speed: 500,
-        slidesToShow: 3,
-        slidesToScroll: 1,
-        centerMode: true,
-        focusOnSelect: true,
-        centerPadding: '60px',
-        variablewidth: false,
-        responsive: [
-            {
-                breakpoint: 1024,
-                settings: {
-                    slidesToShow: 2,
-                },
-            },
-            {
-                breakpoint: 640,
-                settings: {
-                    slidesToShow: 1,
-                },
-            },
-        ],
-    };
+  const settings = {
+    dots: true,
+    arrows: false,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 3,
+    slidesToScroll: 1,
+    centerMode: true,
+    focusOnSelect: true,
+    centerPadding: '60px',
+    variablewidth: false,
+    responsive: [
+      {
+        breakpoint: 1400,
+        settings: { slidesToShow: 3 },
+      },
+      {
+        breakpoint: 1199,
+        settings: { slidesToShow: 2, centerPadding: '30px', },
+      },
+      {
+        breakpoint: 767,
+        settings: { slidesToShow: 1, centerPadding: '20px', },
+      },
+    ],
+  };
 
-    useEffect(() => {
-      const loadSpecialities = async () => {
-        try {
-          setLoading(true);
+  useEffect(() => {
+    const loadSpecialities = async () => {
+      try {
+        setLoading(true);
 
-          const response = await getAllSpeciality();
+        const response = await getAllSpeciality();
 
-          console.log("Speciality API Response:", response);
+        console.log("Speciality API Response:", response);
 
-          if (response?.data && Array.isArray(response.data)) {
-            setSpecialities(response.data);
-          } else {
-            setSpecialities([]);
-          }
-        } catch (error) {
-          console.error("Speciality API Error:", error);
-
+        if (response?.data && Array.isArray(response.data)) {
+          setSpecialities(response.data);
+        } else {
           setSpecialities([]);
-        } finally {
-          setLoading(false);
         }
-      };
+      } catch (error) {
+        console.error("Speciality API Error:", error);
 
-      void loadSpecialities();
-    }, []);
-
-    const getImageUrl = (path: string | null) => {
-      if (!path) {
-        return "/assets/images/health.jpg";
+        setSpecialities([]);
+      } finally {
+        setLoading(false);
       }
-
-      if (path.startsWith("http://") || path.startsWith("https://")) {
-        return path;
-      }
-
-      const baseUrl = process.env.NEXT_PUBLIC_LIMS_API_BASE_URL || "";
-
-      const cleanBase = baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl;
-
-      const cleanPath = path.startsWith("/") ? path : `/${path}`;
-
-      return `${cleanBase}${cleanPath}`;
     };
 
-    const stripHtml = (value: string) => {
-      if (!value) {
-        return "";
-      }
+    void loadSpecialities();
+  }, []);
 
-      return value.replace(/<[^>]*>/g, "");
-    };
+  const getImageUrl = (path: string | null) => {
+    if (!path) {
+      return "/assets/images/health.jpg";
+    }
 
-    return (
-      <>
-        <div className="health_slider">
-          <div className="container">
-            <div className="top-title">
-              <div className="left-pnl">
-                <h2>Your Guide to Health & Medicine</h2>
-                <p>
-                  India’s fastest AI powered & temperature - controlled supply
-                  chain to collect and test your blood in freshest state.
-                </p>
-              </div>
-              <button className="expand-btn">
-                <span className="icon">
-                  <img src="/assets/images/exp-btn.svg" alt="" />
-                </span>
-                <span className="btn-text">View More</span>
-              </button>
+    if (path.startsWith("http://") || path.startsWith("https://")) {
+      return path;
+    }
+
+    const baseUrl = process.env.NEXT_PUBLIC_LIMS_API_BASE_URL || "";
+
+    const cleanBase = baseUrl.endsWith("/") ? baseUrl.slice(0, -1) : baseUrl;
+
+    const cleanPath = path.startsWith("/") ? path : `/${path}`;
+
+    return `${cleanBase}${cleanPath}`;
+  };
+
+  const stripHtml = (value: string) => {
+    if (!value) {
+      return "";
+    }
+
+    return value.replace(/<[^>]*>/g, "");
+  };
+
+  return (
+    <>
+      <div className="health_slider">
+        <div className="container">
+          <div className="top-title">
+            <div className="left-pnl">
+              <h2>Your Guide to Health & Medicine</h2>
+              <p>
+                India’s fastest AI powered & temperature - controlled supply
+                chain to collect and test your blood in freshest state.
+              </p>
             </div>
+            <button className="expand-btn">
+              <span className="icon">
+                <img src="/assets/images/exp-btn.svg" alt="" />
+              </span>
+              <span className="btn-text">View More</span>
+            </button>
+          </div>
 
-            <div className="cmn-right-align">
-              <Slider {...settings} className="is_slick_dot">
-                {specialities.map((speciality) => (
-                  <div key={speciality.id} className="item">
-                    <div className={`cmn_margin ${styles.img_block}`}>
-                      <img
-                        src={getImageUrl(speciality.image || speciality.icon)}
-                        alt={speciality.specialityname}
-                      />
+          <div className="cmn-right-align">
+            <Slider {...settings} className="is_slick_dot">
+              {specialities.map((speciality) => (
+                <div key={speciality.id} className="item">
+                  <div className={`cmn_margin ${styles.img_block}`}>
+                    <img
+                      src={getImageUrl(speciality.image || speciality.icon)}
+                      alt={speciality.specialityname}
+                    />
 
-                      <div className={styles.text_block}>
-                        <div className={styles.lt_block}>
-                          <h3>{speciality.specialityname}</h3>
+                    <div className={styles.text_block}>
+                      <div className={styles.lt_block}>
+                        <h3>{speciality.specialityname}</h3>
 
-                          <p>
-                            {stripHtml(speciality.description) ||
-                              "Explore related health tests and diagnostic services."}
-                          </p>
-                        </div>
-
-                        <button
-                          type="button"
-                          className={`arrow-btn ${styles.arrow_btn}`}
-                        >
-                          <svg
-                            width="18"
-                            height="18"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2"
-                          >
-                            <line x1="7" y1="17" x2="17" y2="7" />
-
-                            <polyline points="7 7 17 7 17 17" />
-                          </svg>
-                        </button>
+                        <p>
+                          {stripHtml(speciality.description) ||
+                            "Explore related health tests and diagnostic services."}
+                        </p>
                       </div>
+
+                      <button
+                        type="button"
+                        className={`arrow-btn ${styles.arrow_btn}`}
+                      >
+                        <svg
+                          width="18"
+                          height="18"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                        >
+                          <line x1="7" y1="17" x2="17" y2="7" />
+
+                          <polyline points="7 7 17 7 17 17" />
+                        </svg>
+                      </button>
                     </div>
                   </div>
-                ))}
-              </Slider>
-            </div>
+                </div>
+              ))}
+            </Slider>
+          </div>
+          <div className="text-center is-exp-btn">
+            <button className="exp-btn">Explore More <img src="/assets/images/exp-btn.svg" alt="" />
+            </button>
           </div>
         </div>
-      </>
-    );
+      </div>
+    </>
+  );
 }
 
 export default Health
