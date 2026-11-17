@@ -13,6 +13,8 @@ import {
   updateCartDetails,
   getAllPatientAddresses,
   deletePatientAddress,
+  getAllCoupons,
+  type CouponItem,
   type PatientAddress,
   type BookingSlot,
 } from "@/services/cart.service";
@@ -20,7 +22,6 @@ import AddressModal from "@/components/common/AddressModal/AddressModal";
 import { usePatientSelection } from "@/components/common/PatientSelectionModal/PatientSelectionProvider";
 
 import { useAlert } from "@/components/common/Alert/AlertProvider";
-
 import {
   createCheckoutOrder,
   processToCheckout,
@@ -28,6 +29,7 @@ import {
   type RazorpayPaymentResult,
 } from "@/actions/checkout.actions";
 import Script from "next/script";
+import { getLoggedInUser } from "@/actions/session.actions";
 
 type RazorpayResult = RazorpayPaymentResult;
 
@@ -133,6 +135,17 @@ export default function CartPage() {
   const [modalFiles, setModalFiles] = useState<File[]>([]);
   const [paymentBusy, setPaymentBusy] = useState(false);
   const [paymentMessage, setPaymentMessage] = useState("");
+
+  const [coupons, setCoupons] = useState<CouponItem[]>([]);
+
+  const [loadingCoupons, setLoadingCoupons] = useState(true);
+
+  const [couponError, setCouponError] = useState("");
+
+  const [couponCode, setCouponCode] = useState("");
+
+  const [selectedCouponId, setSelectedCouponId] = useState<number | null>(null);
+
   const { confirm } = useAlert();
   const { showAlert } = useAlert();
 
@@ -159,6 +172,9 @@ export default function CartPage() {
   const addressDeleteDialogRef = useRef<HTMLDialogElement>(null);
   const addressDeletePendingRef = useRef(false);
   const checkoutPreviewRef = useRef<HTMLDialogElement>(null);
+
+  // const selectedCoupon =
+  //   coupons.find((coupon) => coupon.couponId === selectedCouponId) ?? null;
 
   const [pendingPayment, setPendingPayment] = useState<PendingCheckout | null>(
     null,
@@ -203,6 +219,64 @@ export default function CartPage() {
     }
   };
 
+  const handleApplyCoupon = (coupon?: CouponItem) => {
+    let selected = coupon;
+
+    // When coupon code is entered manually
+    if (!selected) {
+      const enteredCode = couponCode.trim().toLowerCase();
+
+      selected = coupons.find(
+        (item) => item.couponCode.trim().toLowerCase() === enteredCode,
+      );
+    }
+
+    if (!selected) {
+      setCouponError("Coupon code is not available.");
+      return;
+    }
+
+    const minLimit = Number(selected.minlimit ?? 0);
+
+    const maxLimit =
+      selected.maxlimit !== null && selected.maxlimit !== undefined
+        ? Number(selected.maxlimit)
+        : null;
+
+    // Minimum limit validation
+    if (totalAmount < minLimit) {
+      setCouponError(
+        `Minimum order amount ₹${minLimit.toFixed(
+          2,
+        )} is required to apply this coupon.`,
+      );
+
+      return;
+    }
+
+    // Maximum limit validation
+    // Only check when maxlimit has a value
+    if (maxLimit !== null && totalAmount > maxLimit) {
+      setCouponError(
+        `This coupon is applicable only up to ₹${maxLimit.toFixed(2)}.`,
+      );
+
+      return;
+    }
+
+    setCouponError("");
+
+    setSelectedCouponId(selected.couponId);
+
+    setCouponCode(selected.couponCode);
+  };
+
+  const handleRemoveCoupon = () => {
+    setSelectedCouponId(null);
+    setCouponCode("");
+    setCouponError("");
+  };
+
   useEffect(() => {
     void loadCart();
   }, []);
@@ -242,16 +316,89 @@ export default function CartPage() {
     };
   }, []);
 
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadCoupons = async () => {
+      try {
+        setLoadingCoupons(true);
+        setCouponError("");
+
+        console.log("Calling coupon API...");
+
+        const response = await getAllCoupons();
+
+        console.log("Coupon API Response:", response);
+
+        if (cancelled) {
+          return;
+        }
+
+        if (response?.status === 1 && Array.isArray(response.data)) {
+          setCoupons(response.data);
+        } else {
+          setCoupons([]);
+        }
+      } catch (error) {
+        console.error("Coupon API Error:", error);
+
+        if (!cancelled) {
+          setCoupons([]);
+
+          setCouponError(
+            error instanceof Error ? error.message : "Unable to load coupons.",
+          );
+        }
+      } finally {
+        if (!cancelled) {
+          setLoadingCoupons(false);
+        }
+      }
+    };
+
+    void loadCoupons();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const investigations = cartGroups.flatMap((group) => group.investigation);
+
   const grossAmount = investigations.reduce(
     (sum, item) => sum + Number(item.mrpAmount ?? 0),
     0,
   );
+
   const totalAmount = investigations.reduce(
     (sum, item) => sum + getItemPrice(item),
     0,
   );
+
   const offerDiscount = Math.max(0, grossAmount - totalAmount);
+
+  const selectedCoupon =
+    coupons.find((coupon) => coupon.couponId === selectedCouponId) ?? null;
+
+  const couponMinLimit = Number(selectedCoupon?.minlimit ?? 0);
+
+  const couponMaxLimit =
+    selectedCoupon?.maxlimit !== null && selectedCoupon?.maxlimit !== undefined
+      ? Number(selectedCoupon.maxlimit)
+      : null;
+
+  const isCouponAmountValid =
+    selectedCoupon !== null &&
+    totalAmount >= couponMinLimit &&
+    (couponMaxLimit === null || totalAmount <= couponMaxLimit);
+
+  const couponDiscount =
+    isCouponAmountValid && selectedCoupon?.discount_type === "1"
+      ? Number(selectedCoupon.max_discount_amount ?? 0)
+      : 0;
+
+  const payableAmount = Math.max(0, totalAmount - couponDiscount);
+
   const checkoutDate = selectedBookingDate
     ? new Date(`${selectedBookingDate}T00:00:00+05:30`).toLocaleDateString(
         "en-IN",
@@ -402,17 +549,24 @@ export default function CartPage() {
         const order = await createCheckoutOrder(
           {
             cartIds: cartGroups.map((group) => group.cartId),
+
             patientIds: [
               ...new Set(cartGroups.map((group) => group.patientId)),
             ],
+
             slot_date: selectedBookingDate,
+
             slot_id: checkoutSlot.id,
+
             address_id: checkoutAddress.id,
+
+            coupon_id: selectedCoupon?.couponId ?? null,
           },
+
           getSelectedStateId(),
         );
 
-        if (order.amount !== Math.round(totalAmount * 100)) {
+        if (order.amount !== Math.round(payableAmount * 100)) {
           setPaymentMessage(
             "Your total changed. Refresh the cart and review it again.",
           );
@@ -448,7 +602,61 @@ export default function CartPage() {
         setPendingPayment(proof);
       }
 
-      await processToCheckout(proof.details, proof.payment);
+      ///// debug //////
+      const user = await getLoggedInUser();
+
+      if (!user?.id) {
+        throw new Error("Please sign in before confirming your booking.");
+      }
+
+      const checkoutPayload = {
+        userId: user.id,
+
+        cartIds: proof.details.cartIds,
+
+        patientIds: proof.details.patientIds,
+
+        slot_date: proof.details.slot_date,
+
+        slot_id: proof.details.slot_id,
+
+        address_id: proof.details.address_id,
+
+        paymentStatus: 1,
+
+        paymentType: "Online",
+
+        paymentId: proof.payment.razorpay_payment_id,
+
+        transaction_id: proof.payment.razorpay_payment_id,
+
+        gross_amount: proof.details.gross_amount,
+
+        net_amount: proof.details.net_amount,
+
+        offer_discount: proof.details.offer_discount,
+
+        coupon_id: proof.details.coupon_id ?? null,
+
+        coupon_discount: proof.details.coupon_discount,
+
+        total_amount: proof.details.total_amount,
+
+        platform: "website",
+      };
+
+      console.log("FINAL CHECKOUT API PAYLOAD:", checkoutPayload);
+
+      //// debug ////
+
+      const checkoutResult = await processToCheckout(
+        proof.details,
+        proof.payment,
+      );
+
+      if (!checkoutResult.bookingSaved) {
+        throw new Error("Booking could not be confirmed.");
+      }
 
       setPendingPayment(null);
       checkoutPreviewRef.current?.close();
@@ -1145,26 +1353,73 @@ export default function CartPage() {
                       type="text"
                       placeholder="Enter Coupon Code"
                       className="form-control"
+                      value={couponCode}
+                      onChange={(event) => setCouponCode(event.target.value)}
                     />
-                    <button>Check</button>
+
+                    <button type="button" onClick={() => handleApplyCoupon()}>
+                      Check
+                    </button>
                   </div>
                   <div className="scroll-dv">
-                    <div className="box active">
-                      <div className="left-sec">
-                        <div className="lt-side">
-                          <div className="icon">
-                            <img src="/assets/images/coupon.svg" alt="" />
+                    {loadingCoupons ? (
+                      <p>Loading coupons...</p>
+                    ) : coupons.length === 0 ? (
+                      <p>No coupons available.</p>
+                    ) : (
+                      coupons.map((coupon) => {
+                        const isApplied = selectedCouponId === coupon.couponId;
+
+                        return (
+                          <div
+                            key={coupon.couponId}
+                            className={`box ${isApplied ? "active" : ""}`}
+                          >
+                            <div className="left-sec">
+                              <div className="lt-side">
+                                <div className="icon">
+                                  <img src="/assets/images/coupon.svg" alt="" />
+                                </div>
+
+                                <div className="text">
+                                  <h4>{coupon.couponName}</h4>
+
+                                  <p>{coupon.descriptionDetails}</p>
+                                </div>
+                              </div>
+
+                              {coupon.discount_percent > 0 && (
+                                <h6>{coupon.discount_percent}% discount</h6>
+                              )}
+                            </div>
+
+                            {selectedCouponId === coupon.couponId ? (
+                              <button
+                                type="button"
+                                className="cmn_btn"
+                                onClick={handleRemoveCoupon}
+                              >
+                                Remove
+                              </button>
+                            ) : (
+                              <button
+                                type="button"
+                                className="cmn_btn"
+                                onClick={() => handleApplyCoupon(coupon)}
+                              >
+                                Apply
+                              </button>
+                            )}
+
+                            <span className="dis-tag">{coupon.couponCode}</span>
                           </div>
-                          <div className="text">
-                            <h4>20% Off</h4>
-                            <p>Complete health screening package</p>
-                          </div>
-                        </div>
-                        <h6>Upto Rs. 250 on minimum purchase of Rs. 300.</h6>
-                      </div>
-                      <button className="cmn_btn">Apply</button>
-                      <span className="dis-tag">HEALTH20</span>
-                    </div>
+                        );
+                      })
+                    )}
+
+                    {couponError && (
+                      <p className="text-danger mt-2">{couponError}</p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -1188,13 +1443,19 @@ export default function CartPage() {
                       <span>Offer Discount</span> ₹ {offerDiscount.toFixed(2)}
                     </li>
                     <li>
-                      <span>Coupon Discount</span> Apply Coupon
+                      <span>Coupon Discount</span>
+
+                      {selectedCoupon ? (
+                        <span>- ₹ {couponDiscount.toFixed(2)}</span>
+                      ) : (
+                        <span>₹ 0.00</span>
+                      )}
                     </li>
                   </ul>
                   <div className="total-amount">
                     <div className="lt-side">
                       <h6>Total Amount</h6>
-                      <h4>₹{totalAmount.toFixed(2)}</h4>
+                      <h4>₹{payableAmount.toFixed(2)}</h4>
                     </div>
                     <div className="rt-side">
                       <button
@@ -1365,7 +1626,7 @@ export default function CartPage() {
             <div>
               <span className="d-block small text-muted">Total Amount</span>
               <strong className="h4 mb-0" style={{ color: "#08783f" }}>
-                {checkoutCurrency.format(totalAmount)}
+                {checkoutCurrency.format(payableAmount)}
               </strong>
             </div>
             <form method="dialog" className="m-0">
