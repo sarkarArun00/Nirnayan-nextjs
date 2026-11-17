@@ -68,11 +68,25 @@ function PopularTest({ section = "all", hideButton = false, removeBg = false }: 
     centerPadding: '60px',
     responsive: [
       {
-        breakpoint: 768,
+        breakpoint: 1400,
+        settings: {
+          slidesToShow: 3,
+        }
+      },
+      {
+        breakpoint: 1199,
+        settings: {
+          slidesToShow: 2,
+          centerPadding: '30px',
+        }
+      },
+      {
+        breakpoint: 767,
         settings: {
           slidesToShow: 1,
-        },
-      },
+          centerPadding: '0',
+        }
+      }
     ],
   };
 
@@ -700,7 +714,17 @@ function PopularTest({ section = "all", hideButton = false, removeBg = false }: 
       {showSection3 && (
         <div className={styles.offer_banner}>
           <div className="container">
-            <img src="/assets/images/offer-banner.png" alt="" />
+            <picture>
+              <source
+                media="(max-width: 575px)"
+                srcSet="/assets/images/offer-banner2.png"
+              />
+              <img
+                src="/assets/images/offer-banner.png"
+                alt="Offer banner"
+                className="w-100"
+              />
+            </picture>
           </div>
         </div>
       )}

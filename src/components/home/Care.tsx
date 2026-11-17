@@ -51,12 +51,12 @@ export default function Care() {
         <div className={styles.preg_care}>
             <div className="container">
                 <div className={styles.inn}>
-                    <div className="row align-items-center">
-                        <div className="col-lg-4 col-md-5 col-sm-12">
+                    <div className="row flex-column-reverse flex-md-row align-items-center">
+                        <div className="col-xl-4 col-lg-5 col-sm-12">
                             <Slider {...sliderSettings} className="is_slick_dot">
                                 {slideData.map((item) => (
                                     <div className="item" key={item.id}>
-                                        <div className="test-box is-popular">
+                                        <div className={`test-box is-popular ${styles.test_card}`}>
                                             <div className="top-pnl">
                                                 <img src="/assets/images/fire.svg" alt="" />
                                                 <h6>Most Popular</h6>
@@ -88,11 +88,11 @@ export default function Care() {
                                                     </div>
                                                 </div>
                                                 <div className="btm-pnl">
-                                                    <div className="d-flex align-items-center gap-2">
+                                                    <div className="d-flex align-items-center gap-2 flex-wrap flex-1">
                                                         <span className="price">₹500.00 <del>₹1000</del></span>
                                                         <span className="discount">10% Off</span>
                                                     </div>
-                                                    <button className="cmn_btn">Add to Cart</button>
+                                                    <button className="cmn_btn flex-shrink-0">Add to Cart</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -100,7 +100,7 @@ export default function Care() {
                                 ))}
                             </Slider>
                         </div>
-                        <div className="col-lg-8 col-md-12 col-sm-12">
+                        <div className="col-xl-8 col-lg-7 col-sm-12">
                             <div className={styles.care_details}>
                                 <div className={styles.details_content}>
                                     <div className={styles.text_block}>

@@ -188,7 +188,7 @@ function page() {
                                                     onClick={() => setActive(index)}
                                                     aria-pressed={active === index}
                                                 >
-                                                    <span className="organ-icon">
+                                                    <span className="organ-icons">
                                                         <img src={organ.image} alt="" />
                                                     </span>
 

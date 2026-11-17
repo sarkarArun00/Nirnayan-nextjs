@@ -524,6 +524,9 @@ ol.breadcrumb li.active{ color:var(--up-black); }
     width: 38px;
     height: 38px;
   }
+  .cmn-backdrop {
+    padding:0 15px;
+  }
 
 }
 

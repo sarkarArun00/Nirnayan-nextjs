@@ -35,11 +35,25 @@ function PopularPackage() {
     centerPadding: "60px",
     responsive: [
       {
-        breakpoint: 768,
+        breakpoint: 1400,
+        settings: {
+          slidesToShow: 3,
+        }
+      },
+      {
+        breakpoint: 1199,
+        settings: {
+          slidesToShow: 2,
+          centerPadding: '30px',
+        }
+      },
+      {
+        breakpoint: 767,
         settings: {
           slidesToShow: 1,
-        },
-      },
+          centerPadding: '20px',
+        }
+      }
     ],
   };
 
