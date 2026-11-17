@@ -87,6 +87,26 @@ function Awards({ section = "all", pageClass = "" }: AwardsProps) {
   const showSection2 = section === "all" || section === 2;
   const showSection3 = section === "all" || section === 3;
 
+  useEffect(() => {
+    const handleScroll = () => {
+      const section = sectionRef.current;
+      if (!section) return;
+      const rect = section.getBoundingClientRect();
+      const start = window.innerHeight * 0.8;
+      const end = window.innerHeight * 0.3;
+      const total = rect.height + start - end;
+      const current = start - rect.top;
+      const value = Math.min(1, Math.max(0, current / total));
+      setProgress(value);
+    };
+    handleScroll();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", handleScroll);
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleScroll);
+    };
+  }, []);
 
   return (
     <>
