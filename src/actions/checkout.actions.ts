@@ -1,7 +1,8 @@
 "use server";
 
 import { createHmac, randomUUID, timingSafeEqual } from "node:crypto";
-import { getLoggedInUser } from "@/actions/session.actions";
+import { getSession } from "@/lib/server/session";
+
 
 export type CheckoutSelection = {
     cartIds: number[];
@@ -9,6 +10,7 @@ export type CheckoutSelection = {
     slot_date: string;
     slot_id: number;
     address_id: number;
+    coupon_id?: number | null;
 };
 
 export type CheckoutPaymentProof = {
@@ -18,14 +20,20 @@ export type CheckoutPaymentProof = {
 };
 
 type CheckoutTotals = {
-    grossAmount: number;
+    gross_amount: number;
     net_amount: number;
     offer_discount: number;
     coupon_discount: number;
-    total_Amount: number;
+    total_amount: number;
 };
 
 export type CheckoutBookingDetails = CheckoutSelection & CheckoutTotals;
+
+// A checkout already open in the browser may still submit the old field names.
+type LegacyCheckoutBookingDetails = Omit<CheckoutBookingDetails, "gross_amount" | "total_amount"> & {
+    grossAmount: number;
+    total_Amount: number;
+};
 
 export type RazorpayPaymentResult = {
     razorpay_payment_id: string;
@@ -46,6 +54,24 @@ type CartResponse = {
     }>;
 };
 
+type CouponResponse = {
+    data: Array<{
+        couponId: number;
+        validityStart: string;
+        validityEnd: string;
+        limit_per_user: number;
+        discount_type: string | null;
+        discount_percent: number | null;
+        max_discount_amount: number | string | null;
+        minlimit: number | string | null;
+        maxlimit: number | string | null;
+        status: boolean;
+        delete_status: boolean;
+    }>;
+    status: number | string;
+    success?: boolean;
+};
+
 type RazorpayOrder = {
     id: string;
     receipt: string;
@@ -61,6 +87,14 @@ type RazorpayPayment = {
     amount_refunded: number;
     currency: string;
     status: string;
+};
+
+type LimsBookingResponse = {
+    status?: number | string;
+    statusCode?: number;
+    success?: boolean;
+    message?: string | string[];
+    data?: unknown;
 };
 
 function isId(value: unknown): value is number {
@@ -81,18 +115,33 @@ function validateSelection(input: CheckoutSelection): CheckoutSelection {
         throw new Error("Select a cart, a collection slot, and an address.");
     }
 
+    const couponId =
+        input.coupon_id == null
+            ? null
+            : Number(input.coupon_id);
+
+    if (
+        couponId !== null &&
+        !isId(couponId)
+    ) {
+        throw new Error(
+            "Invalid coupon selected.",
+        );
+    }
+
     return {
         cartIds: input.cartIds,
         patientIds: input.patientIds,
         slot_date: input.slot_date,
         slot_id: input.slot_id,
         address_id: input.address_id,
+        coupon_id: couponId,
     };
 }
 
 async function getCheckoutUserId() {
-    const user = await getLoggedInUser();
-    const id = Number(user?.id);
+    const session = await getSession();
+    const id = Number(session.user?.id);
 
     if (!isId(id)) {
         throw new Error("Please sign in before checking out.");
@@ -122,7 +171,12 @@ function getRazorpayConfig() {
     return { keyId, secret };
 }
 
-async function requestJson<T>(url: string, init: RequestInit, operation: string): Promise<T> {
+async function requestJson<T>(
+    url: string,
+    init: RequestInit,
+    operation: string,
+    onResponse?: (httpStatus: number, result: T | undefined) => void,
+): Promise<T> {
     const response = await fetch(url, {
         ...init,
         cache: "no-store",
@@ -133,12 +187,18 @@ async function requestJson<T>(url: string, init: RequestInit, operation: string)
     });
 
     if (!response.ok) {
+        if (onResponse) {
+            onResponse(response.status, await response.json().catch(() => undefined));
+        }
         throw new Error(`${operation} returned HTTP ${response.status}.`);
     }
 
-    return response.json().catch(() => {
+    const result: T = await response.json().catch(() => {
+        onResponse?.(response.status, undefined);
         throw new Error(`${operation} returned invalid JSON.`);
     });
+    onResponse?.(response.status, result);
+    return result;
 }
 
 async function razorpayRequest<T>(path: string, body?: object) {
@@ -171,7 +231,81 @@ function toPaise(value: number | string) {
     return paise;
 }
 
-async function getCartTotals(userId: number, stateId: number, selection: CheckoutSelection) {
+async function getCouponDiscount(
+    userId: number,
+    couponId: number | null | undefined,
+    netAmount: number,
+): Promise<number> {
+    if (couponId == null) {
+        return 0;
+    }
+
+    const session = await getSession();
+
+    const headers: Record<string, string> = {
+        Accept: "application/json",
+        user_id: String(userId),
+    };
+
+    if (session.accessToken) {
+        headers.Authorization = `Bearer ${session.accessToken}`;
+    }
+
+    const coupons = await requestJson<CouponResponse>(
+        `${getLimsBaseUrl()}/b2c/coupon/getAllCoupons/${userId}`,
+        { method: "GET", headers },
+        "Load coupons for checkout",
+    );
+
+    if (
+        (coupons?.status !== 1 && coupons?.status !== "1") ||
+        !Array.isArray(coupons.data)
+    ) {
+        throw new Error("The coupon API returned an unexpected response.");
+    }
+
+    const coupon = coupons.data.find((item) => item.couponId === couponId);
+
+    if (!coupon || coupon.status !== true || coupon.delete_status === true) {
+        throw new Error("The selected coupon is no longer available.");
+    }
+
+    const minLimit = Number(coupon.minlimit ?? 0);
+    const maxLimit =
+        coupon.maxlimit !== null && coupon.maxlimit !== undefined
+            ? Number(coupon.maxlimit)
+            : null;
+
+    if (!Number.isFinite(minLimit) || (maxLimit !== null && !Number.isFinite(maxLimit))) {
+        throw new Error("The selected coupon has invalid amount limits.");
+    }
+
+    if (netAmount < minLimit) {
+        throw new Error(
+            `Minimum order amount ₹${minLimit.toFixed(2)} is required to apply this coupon.`,
+        );
+    }
+
+    if (maxLimit !== null && netAmount > maxLimit) {
+        throw new Error(
+            `This coupon is applicable only up to ₹${maxLimit.toFixed(2)}.`,
+        );
+    }
+
+    if (coupon.discount_type !== "1") {
+        throw new Error("The selected coupon discount type is not supported yet.");
+    }
+
+    const flatDiscount = Number(coupon.max_discount_amount ?? 0);
+
+    if (!Number.isFinite(flatDiscount) || flatDiscount < 0) {
+        throw new Error("The selected coupon has an invalid discount amount.");
+    }
+
+    return Math.min(netAmount, flatDiscount);
+}
+
+async function getCartTotals(userId: number, stateId: number, selection: CheckoutSelection): Promise<CheckoutTotals> {
     const query = new URLSearchParams({ userId: String(userId), stateId: String(stateId) });
     const cart = await requestJson<CartResponse>(
         `${getLimsBaseUrl()}/b2c/getAllCartByUser?${query}`,
@@ -208,12 +342,19 @@ async function getCartTotals(userId: number, stateId: number, selection: Checkou
         throw new Error("The cart has no valid amount to pay.");
     }
 
+    const netAmount = net / 100;
+    const couponDiscount = await getCouponDiscount(
+        userId,
+        selection.coupon_id,
+        netAmount,
+    );
+
     return {
-        grossAmount: gross / 100,
-        net_amount: net / 100,
+        gross_amount: gross / 100,
+        net_amount: netAmount,
         offer_discount: Math.max(0, gross - net) / 100,
-        coupon_discount: 0,
-        total_Amount: net / 100,
+        coupon_discount: couponDiscount,
+        total_amount: Math.max(0, netAmount - couponDiscount),
     };
 }
 
@@ -222,8 +363,9 @@ function bookingDigest(userId: number, receipt: string, details: CheckoutBooking
     const fields = [
         "lims-checkout-v1", getLimsBaseUrl(), userId, receipt,
         details.cartIds, details.patientIds, details.slot_date, details.slot_id, details.address_id,
-        toPaise(details.grossAmount), toPaise(details.net_amount), toPaise(details.offer_discount),
-        toPaise(details.coupon_discount), toPaise(details.total_Amount),
+        details.coupon_id ?? null,
+        toPaise(details.gross_amount), toPaise(details.net_amount), toPaise(details.offer_discount),
+        toPaise(details.coupon_discount), toPaise(details.total_amount),
     ];
 
     return createHmac("sha256", secret).update(JSON.stringify(fields)).digest("hex");
@@ -248,7 +390,7 @@ export async function createCheckoutOrder(
 
     const { keyId } = getRazorpayConfig();
     const totals = await getCartTotals(userId, stateId, selection);
-    const amount = toPaise(totals.total_Amount);
+    const amount = toPaise(totals.total_amount);
     const receipt = randomUUID();
     const details = { ...selection, ...totals };
     const digest = bookingDigest(userId, receipt, details);
@@ -278,14 +420,30 @@ export async function createCheckoutOrder(
 }
 
 export async function processToCheckout(
-    input: CheckoutBookingDetails,
+    input: CheckoutBookingDetails | LegacyCheckoutBookingDetails,
     payment: RazorpayPaymentResult,
 ) {
+
+    const session = await getSession();
+
+    const userId = session.user?.id;
+    const accessToken = session.accessToken;
+
+    if (!userId) {
+        throw new Error("User not logged in.");
+    }
+
+    if (!accessToken) {
+        throw new Error(
+            "Authentication token not found."
+        );
+    }
+
     if (process.env.NODE_ENV === "development") {
         console.info("[Checkout] Verifying Razorpay payment");
     }
 
-    const userId = await getCheckoutUserId();
+
     const selection = validateSelection(input);
     const paymentId = payment?.razorpay_payment_id;
 
@@ -297,14 +455,16 @@ export async function processToCheckout(
         throw new Error("Razorpay payment details are incomplete.");
     }
 
-    const totals = {
-        grossAmount: toPaise(input.grossAmount) / 100,
+    const grossAmount = "gross_amount" in input ? input.gross_amount : input.grossAmount;
+    const totalAmount = "total_amount" in input ? input.total_amount : input.total_Amount;
+    const totals: CheckoutTotals = {
+        gross_amount: toPaise(grossAmount) / 100,
         net_amount: toPaise(input.net_amount) / 100,
         offer_discount: toPaise(input.offer_discount) / 100,
         coupon_discount: toPaise(input.coupon_discount) / 100,
-        total_Amount: toPaise(input.total_Amount) / 100,
+        total_amount: toPaise(totalAmount) / 100,
     };
-    const amount = toPaise(totals.total_Amount);
+    const amount = toPaise(totals.total_amount);
     const verified = await razorpayRequest<RazorpayPayment>(`/payments/${paymentId}`);
 
     if (
@@ -336,46 +496,77 @@ export async function processToCheckout(
     const headers: Record<string, string> = {
         Accept: "application/json",
         "Content-Type": "application/json",
+        Authorization: `Bearer ${accessToken}`,
         user_id: String(userId),
         "Idempotency-Key": paymentId,
         "X-Razorpay-Order-Id": order.id,
         "X-Razorpay-Signature": payment.razorpay_signature,
     };
-    const serviceToken = process.env.LIMS_CHECKOUT_SERVICE_TOKEN?.trim();
-    if (serviceToken) {
-        headers.Authorization = `Bearer ${serviceToken}`;
+
+    const bookingUrl = `${getLimsBaseUrl()}/b2c/processToCheckout`;
+    const debugCheckout = process.env.NODE_ENV === "development";
+    const payload = {
+        userId,
+        cartIds: details.cartIds,
+        patientIds: details.patientIds,
+        slot_date: details.slot_date,
+        slot_id: details.slot_id,
+        address_id: details.address_id,
+        paymentStatus: 1,
+        paymentType: "Online",
+        paymentId,
+        transaction_id: paymentId,
+        gross_amount: details.gross_amount,
+        net_amount: details.net_amount,
+        offer_discount: details.offer_discount,
+        coupon_id: details.coupon_id ?? null,
+        coupon_discount: details.coupon_discount,
+        total_amount: details.total_amount,
+        platform: "website",
+    };
+    const body = JSON.stringify(payload);
+
+    if (debugCheckout) {
+        console.info("[Checkout] LIMS request", { method: "POST", url: bookingUrl });
+        console.info("[Checkout] LIMS payload\n%s", body);
     }
 
-    if (process.env.NODE_ENV === "development") {
-        console.info("[Checkout] Calling /b2c/processToCheckout");
-    }
-
-    const result = await requestJson<{ status: number; data?: unknown }>(
-        `${getLimsBaseUrl()}/b2c/processToCheckout`,
-        {
-            method: "POST",
-            headers,
-            body: JSON.stringify({
-                ...selection,
-                userId,
-                paymentStatus: 1,
-                paymentType: "Online",
-                paymentId,
-                transaction_id: paymentId,
-                gross_amount: totals.grossAmount,
-                net_amount: totals.net_amount,
-                offer_discount: totals.offer_discount,
-                coupon_discount: totals.coupon_discount,
-                total_amount: totals.total_Amount,
-                platform: "website",
-            }),
-        },
+    const result = await requestJson<LimsBookingResponse | null>(
+        bookingUrl,
+        { method: "POST", headers, body },
         "Save booking",
+        debugCheckout ? (httpStatus, reply) => {
+            const message = Array.isArray(reply?.message)
+                ? reply.message.filter((entry) => typeof entry === "string").join(" | ")
+                : reply?.message;
+
+            console.info("[Checkout] LIMS response", {
+                httpStatus,
+                status: reply?.status,
+                statusCode: reply?.statusCode,
+                success: reply?.success,
+                message: typeof message === "string" ? message.slice(0, 500) : undefined,
+                keys: Object.keys(reply ?? {}),
+            });
+        } : undefined,
     );
 
-    if (result?.status !== 1) {
-        throw new Error("The booking API did not confirm the booking.");
+    if (
+        result?.status === 0 ||
+        result?.status === "0" ||
+        result?.success === false ||
+        (typeof result?.statusCode === "number" &&
+            result.statusCode >= 400)
+    ) {
+        const backendMessage = Array.isArray(result?.message)
+            ? result.message.join(" | ")
+            : result?.message;
+
+        throw new Error(
+            backendMessage ||
+            "LIMS rejected the booking request."
+        );
     }
 
-    return result.data ?? result;
+    return { bookingSaved: result?.status === 1 || result?.status === "1" };
 }

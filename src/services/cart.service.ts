@@ -76,6 +76,51 @@ export async function saveToCart(
     return result;
 }
 
+export type CouponTransaction = {
+    id: number;
+    couponId: number;
+    userId: number;
+    bookingId: number | null;
+    createdAt: string;
+    updatedAt: string;
+};
+
+export type CouponItem = {
+    couponId: number;
+    couponCode: string;
+    couponName: string;
+    descriptionDetails: string;
+
+    validityStart: string;
+    validityEnd: string;
+
+    client_id: number | null;
+
+    limit_per_user: number;
+
+    discount_type: string | null;
+    discount_percent: number;
+
+    max_discount_amount: number | null;
+
+    minlimit: number;
+    maxlimit: number | null;
+
+    createdAt: string;
+    updatedAt: string;
+
+    status: boolean;
+    delete_status: boolean;
+
+    transactions: CouponTransaction[];
+};
+
+export type CouponListResponse = {
+    data: CouponItem[];
+    status: number;
+    success: boolean;
+};
+
 export type CartTat = {
     normalTat: {
         value: string;
@@ -498,6 +543,39 @@ export async function updateCartDetails(cartId: number, doctorName: string, file
     if (!response.ok) {
         throw new Error(
             result?.message || "Failed to update cart details."
+        );
+    }
+
+    return result;
+}
+
+export async function getAllCoupons(): Promise<CouponListResponse> {
+    const user = await getLoggedInUser();
+
+    if (!user?.id) {
+        throw new Error("User not logged in.");
+    }
+
+    const response = await fetch(
+        `${getBaseUrl()}b2c/coupon/getAllCoupons/${user.id}`,
+        {
+            method: "GET",
+
+            headers: {
+                Accept: "application/json",
+                user_id: String(user.id),
+            },
+
+            cache: "no-store",
+        },
+    );
+
+    const result = await response.json();
+
+    if (!response.ok) {
+        throw new Error(
+            result?.message ||
+            "Unable to load available coupons.",
         );
     }
 
