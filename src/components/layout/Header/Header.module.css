@@ -240,6 +240,7 @@
 
 @media screen and (max-width:767px){
   .main-header .logo .img{ width:45px;}
+  .main-header.banner-touched .logo .text{ opacity:1; visibility:visible; max-width:160px; transform:scale(1) rotateX(0deg); filter:blur(0); }
   .main-header .location{ display:none; }
   .main-header .hidden-block{ display:none; }
   .main-header .top-wrap{ gap:0 6px; }
@@ -262,5 +263,5 @@
   .accordionContainer ul.open{ max-height: 800px; opacity: 1; visibility: visible; padding: 10px 15px; }
   .sub_menu .close_btn{ right:10px; top:10px; width:30px; height:30px; font-size:11px; }
 
-  
+
 }
