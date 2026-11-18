@@ -527,7 +527,7 @@ const [isPatientOnlyMode, setIsPatientOnlyMode] = useState(false);
         if (user?.id) {
           setLoggedInUserId(user.id);
 
-          console.log("Patient Modal User ID:", user.id);
+          // console.log("Patient Modal User ID:", user.id);
         }
       } catch (error) {
         console.error("Unable to get logged-in user:", error);

@@ -324,11 +324,8 @@ export default function CartPage() {
         setLoadingCoupons(true);
         setCouponError("");
 
-        console.log("Calling coupon API...");
-
         const response = await getAllCoupons();
 
-        console.log("Coupon API Response:", response);
 
         if (cancelled) {
           return;
@@ -767,6 +764,8 @@ export default function CartPage() {
     };
   }, [addressToDelete]);
 
+
+  
   if (loadingCart) {
     return <div className="container py-5">Loading cart...</div>;
   }
@@ -1033,7 +1032,7 @@ export default function CartPage() {
               <section
                 className="booking-wrap"
                 aria-labelledby="booking-slot-heading"
-              >
+                >
                 <div className="booking-head">
                   <div className="left-block">
                     <i

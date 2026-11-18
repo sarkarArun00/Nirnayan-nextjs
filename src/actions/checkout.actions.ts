@@ -439,6 +439,8 @@ export async function processToCheckout(
         );
     }
 
+    console.log('access Token: ', accessToken)
+
     if (process.env.NODE_ENV === "development") {
         console.info("[Checkout] Verifying Razorpay payment");
     }

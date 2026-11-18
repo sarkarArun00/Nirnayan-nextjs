@@ -289,10 +289,10 @@ export async function getCartByUser(): Promise<GetCartResponse> {
     const stateId =
         getSelectedStateId();
 
-    console.log(
-        "Selected State ID:",
-        stateId
-    );
+    // console.log(
+    //     "Selected State ID:",
+    //     stateId
+    // );
 
     const url =
         `${getBaseUrl()}b2c/getAllCartByUser` + `?userId=${user.id}&stateId=${stateId}`;

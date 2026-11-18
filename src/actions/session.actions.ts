@@ -157,3 +157,11 @@ export async function logoutSession() {
     const session = await getSession();
     session.destroy();
 }
+
+export async function debugAccessToken() {
+    const session = await getSession();
+
+    return {
+        accessToken: session.accessToken ?? null,
+    };
+}

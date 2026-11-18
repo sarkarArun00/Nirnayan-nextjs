@@ -19,6 +19,8 @@ import { usePathname } from "next/navigation";
 import { getAllState } from "@/services/master.service"
 import { getCartByUser } from "@/services/cart.service";
 
+import { debugAccessToken } from "@/actions/session.actions";
+
 
 
 
@@ -140,6 +142,7 @@ export default function Header() {
   const [signUpTimer, setSignUpTimer] = useState(20);
   const [stateData, setStateData] = useState([]);
 
+
   const [loginSession, setLoginSession] = useState<{
     user: LoginUser;
   } | null>(null);
@@ -258,24 +261,24 @@ export default function Header() {
     }
   };
 
-useEffect(() => {
-  if (!loginSession) {
-    setCartCount(0);
-    return;
-  }
+  useEffect(() => {
+    if (!loginSession) {
+      setCartCount(0);
+      return;
+    }
 
-  void updateCartCount();
-
-  const handleCartUpdated = () => {
     void updateCartCount();
-  };
 
-  window.addEventListener("cartUpdated", handleCartUpdated);
+    const handleCartUpdated = () => {
+      void updateCartCount();
+    };
 
-  return () => {
-    window.removeEventListener("cartUpdated", handleCartUpdated);
-  };
-}, [loginSession]);
+    window.addEventListener("cartUpdated", handleCartUpdated);
+
+    return () => {
+      window.removeEventListener("cartUpdated", handleCartUpdated);
+    };
+  }, [loginSession]);
 
   useEffect(() => {
     const interval = window.setInterval(() => {
@@ -342,6 +345,16 @@ useEffect(() => {
 
     return () => clearInterval(interval);
   }, [otpRequested, timer]);
+
+useEffect(() => {
+  const checkToken = async () => {
+    const result = await debugAccessToken();
+
+    console.log("Access Token:", result.accessToken);
+  };
+
+  void checkToken();
+}, []);
 
   // Google Translate
   const [langOpen, setLangOpen] = useState(false);
@@ -434,7 +447,7 @@ useEffect(() => {
       try {
         const response = await getAllState();
 
-        console.log("State API Response:", response);
+        // console.log("State API Response:", response);
 
         let stateList: StateItem[] = [];
 
@@ -457,7 +470,7 @@ useEffect(() => {
           ).data;
         }
 
-        console.log("FINAL STATE LIST:", stateList);
+        // console.log("FINAL STATE LIST:", stateList);
 
         setStates(stateList);
       } catch (error) {
@@ -487,9 +500,9 @@ useEffect(() => {
       ) {
         setSelectedState(parsedState);
 
-        console.log("Restored State:", parsedState);
+        // console.log("Restored State:", parsedState);
 
-        console.log("Restored State ID:", parsedState.id);
+        // console.log("Restored State ID:", parsedState.id);
       }
     } catch (error) {
       console.error("Unable to restore selected state:", error);
@@ -505,25 +518,43 @@ useEffect(() => {
 
   const pathname = usePathname();
 
-  useEffect(() => {
-    const logUser = () => {
-      if (loginSession?.user) {
-        console.log("Logged-in User:", loginSession.user);
+useEffect(() => {
+  const loadLoggedInUser = async () => {
+    try {
+      const user = await getLoggedInUser();
+
+      if (user) {
+        setLoginSession({
+          user,
+        });
+
+        console.log("Logged-in User:", user);
       } else {
+        setLoginSession(null);
+
         console.log("No user logged in");
       }
-    };
+    } catch (error) {
+      console.error("Unable to load logged-in user:", error);
 
-    // When the page opens, route changes, or session changes
-    logUser();
+      setLoginSession(null);
+    }
+  };
 
-    // When the browser window receives focus
-    window.addEventListener("focus", logUser);
+  // Initial load + route change
+  void loadLoggedInUser();
 
-    return () => {
-      window.removeEventListener("focus", logUser);
-    };
-  }, [pathname, loginSession?.user]);
+  // Reload when browser gets focus
+  const handleFocus = () => {
+    void loadLoggedInUser();
+  };
+
+  window.addEventListener("focus", handleFocus);
+
+  return () => {
+    window.removeEventListener("focus", handleFocus);
+  };
+}, [pathname]);
 
   useEffect(() => {
     if (!isAccountMenuOpen) return;
@@ -1212,7 +1243,9 @@ useEffect(() => {
 
               <div className={styles["test-search"]}>
                 <div className={styles.divider}></div>
-                <div className="d-flex align-items-center flex-grow-1" onClick={() => setIsSearch(true)}
+                <div
+                  className="d-flex align-items-center flex-grow-1"
+                  onClick={() => setIsSearch(true)}
                   role="button"
                   tabIndex={0}
                   onKeyDown={(e) => {
@@ -1220,7 +1253,8 @@ useEffect(() => {
                       e.preventDefault();
                       setIsSearch(true);
                     }
-                  }}>
+                  }}
+                >
                   <span className={styles["search-text"]}>Search for</span>
                 </div>
                 <div className="d-flex align-items-center">
@@ -1349,7 +1383,7 @@ useEffect(() => {
                           <img src="/assets/images/profile.svg" alt="" />
                           My Profile
                         </Link>
-                        <Link href="#">
+                        <Link href="/my-orders">
                           <img src="/assets/images/orders.svg" alt="" /> My
                           Order
                         </Link>
@@ -1407,7 +1441,10 @@ useEffect(() => {
           </button>
         </div>
 
-        <div ref={menuRef} className={`${styles.sub_menu} ${isOpens ? styles.show : ""}`}>
+        <div
+          ref={menuRef}
+          className={`${styles.sub_menu} ${isOpens ? styles.show : ""}`}
+        >
           <button
             className={styles.close_btn}
             onClick={() => setIsOpens(false)}
@@ -1477,8 +1514,9 @@ useEffect(() => {
                       <div key={item.id} className={styles.accordionItem}>
                         <button
                           type="button"
-                          className={`${styles.accordionHeader} ${isOpen ? styles.activeHeader : ""
-                            }`}
+                          className={`${styles.accordionHeader} ${
+                            isOpen ? styles.activeHeader : ""
+                          }`}
                           onClick={() => toggleAccordion(index)}
                           aria-expanded={isOpen}
                         >
@@ -1486,15 +1524,17 @@ useEffect(() => {
 
                           <span className={styles.accordionIcon}>
                             <i
-                              className={`fa-solid ${isOpen ? "fa-chevron-up" : "fa-chevron-down"
-                                }`}
+                              className={`fa-solid ${
+                                isOpen ? "fa-chevron-up" : "fa-chevron-down"
+                              }`}
                             />
                           </span>
                         </button>
 
                         <ul
-                          className={`${styles.linkList} ${isOpen ? styles.open : ""
-                            }`}
+                          className={`${styles.linkList} ${
+                            isOpen ? styles.open : ""
+                          }`}
                         >
                           {item.content.map((linkItem, i) => (
                             <li key={i} className={styles.mobileLinkRow}>
