@@ -68,7 +68,8 @@ body.active .sticky-bar{ opacity:1; visibility:visible; pointer-events:auto; tra
 
 /* ==== Saved Patient Start ==== */
 .patient-list{ display:grid; grid-template-columns:repeat(3, 1fr); grid-row-gap:20px; grid-column-gap:20px; }
-.patient-card{ position:relative; isolation:isolate; display:flex; align-items:center; border:1px solid var(--up-gray2); border-radius:10px; cursor:pointer; transition:all 0.4s; padding:30px 15px; }
+.patient-card{ position:relative; isolation:isolate; display:flex; align-items:center; border:1px solid var(--up-gray2); border-radius:10px; cursor:pointer; transition:all 0.4s; z-index:0; padding:30px 15px; }
+.patient-card.menu-open{ z-index:10; }
 .patient-card:before{ content:""; position:absolute; right:0; top:0; z-index:-1; background:linear-gradient(85.75deg, #FFFFFF 29.6%, rgba(250,200,1,0.3) 100%); border-radius:10px; opacity:0; transition:all .5s ease; width:0%; height:100%; }
 .patient-card:hover:before{ opacity:1; width:100%; }
 .patient-card.active:before{ opacity:1; width:100%; }
@@ -85,7 +86,7 @@ body.active .sticky-bar{ opacity:1; visibility:visible; pointer-events:auto; tra
 .patient-card .patient-dtl p a{ color:var(--up-black); display:block; transition:all 0.4s; }
 .patient-card .patient-dtl p a:hover{ color:var(--up-theme); }
 .patient-card .add-type{ position:absolute; top:0; right:15px; font-size:13px; line-height:1.2; font-weight:500; background:var(--up-secondiary); border-radius:0 0 10px 10px; padding:5px 15px; }
-.patient-card .patient-action-area{ position:relative; }
+.patient-card .patient-action-area{ position:relative; z-index:2; }
 .patient-card .patient-action-area .patient-toggle-btn{ font-size:20px; border:0; background:none; padding:4px; }
 .patient-card .patient-action-area .patient-actions-wrap{ width:150px; position:absolute; right:15px; top:0; background:var(--up-white); border:1px solid var(--up-gray2); border-radius:10px; padding:6px; transform:scale(0.5); opacity:0; pointer-events:none; transition:all 0.4s; box-shadow:0px 0px 4px 0px rgba(0,0,0,0.15); }
 .patient-card .patient-action-area .patient-actions-wrap.show{ transform:scale(1); opacity:1; pointer-events:fill; }

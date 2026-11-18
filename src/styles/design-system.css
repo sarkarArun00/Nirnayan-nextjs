@@ -139,7 +139,7 @@ label span{ color:#FF0000; }
 .lab-search-panel .lab-search-field{ position:relative; margin-bottom:25px; }
 .lab-search-panel .lab-search-field .form-control{ height:48px; border:1px solid var(--up-black); border-radius:25px; padding:0 80px 0 55px }
 .lab-search-panel .lab-search-field .lab-search-symbol{ position:absolute; left:18px; top:15px; font-size:20px; color:var(--up-black); }
-.lab-search-panel .lab-search-field .flex-dv{ position:absolute; top:15px; right:15px; }
+.lab-search-panel .lab-search-field .flex-dv{ position:absolute; top:12px; right:15px; }
 .lab-search-panel .lab-search-field .flex-dv button{ padding:0; margin:0; background:none; border:0; }
 .lab-search-panel .lab-search-field .flex-dv .lab-search-mike{ font-size:18px; color:var(--up-black); }
 .lab-search-panel .lab-search-field .flex-dv .lab-search-line{ width:1px; background:#D9F3E5; height:20px; }

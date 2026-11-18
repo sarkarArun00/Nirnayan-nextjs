@@ -816,7 +816,8 @@ export default function ProfilePage() {
                   return (
                     <div
                       key={patient.id}
-                      className={`patient-card ${isDefault ? "active" : ""}`}
+                      className={`patient-card ${isDefault ? "active" : ""} ${expandedPatientId === patient.id ? "menu-open" : ""
+                        }`}
                     >
                       <div className="patient-left">
                         <div className="icon">
