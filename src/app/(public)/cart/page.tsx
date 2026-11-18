@@ -398,9 +398,9 @@ export default function CartPage() {
 
   const checkoutDate = selectedBookingDate
     ? new Date(`${selectedBookingDate}T00:00:00+05:30`).toLocaleDateString(
-        "en-IN",
-        { dateStyle: "full", timeZone: "Asia/Kolkata" },
-      )
+      "en-IN",
+      { dateStyle: "full", timeZone: "Asia/Kolkata" },
+    )
     : null;
   const checkoutSlot = slots.find(
     (slot) => slot.id === selectedSlotId && slot.threshold !== 0,
@@ -765,7 +765,7 @@ export default function CartPage() {
   }, [addressToDelete]);
 
 
-  
+
   if (loadingCart) {
     return <div className="container py-5">Loading cart...</div>;
   }
@@ -858,7 +858,7 @@ export default function CartPage() {
                           <p>
                             <i className="fa-solid fa-venus-mars"></i>{" "}
                             {group.patient_age !== null &&
-                            group.patient_age !== undefined
+                              group.patient_age !== undefined
                               ? `${group.patient_age} Y`
                               : "Age N/A"}
                             {" • "}
@@ -887,7 +887,7 @@ export default function CartPage() {
                         }}
                       >
                         {group.doctor_name ||
-                        (group.attachments && group.attachments.length > 0)
+                          (group.attachments && group.attachments.length > 0)
                           ? "Edit Rx & Doctor"
                           : "Upload Rx & Doctor"}
                         <img
@@ -927,7 +927,7 @@ export default function CartPage() {
                             <span className="is-discount">
                               {Math.round(
                                 ((item.mrpAmount - price) / item.mrpAmount) *
-                                  100,
+                                100,
                               )}
                               % Off
                             </span>
@@ -1032,7 +1032,7 @@ export default function CartPage() {
               <section
                 className="booking-wrap"
                 aria-labelledby="booking-slot-heading"
-                >
+              >
                 <div className="booking-head">
                   <div className="left-block">
                     <i
@@ -1168,14 +1168,12 @@ export default function CartPage() {
                           <button
                             key={slot.id}
                             type="button"
-                            className={`timeSlotButton ${
-                              isSelected && !isInactive ? "active" : ""
-                            }`}
+                            className={`timeSlotButton ${isSelected && !isInactive ? "active" : ""
+                              }`}
                             disabled={!selectedBookingDate || isInactive}
                             aria-pressed={isSelected && !isInactive}
-                            aria-label={`${slot.slot_label}, ${timeLabel}${
-                              isInactive ? ", unavailable" : ""
-                            }`}
+                            aria-label={`${slot.slot_label}, ${timeLabel}${isInactive ? ", unavailable" : ""
+                              }`}
                             onClick={() => setSelectedSlotId(slot.id)}
                           >
                             {timeLabel}
@@ -1443,11 +1441,10 @@ export default function CartPage() {
                     </li>
                     <li>
                       <span>Coupon Discount</span>
-
                       {selectedCoupon ? (
-                        <span>- ₹ {couponDiscount.toFixed(2)}</span>
+                        `- ₹ ${couponDiscount.toFixed(2)}`
                       ) : (
-                        <span>₹ 0.00</span>
+                        '₹ 0.00'
                       )}
                     </li>
                   </ul>
