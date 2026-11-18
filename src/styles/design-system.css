@@ -79,7 +79,12 @@ label span{ color:#FF0000; }
 .is-exp-btn{ padding-top:25px; display:none; }
 .exp-btn{ font-size:15px; line-height:1.2; color:var(--up-black); display:flex; align-items:center; gap:12px; height:48px; padding:0 25px; border:1px solid var(--up-black); border-radius:50px; background:var(--up-white); transition: all 0.4s; }
 .exp-btn.is-white{ background:transparent; border-color:var(--up-white); color:var(--up-white); }
-.exp-btn.is-white img{ filter:brightness(0) invert(1); }
+.exp-btn.is-white img{ filter:brightness(0) invert(1); transition:all 0.4s ease; }
+
+.exp-btn:hover{ background:var(--up-black) !important; color:var(--up-white); }
+.exp-btn:hover img{ filter:brightness(0) invert(1); }
+.exp-btn.is-white:hover{ background:var(--up-white) !important; color:var(--up-black); }
+.exp-btn.is-white:hover img{ filter:none; }
 /* Mobile Explore Button Start */
 
 /* Header Css Start */
@@ -349,7 +354,7 @@ label span{ color:#FF0000; }
 #faqAccordion .accordion-item h2{ margin-bottom:0; }
 #faqAccordion .accordion-item:last-child{ margin-bottom:0; }
 #faqAccordion .accordion-item .accordion-button{ font-size:18px; line-height:1.2; font-weight:600; color:var(--up-black); background:transparent !important; border-radius:0 !important; padding:20px; box-shadow:none; }
-#faqAccordion .accordion-item .accordion-button:after{ width:45px; height:45px; border:1px solid var(--up-gray); border-radius:50%; background-position:center; }
+#faqAccordion .accordion-item .accordion-button:after{ width:40px; height:40px; border:1px solid var(--up-gray); border-radius:50%; background-position:center; }
 #faqAccordion .accordion-item .accordion-button[aria-expanded="true"]:after{ background-color:var(--up-theme); border:none; background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23ffffff'%3e%3cpath fill-rule='evenodd' d='M1.646 11.354a.5.5 0 0 0 .708 0L8 5.707l5.646 5.647a.5.5 0 0 0 .708-.708l-6-6a.5.5 0 0 0-.708 0l-6 6a.5.5 0 0 0 0 .708z'/%3e%3c/svg%3e"); }
 #faqAccordion .accordion-item .accordion-body{ position:relative; padding:25px 20px; }
 #faqAccordion .accordion-item .accordion-body:before{ position:absolute; content:""; width:calc(100% - 40px); height:1px; left:0; right:0; top:0; background:#BABABA; margin:0 auto; }

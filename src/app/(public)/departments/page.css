@@ -1,0 +1,27 @@
+.breadcrumb-wrap{ padding-top:var(--istop-gap); }
+
+.dep-slider{ padding:var(--cmngap-btm) 0; }
+.dep-slider .slide-card{ box-shadow:0px 0px 8px 0px rgba(0,0,0,0.25); border-radius:var(--sec-radius); padding:20px; margin:7px 0; }
+.dep-slider .slide-card .img{ height:210px; border-radius:15px; overflow:hidden; margin-bottom:20px; }
+.dep-slider .slide-card .img img{ width:100%; height:100%; object-fit:cover; transition:all 0.4s; }
+.dep-slider .slide-card .img img:hover{ transform:scale(1.1); }
+.dep-slider .slide-card h3{ font-weight:600; color:var(--up-black); margin-bottom:10px; }
+.dep-slider .slide-card p{ color:var(--up-gray); display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:2; line-clamp:2; overflow:hidden; }
+
+.quality-asse{ background:#D9F3E5; padding:var(--cmngap-btm) 0; }
+.quality-asse .grid_box{ display:grid; grid-template-columns:repeat(5, 1fr); grid-row-gap:20px; grid-column-gap:20px; }
+.quality-asse .box{ background:#FFFAE9; border-radius:var(--sec-radius); padding:32px 20px; }
+.quality-asse .box .icon{ width:84px; height:84px; background:var(--up-secondiary); border-radius:50%; display:flex; align-items:center; justify-content:center; margin-bottom:15px; }
+.quality-asse .box h4{ color:var(--up-black); font-weight:600; margin-bottom:15px; }
+.quality-asse .box p{ color:var(--up-gray); font-weight:400; display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:3; line-clamp:3; overflow:hidden; }
+
+/* Form block Start */
+.dep-enq-wrap{ background:linear-gradient(180deg, #D9F3E5 0%, #FFFFFF 100%); padding:var(--cmngap-btm) 0; }
+.dep-enq-wrap .text-block h2{ font-weight:600; color:var(--up-black); }
+.dep-enq-wrap .text-block p{ color:var(--up-gray); margin-bottom:45px; }
+.dep-enq-wrap .form-wrap{ background:linear-gradient(123.13deg, #fac801, #fff, #fff, #00a651); border-radius:var(--sec-radius); padding:1px; }
+.dep-enq-wrap .form-wrap .form-in{ background:var(--up-white); border-radius:var(--sec-radius); padding:40px; }
+.dep-enq-wrap .form-wrap .form-in h3{ font-weight:700; color:var(--up-black); margin-bottom:15px; }
+.dep-enq-wrap .form-wrap .form-in p{ color:var(--up-gray); }
+.dep-enq-wrap .form-wrap .inp-box{ margin-bottom:15px; }
+/* Form block End */

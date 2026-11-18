@@ -1269,12 +1269,12 @@ useEffect(() => {
             <div className={styles.navigation}>
               <ul>
                 <li>
-                  <Link href="/test-detail">
+                  <Link href="/test-list">
                     <img src="/assets/images/blood.svg" alt="Test Icon" /> Test
                   </Link>
                 </li>
                 <li>
-                  <Link href="#">
+                  <Link href="/our-package">
                     <img src="/assets/images/package.svg" alt="Package Icon" />{" "}
                     Packages
                   </Link>
@@ -1387,7 +1387,7 @@ useEffect(() => {
                           <img src="/assets/images/orders.svg" alt="" /> My
                           Order
                         </Link>
-                        <Link href="#">
+                        <Link href="/upload-prescription">
                           <img src="/assets/images/rx.svg" alt="" />{" "}
                           Prescriptions
                         </Link>
