@@ -145,6 +145,7 @@ export default function CartPage() {
   const [couponCode, setCouponCode] = useState("");
 
   const [selectedCouponId, setSelectedCouponId] = useState<number | null>(null);
+  const [isCheckoutPreviewOpen, setIsCheckoutPreviewOpen] = useState(false);
 
   const { confirm } = useAlert();
   const { showAlert } = useAlert();
@@ -1454,7 +1455,7 @@ export default function CartPage() {
                       <h4>₹{payableAmount.toFixed(2)}</h4>
                     </div>
                     <div className="rt-side">
-                      <button
+                      {/* <button
                         type="button"
                         className="cmn_btn"
                         aria-haspopup="dialog"
@@ -1476,6 +1477,29 @@ export default function CartPage() {
                         }}
                       >
                         Proceed to Checkout
+                      </button> */}
+                      <button
+                        type="button"
+                        className="cmn_btn"
+                        aria-haspopup="dialog"
+                        aria-controls="cart-checkout-preview"
+                        disabled={
+                          investigations.length === 0 ||
+                          loadingSlots ||
+                          loadingAddresses
+                        }
+                        onClick={() => {
+                          if (!canCheckout) {
+                            window.alert(
+                              `Please select ${missingCheckoutFields.join(" and ")}.`,
+                            );
+                            return;
+                          }
+
+                          setIsCheckoutPreviewOpen(true);
+                        }}
+                      >
+                        Proceed to Checkout
                       </button>
                       <div className="d-flex justify-content-center align-items-center gap-2 mt-2">
                         <img src="/assets/images/shield.svg" alt="" />
@@ -1489,164 +1513,165 @@ export default function CartPage() {
           </div>
         )}
       </div>
-
-      <dialog
-        id="cart-checkout-preview"
-        ref={checkoutPreviewRef}
-        aria-labelledby="checkout-preview-heading"
-        aria-describedby="checkout-preview-description"
-        className="border-0 rounded-4 shadow p-0"
-        style={{
-          width: "min(680px, calc(100% - 32px))",
-          maxWidth: "none",
-          maxHeight: "calc(100dvh - 32px)",
-          margin: "auto",
-        }}
+      <div
+        className={`cmn-backdrop ${isCheckoutPreviewOpen ? "active" : ""}`}
+        onClick={() => setIsCheckoutPreviewOpen(false)}
       >
         <div
-          className="d-flex flex-column bg-white"
-          style={{ maxHeight: "calc(100dvh - 32px)" }}
+          // id="cart-checkout-preview"
+          // ref={checkoutPreviewRef}
+          // aria-labelledby="checkout-preview-heading"
+          // aria-describedby="checkout-preview-description"
+          // className="border-0 rounded-4 shadow p-0"
+          // style={{
+          //   width: "min(680px, calc(100% - 32px))",
+          //   maxWidth: "none",
+          //   maxHeight: "calc(100dvh - 32px)",
+          //   margin: "auto",}}
+          id="cart-checkout-preview"
+          className="inn"
+          onClick={(e) => e.stopPropagation()}
+          aria-labelledby="checkout-preview-heading"
+          aria-describedby="checkout-preview-description"
+          role="dialog"
+          aria-modal="true"
         >
-          <header className="d-flex justify-content-between align-items-start gap-3 border-bottom p-4">
-            <div>
-              <h2 id="checkout-preview-heading" className="h4 mb-1">
-                Review Your Booking
-              </h2>
-              <p
-                id="checkout-preview-description"
-                className="small text-muted mb-0"
-              >
-                Review your tests, packages, and collection details.
-              </p>
-            </div>
-            <button
-              type="button"
-              className="btn btn-sm btn-light border"
-              aria-label="Close checkout preview"
-              onClick={() => checkoutPreviewRef.current?.close()}
-            >
-              <i className="fa-solid fa-xmark" aria-hidden="true" />
-            </button>
-          </header>
+          <button
+            type="button"
+            className="closeBtn"
+            aria-label="Close checkout preview"
+            // onClick={() => checkoutPreviewRef.current?.close()}
+            onClick={() => setIsCheckoutPreviewOpen(false)}
+          >
+            <i className="fa-solid fa-xmark" aria-hidden="true" />
+          </button>
 
-          <div className="overflow-auto p-4">
-            <h3 className="h6 mb-3">
-              Patients and Tests ({investigations.length})
-            </h3>
-
-            {cartGroups.map((group) => (
-              <section key={group.cartId} className="rounded-3 border p-3 mb-3">
-                <h4 className="h6 mb-1">{group.patient_name}</h4>
-                <p className="small text-muted mb-2">
-                  {group.patient_age != null && `${group.patient_age} Y · `}
-                  {getGenderName(group.patient_gender)}
-                </p>
-                {group.doctor_name && (
-                  <p className="small mb-2">Doctor: {group.doctor_name}</p>
-                )}
-                <ul className="list-unstyled mb-0">
-                  {group.investigation.map((item) => (
-                    <li
-                      key={item.bookingId}
-                      className="d-flex justify-content-between align-items-start gap-3 border-top py-2"
-                    >
-                      <div>
-                        <span className="d-block">{item.test_name}</span>
-                        <small className="text-muted">
-                          {item.productType === "package"
-                            ? "Health package"
-                            : "Test"}
-                        </small>
-                      </div>
-                      <strong className="text-nowrap">
-                        {checkoutCurrency.format(getItemPrice(item))}
-                      </strong>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            ))}
-
-            <div className="row g-3 mt-1">
-              <section className="col-12 col-sm-6">
-                <div className="border rounded-3 p-3 h-100">
-                  <h3 className="h6 mb-2">Collection Slot</h3>
-                  <p className="small mb-1">
-                    {checkoutDate ?? "No date selected"}
-                  </p>
-                  <p className="small mb-0">
-                    {checkoutSlot
-                      ? `${formatSlotTime(checkoutSlot.start_time)} – ${formatSlotTime(checkoutSlot.end_time)}`
-                      : "No time slot selected"}
-                  </p>
-                </div>
-              </section>
-              <section className="col-12 col-sm-6">
-                <div className="border rounded-3 p-3 h-100">
-                  <h3 className="h6 mb-2">Collection Address</h3>
-                  {checkoutAddress ? (
-                    <>
-                      <p className="small fw-semibold mb-1">
-                        {checkoutAddress.fullName} ·{" "}
-                        {checkoutAddress.addressName}
-                      </p>
-                      <p className="small mb-1">
-                        {[
-                          checkoutAddress.addressLine_1,
-                          checkoutAddress.addressLine_2,
-                          checkoutAddress.landMark,
-                          checkoutAddress.pinCode,
-                        ]
-                          .filter(Boolean)
-                          .join(", ")}
-                      </p>
-                      <p className="small mb-0">
-                        {checkoutAddress.contactNumber}
-                      </p>
-                    </>
-                  ) : (
-                    <p className="small mb-0">No address selected</p>
-                  )}
-                </div>
-              </section>
-            </div>
-
-            {offerDiscount > 0 && (
-              <p className="small mb-0 mt-3" style={{ color: "#08783f" }}>
-                Offer savings: {checkoutCurrency.format(offerDiscount)}
-              </p>
-            )}
+          <div className="header">
+            <h4>Review Your Booking
+            </h4>
+            <p>Review your tests, packages, and collection details.</p>
           </div>
 
-          <footer className="d-flex justify-content-between align-items-center flex-wrap gap-3 border-top p-4">
-            <div>
-              <span className="d-block small text-muted">Total Amount</span>
-              <strong className="h4 mb-0" style={{ color: "#08783f" }}>
-                {checkoutCurrency.format(payableAmount)}
-              </strong>
-            </div>
-            <form method="dialog" className="m-0">
-              <button
-                type="button"
-                className="cmn_btn"
-                disabled={paymentBusy}
-                onClick={() => void handlePayNow()}
-              >
-                {paymentBusy
-                  ? "Processing…"
-                  : pendingPayment
-                    ? "Retry Confirmation"
-                    : "Pay Now"}
-              </button>
-              {paymentMessage && (
-                <p className="small text-danger px-4 mb-3" role="alert">
-                  {paymentMessage}
+          <div className="content-area">
+            <div className="aa">
+              <h3 className="h6 mb-3">
+                Patients and Tests ({investigations.length})
+              </h3>
+
+              {cartGroups.map((group) => (
+                <section key={group.cartId} className="rounded-3 border p-3 mb-3">
+                  <h4 className="h6 mb-1">{group.patient_name}</h4>
+                  <p className="small text-muted mb-2">
+                    {group.patient_age != null && `${group.patient_age} Y · `}
+                    {getGenderName(group.patient_gender)}
+                  </p>
+                  {group.doctor_name && (
+                    <p className="small mb-2">Doctor: {group.doctor_name}</p>
+                  )}
+                  <ul className="list-unstyled mb-0">
+                    {group.investigation.map((item) => (
+                      <li
+                        key={item.bookingId}
+                        className="d-flex justify-content-between align-items-start gap-3 border-top py-2"
+                      >
+                        <div>
+                          <span className="d-block">{item.test_name}</span>
+                          <small className="text-muted">
+                            {item.productType === "package"
+                              ? "Health package"
+                              : "Test"}
+                          </small>
+                        </div>
+                        <strong className="text-nowrap">
+                          {checkoutCurrency.format(getItemPrice(item))}
+                        </strong>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              ))}
+
+              <div className="row g-3">
+                <section className="col-12 col-sm-6">
+                  <div className="border rounded-3 p-3 h-100">
+                    <h3 className="h6 mb-2">Collection Slot</h3>
+                    <p className="small mb-1">
+                      {checkoutDate ?? "No date selected"}
+                    </p>
+                    <p className="small mb-0">
+                      {checkoutSlot
+                        ? `${formatSlotTime(checkoutSlot.start_time)} – ${formatSlotTime(checkoutSlot.end_time)}`
+                        : "No time slot selected"}
+                    </p>
+                  </div>
+                </section>
+                <section className="col-12 col-sm-6">
+                  <div className="border rounded-3 p-3 h-100">
+                    <h3 className="h6 mb-2">Collection Address</h3>
+                    {checkoutAddress ? (
+                      <>
+                        <p className="small fw-semibold mb-1">
+                          {checkoutAddress.fullName} ·{" "}
+                          {checkoutAddress.addressName}
+                        </p>
+                        <p className="small mb-1">
+                          {[
+                            checkoutAddress.addressLine_1,
+                            checkoutAddress.addressLine_2,
+                            checkoutAddress.landMark,
+                            checkoutAddress.pinCode,
+                          ]
+                            .filter(Boolean)
+                            .join(", ")}
+                        </p>
+                        <p className="small mb-0">
+                          {checkoutAddress.contactNumber}
+                        </p>
+                      </>
+                    ) : (
+                      <p className="small mb-0">No address selected</p>
+                    )}
+                  </div>
+                </section>
+              </div>
+
+              {offerDiscount > 0 && (
+                <p className="small mb-0 mt-3" style={{ color: "#00A651" }}>
+                  Offer savings: {checkoutCurrency.format(offerDiscount)}
                 </p>
               )}
-            </form>
-          </footer>
+            </div>
+
+            <footer className="d-flex justify-content-between align-items-center flex-wrap gap-3 border-top mt-3 pt-3">
+              <div>
+                <span className="d-block small text-muted">Total Amount</span>
+                <strong className="h4 mb-0" style={{ color: "#00A651" }}>
+                  {checkoutCurrency.format(payableAmount)}
+                </strong>
+              </div>
+              <form method="dialog" className="m-0">
+                <button
+                  type="button"
+                  className="cmn_btn"
+                  disabled={paymentBusy}
+                  onClick={() => void handlePayNow()}
+                >
+                  {paymentBusy
+                    ? "Processing…"
+                    : pendingPayment
+                      ? "Retry Confirmation"
+                      : "Pay Now"}
+                </button>
+                {paymentMessage && (
+                  <p className="small text-danger px-4 mb-3" role="alert">
+                    {paymentMessage}
+                  </p>
+                )}
+              </form>
+            </footer>
+          </div>
         </div>
-      </dialog>
+      </div>
 
       {removeTarget && removePatient && (
         <div
