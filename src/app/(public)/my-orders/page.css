@@ -68,7 +68,8 @@
 .patient-row .tests-section .test-header h6{ font-weight:500; color:var(--up-black); margin-bottom:0; }
 .patient-row .tests-section .test-header .parameter-pill{ font-size:13px; line-height:1.2; font-weight:500; color:var(--up-theme); display:inline-block; background:#D9F3E5; border-radius:25px; padding:10px 15px; }
 .patient-row .tests-section .chips{ display:flex; flex-wrap:wrap; gap:5px 10px; }
-.patient-row .tests-section .chips span{ font-size:13px; line-height:1.2; font-weight:500; color:var(--up-black); display:inline-block; border:1px solid var(--up-black); border-radius:25px; padding:10px 15px; }
+.patient-row .tests-section .chips span{ font-size:13px; line-height:1.2; font-weight:500; color:var(--up-black); display:inline-block; border:1px solid var(--up-black); border-radius:25px; transition:all 0.4s; padding:10px 15px; }
+.patient-row .tests-section .chips span:hover{ background:var(--up-black); color:var(--up-white); }
 /* ==== Patient Row Css End ==== */
 
 /* ==== Payment Details Start */
