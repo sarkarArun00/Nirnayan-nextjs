@@ -346,15 +346,15 @@ export default function Header() {
     return () => clearInterval(interval);
   }, [otpRequested, timer]);
 
-useEffect(() => {
-  const checkToken = async () => {
-    const result = await debugAccessToken();
+  useEffect(() => {
+    const checkToken = async () => {
+      const result = await debugAccessToken();
 
-    console.log("Access Token:", result.accessToken);
-  };
+      console.log("Access Token:", result.accessToken);
+    };
 
-  void checkToken();
-}, []);
+    void checkToken();
+  }, []);
 
   // Google Translate
   const [langOpen, setLangOpen] = useState(false);
@@ -518,43 +518,43 @@ useEffect(() => {
 
   const pathname = usePathname();
 
-useEffect(() => {
-  const loadLoggedInUser = async () => {
-    try {
-      const user = await getLoggedInUser();
+  useEffect(() => {
+    const loadLoggedInUser = async () => {
+      try {
+        const user = await getLoggedInUser();
 
-      if (user) {
-        setLoginSession({
-          user,
-        });
+        if (user) {
+          setLoginSession({
+            user,
+          });
 
-        console.log("Logged-in User:", user);
-      } else {
+          console.log("Logged-in User:", user);
+        } else {
+          setLoginSession(null);
+
+          console.log("No user logged in");
+        }
+      } catch (error) {
+        console.error("Unable to load logged-in user:", error);
+
         setLoginSession(null);
-
-        console.log("No user logged in");
       }
-    } catch (error) {
-      console.error("Unable to load logged-in user:", error);
+    };
 
-      setLoginSession(null);
-    }
-  };
-
-  // Initial load + route change
-  void loadLoggedInUser();
-
-  // Reload when browser gets focus
-  const handleFocus = () => {
+    // Initial load + route change
     void loadLoggedInUser();
-  };
 
-  window.addEventListener("focus", handleFocus);
+    // Reload when browser gets focus
+    const handleFocus = () => {
+      void loadLoggedInUser();
+    };
 
-  return () => {
-    window.removeEventListener("focus", handleFocus);
-  };
-}, [pathname]);
+    window.addEventListener("focus", handleFocus);
+
+    return () => {
+      window.removeEventListener("focus", handleFocus);
+    };
+  }, [pathname]);
 
   useEffect(() => {
     if (!isAccountMenuOpen) return;
@@ -1225,9 +1225,15 @@ useEffect(() => {
               className={styles["location"]}
               onClick={() => setIsLocation(true)}
             >
-              <i className="fa-solid fa-location-dot location-icon"></i>
-              <h4>{selectedState?.name || "Select Location"}</h4>
-              <i className="fa-solid fa-chevron-down"></i>
+              <div className={styles["loc_icon"]}>
+                <img src="/assets/images/location.png" alt="" />
+              </div>
+              {/* <i className="fa-solid fa-location-dot location-icon"></i> */}
+              <div className={styles["loc_text"]}>
+                <h6>Current Location</h6>
+                <h4>{selectedState?.name || "Select Location"} ...<i className="fa-solid fa-chevron-down"></i></h4>
+                {/* <i className="fa-solid fa-chevron-down"></i> */}
+              </div>
             </div>
 
             {/* Hidden Block */}
@@ -1514,9 +1520,8 @@ useEffect(() => {
                       <div key={item.id} className={styles.accordionItem}>
                         <button
                           type="button"
-                          className={`${styles.accordionHeader} ${
-                            isOpen ? styles.activeHeader : ""
-                          }`}
+                          className={`${styles.accordionHeader} ${isOpen ? styles.activeHeader : ""
+                            }`}
                           onClick={() => toggleAccordion(index)}
                           aria-expanded={isOpen}
                         >
@@ -1524,17 +1529,15 @@ useEffect(() => {
 
                           <span className={styles.accordionIcon}>
                             <i
-                              className={`fa-solid ${
-                                isOpen ? "fa-chevron-up" : "fa-chevron-down"
-                              }`}
+                              className={`fa-solid ${isOpen ? "fa-chevron-up" : "fa-chevron-down"
+                                }`}
                             />
                           </span>
                         </button>
 
                         <ul
-                          className={`${styles.linkList} ${
-                            isOpen ? styles.open : ""
-                          }`}
+                          className={`${styles.linkList} ${isOpen ? styles.open : ""
+                            }`}
                         >
                           {item.content.map((linkItem, i) => (
                             <li key={i} className={styles.mobileLinkRow}>

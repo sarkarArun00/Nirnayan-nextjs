@@ -32,7 +32,7 @@
 
 @media screen and (max-width:1199px){
     .why_us .text_block{ text-align:center; padding:0 0 30px; }
-    .why_us .text_block p{ width:90%; }
+    .why_us .text_block p{ width:90%; margin:0 auto; }
     .why_us .text_block ul{ justify-content:center; margin-top:20px; }
 }
 
