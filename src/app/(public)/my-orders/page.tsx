@@ -6,7 +6,7 @@ import { createPortal } from "react-dom";
 
 import { getAllOrders, type OrderItem } from "@/services/order.service";
 import PhleboTrackingMap from "@/components/orders/PhleboTrackingMap";
-
+import './page.css';
 type OrderTab = "all" | "active" | "completed" | "cancelled";
 
 const GREEN = "#00A651";
@@ -658,6 +658,7 @@ export default function MyOrdersPage() {
   const [selectedPatientId, setSelectedPatientId] = useState("all");
   const [trackingOrder, setTrackingOrder] = useState<OrderItem | null>(null);
   const [mounted, setMounted] = useState(false);
+    const [isActionOpen, setIsActionOpen] = useState(false);
 
   const loadOrders = async () => {
     try {
@@ -725,278 +726,278 @@ export default function MyOrdersPage() {
   const trackingModal =
     mounted && trackingOrder
       ? createPortal(
-          (() => {
-            const phlebo = getPhleboLocation(trackingOrder);
-            const booking = getBookingLocation(trackingOrder);
+        (() => {
+          const phlebo = getPhleboLocation(trackingOrder);
+          const booking = getBookingLocation(trackingOrder);
 
-            return (
+          return (
+            <div
+              onClick={() => setTrackingOrder(null)}
+              style={{
+                position: "fixed",
+                inset: 0,
+                zIndex: 999999,
+                background: "rgba(0,0,0,.58)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                padding: 18,
+              }}
+            >
               <div
-                onClick={() => setTrackingOrder(null)}
+                onClick={(event) => event.stopPropagation()}
                 style={{
-                  position: "fixed",
-                  inset: 0,
-                  zIndex: 999999,
-                  background: "rgba(0,0,0,.58)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  padding: 18,
+                  width: "min(900px, 96vw)",
+                  maxHeight: "92vh",
+                  overflowY: "auto",
+                  background: "#fff",
+                  borderRadius: 18,
+                  overflowX: "hidden",
                 }}
               >
                 <div
-                  onClick={(event) => event.stopPropagation()}
                   style={{
-                    width: "min(900px, 96vw)",
-                    maxHeight: "92vh",
-                    overflowY: "auto",
-                    background: "#fff",
-                    borderRadius: 18,
-                    overflowX: "hidden",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    gap: 16,
+                    padding: "16px 20px",
+                    borderBottom: `1px solid ${BORDER}`,
+                  }}
+                >
+                  <div>
+                    <h3
+                      style={{
+                        margin: 0,
+                        color: TEXT,
+                        fontSize: 20,
+                        fontWeight: 800,
+                      }}
+                    >
+                      Track Phlebotomist
+                    </h3>
+                    <p
+                      style={{
+                        margin: "3px 0 0",
+                        color: MUTED,
+                        fontSize: 11,
+                      }}
+                    >
+                      Booking:{" "}
+                      {trackingOrder.displayBookingNumber ||
+                        `#${trackingOrder.id}`}
+                    </p>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setTrackingOrder(null)}
+                    aria-label="Close map"
+                    style={{
+                      width: 38,
+                      height: 38,
+                      border: 0,
+                      borderRadius: "50%",
+                      background: "#f1f4f2",
+                      color: "#111",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <i className="fa-solid fa-xmark" />
+                  </button>
+                </div>
+
+                <div
+                  style={{
+                    padding: "13px 20px",
+                    background: "#f6fbf8",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    gap: 16,
                   }}
                 >
                   <div
+                    style={{ display: "flex", alignItems: "center", gap: 10 }}
+                  >
+                    <div
+                      style={{
+                        width: 38,
+                        height: 38,
+                        borderRadius: "50%",
+                        background: "#e8f8ef",
+                        color: GREEN,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <i className="fa-solid fa-motorcycle" />
+                    </div>
+                    <div>
+                      <strong style={{ display: "block", fontSize: 12 }}>
+                        Phlebotomist
+                      </strong>
+                      <small style={{ color: GREEN, fontWeight: 700 }}>
+                        {phlebo.isLive ? "Live location" : "On the way"}
+                      </small>
+                    </div>
+                  </div>
+
+                  <div
+                    style={{
+                      flex: 1,
+                      maxWidth: 210,
+                      height: 2,
+                      background: "#a9dcbc",
+                    }}
+                  />
+
+                  <div
+                    style={{ display: "flex", alignItems: "center", gap: 10 }}
+                  >
+                    <div
+                      style={{
+                        width: 38,
+                        height: 38,
+                        borderRadius: 10,
+                        background: "#e8f8ef",
+                        color: GREEN,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <i className="fa-solid fa-house" />
+                    </div>
+                    <div>
+                      <strong style={{ display: "block", fontSize: 12 }}>
+                        Booking Address
+                      </strong>
+                      <small style={{ color: MUTED }}>Destination</small>
+                    </div>
+                  </div>
+                </div>
+
+                {booking ? (
+                  <PhleboTrackingMap
+                    phleboLat={phlebo.lat}
+                    phleboLng={phlebo.lng}
+                    bookingLat={booking.lat}
+                    bookingLng={booking.lng}
+                  />
+                ) : (
+                  <div style={{ padding: 48, textAlign: "center" }}>
+                    Booking location unavailable.
+                  </div>
+                )}
+
+                {booking && (
+                  <div
                     style={{
                       display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      gap: 16,
-                      padding: "16px 20px",
-                      borderBottom: `1px solid ${BORDER}`,
+                      gap: 11,
+                      alignItems: "flex-start",
+                      padding: "14px 20px",
+                      borderTop: `1px solid ${BORDER}`,
                     }}
                   >
+                    <div
+                      style={{
+                        width: 40,
+                        height: 40,
+                        borderRadius: 10,
+                        background: "#e9f8ef",
+                        color: GREEN,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexShrink: 0,
+                      }}
+                    >
+                      <i className="fa-solid fa-house" />
+                    </div>
+
                     <div>
-                      <h3
-                        style={{
-                          margin: 0,
-                          color: TEXT,
-                          fontSize: 20,
-                          fontWeight: 800,
-                        }}
-                      >
-                        Track Phlebotomist
-                      </h3>
+                      <strong style={{ display: "block", fontSize: 12 }}>
+                        {booking.address.addressName}
+                      </strong>
                       <p
                         style={{
-                          margin: "3px 0 0",
+                          margin: "3px 0",
                           color: MUTED,
                           fontSize: 11,
                         }}
                       >
-                        Booking:{" "}
-                        {trackingOrder.displayBookingNumber ||
-                          `#${trackingOrder.id}`}
+                        {getFullAddress(trackingOrder)}
                       </p>
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={() => setTrackingOrder(null)}
-                      aria-label="Close map"
-                      style={{
-                        width: 38,
-                        height: 38,
-                        border: 0,
-                        borderRadius: "50%",
-                        background: "#f1f4f2",
-                        color: "#111",
-                        cursor: "pointer",
-                      }}
-                    >
-                      <i className="fa-solid fa-xmark" />
-                    </button>
-                  </div>
-
-                  <div
-                    style={{
-                      padding: "13px 20px",
-                      background: "#f6fbf8",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      gap: 16,
-                    }}
-                  >
-                    <div
-                      style={{ display: "flex", alignItems: "center", gap: 10 }}
-                    >
-                      <div
-                        style={{
-                          width: 38,
-                          height: 38,
-                          borderRadius: "50%",
-                          background: "#e8f8ef",
-                          color: GREEN,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <i className="fa-solid fa-motorcycle" />
-                      </div>
-                      <div>
-                        <strong style={{ display: "block", fontSize: 12 }}>
-                          Phlebotomist
-                        </strong>
-                        <small style={{ color: GREEN, fontWeight: 700 }}>
-                          {phlebo.isLive ? "Live location" : "On the way"}
-                        </small>
-                      </div>
-                    </div>
-
-                    <div
-                      style={{
-                        flex: 1,
-                        maxWidth: 210,
-                        height: 2,
-                        background: "#a9dcbc",
-                      }}
-                    />
-
-                    <div
-                      style={{ display: "flex", alignItems: "center", gap: 10 }}
-                    >
-                      <div
-                        style={{
-                          width: 38,
-                          height: 38,
-                          borderRadius: 10,
-                          background: "#e8f8ef",
-                          color: GREEN,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                      >
-                        <i className="fa-solid fa-house" />
-                      </div>
-                      <div>
-                        <strong style={{ display: "block", fontSize: 12 }}>
-                          Booking Address
-                        </strong>
-                        <small style={{ color: MUTED }}>Destination</small>
-                      </div>
+                      <small style={{ color: MUTED }}>
+                        {booking.address.fullName}
+                        {booking.address.contactNumber
+                          ? ` • ${booking.address.contactNumber}`
+                          : ""}
+                      </small>
                     </div>
                   </div>
+                )}
 
-                  {booking ? (
-                    <PhleboTrackingMap
-                      phleboLat={phlebo.lat}
-                      phleboLng={phlebo.lng}
-                      bookingLat={booking.lat}
-                      bookingLng={booking.lng}
-                    />
-                  ) : (
-                    <div style={{ padding: 48, textAlign: "center" }}>
-                      Booking location unavailable.
-                    </div>
-                  )}
+                <div
+                  style={{
+                    padding: "14px 20px",
+                    borderTop: `1px solid ${BORDER}`,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                    gap: 16,
+                    flexWrap: "wrap",
+                  }}
+                >
+                  <div>
+                    <span
+                      style={{ display: "block", color: MUTED, fontSize: 10 }}
+                    >
+                      Phlebotomist Location
+                    </span>
+                    <strong style={{ fontSize: 12 }}>
+                      {phlebo.lat.toFixed(6)}, {phlebo.lng.toFixed(6)}
+                    </strong>
+                  </div>
 
                   {booking && (
-                    <div
+                    <a
+                      href={
+                        `https://www.google.com/maps/dir/?api=1` +
+                        `&origin=${phlebo.lat},${phlebo.lng}` +
+                        `&destination=${booking.lat},${booking.lng}` +
+                        `&travelmode=driving`
+                      }
+                      target="_blank"
+                      rel="noopener noreferrer"
                       style={{
-                        display: "flex",
-                        gap: 11,
-                        alignItems: "flex-start",
-                        padding: "14px 20px",
-                        borderTop: `1px solid ${BORDER}`,
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: 8,
+                        padding: "11px 18px",
+                        borderRadius: 24,
+                        background: GREEN,
+                        color: "#fff",
+                        textDecoration: "none",
+                        fontSize: 12,
+                        fontWeight: 700,
+                        boxShadow: "0 5px 14px rgba(0,166,81,.2)",
                       }}
                     >
-                      <div
-                        style={{
-                          width: 40,
-                          height: 40,
-                          borderRadius: 10,
-                          background: "#e9f8ef",
-                          color: GREEN,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          flexShrink: 0,
-                        }}
-                      >
-                        <i className="fa-solid fa-house" />
-                      </div>
-
-                      <div>
-                        <strong style={{ display: "block", fontSize: 12 }}>
-                          {booking.address.addressName}
-                        </strong>
-                        <p
-                          style={{
-                            margin: "3px 0",
-                            color: MUTED,
-                            fontSize: 11,
-                          }}
-                        >
-                          {getFullAddress(trackingOrder)}
-                        </p>
-                        <small style={{ color: MUTED }}>
-                          {booking.address.fullName}
-                          {booking.address.contactNumber
-                            ? ` • ${booking.address.contactNumber}`
-                            : ""}
-                        </small>
-                      </div>
-                    </div>
+                      Open Route in Google Maps
+                      <i className="fa-solid fa-arrow-up-right-from-square" />
+                    </a>
                   )}
-
-                  <div
-                    style={{
-                      padding: "14px 20px",
-                      borderTop: `1px solid ${BORDER}`,
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      gap: 16,
-                      flexWrap: "wrap",
-                    }}
-                  >
-                    <div>
-                      <span
-                        style={{ display: "block", color: MUTED, fontSize: 10 }}
-                      >
-                        Phlebotomist Location
-                      </span>
-                      <strong style={{ fontSize: 12 }}>
-                        {phlebo.lat.toFixed(6)}, {phlebo.lng.toFixed(6)}
-                      </strong>
-                    </div>
-
-                    {booking && (
-                      <a
-                        href={
-                          `https://www.google.com/maps/dir/?api=1` +
-                          `&origin=${phlebo.lat},${phlebo.lng}` +
-                          `&destination=${booking.lat},${booking.lng}` +
-                          `&travelmode=driving`
-                        }
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{
-                          display: "inline-flex",
-                          alignItems: "center",
-                          gap: 8,
-                          padding: "11px 18px",
-                          borderRadius: 24,
-                          background: GREEN,
-                          color: "#fff",
-                          textDecoration: "none",
-                          fontSize: 12,
-                          fontWeight: 700,
-                          boxShadow: "0 5px 14px rgba(0,166,81,.2)",
-                        }}
-                      >
-                        Open Route in Google Maps
-                        <i className="fa-solid fa-arrow-up-right-from-square" />
-                      </a>
-                    )}
-                  </div>
                 </div>
               </div>
-            );
-          })(),
-          document.body,
-        )
+            </div>
+          );
+        })(),
+        document.body,
+      )
       : null;
 
   if (loading) {
@@ -1017,28 +1018,28 @@ export default function MyOrdersPage() {
 
   return (
     <>
-      <section style={ui.page}>
+      <section className="my-order">
         <div className="container">
-          <ol className="breadcrumb" style={{ marginBottom: 10 }}>
-            <li className="breadcrumb-item">
-              <Link href="/">Home</Link>
-            </li>
-            <li className="breadcrumb-item active">My Order</li>
-          </ol>
-
-          <div style={ui.headerRow}>
-            <div>
-              <h1 style={ui.title}>My Orders</h1>
-              <p style={ui.subtitle}>Manage and track all orders</p>
-            </div>
-
-            <div style={{ fontSize: 11, color: MUTED }}>
-              {totalOrders} total order{totalOrders === 1 ? "" : "s"}
-            </div>
+          <div className="breadcrumb-wrap">
+            <nav aria-label="breadcrumb">
+              <ol className="breadcrumb">
+                <li className="breadcrumb-item">
+                  <Link href="/">Home</Link>
+                </li>
+                <li className="breadcrumb-item active" aria-current="page">
+                  My Order
+                </li>
+              </ol>
+            </nav>
           </div>
 
-          <div style={ui.filterBar}>
-            <div style={ui.tabs}>
+          <div className="order-title">
+            <h2>My Orders</h2>
+            <p>Manage and track all orders</p>
+          </div>
+
+          <div className="filter-bar">
+            <div className="tabs">
               {(
                 [
                   ["all", "All Orders"],
@@ -1051,10 +1052,7 @@ export default function MyOrdersPage() {
                   key={key}
                   type="button"
                   onClick={() => setActiveTab(key)}
-                  style={{
-                    ...ui.tabButton,
-                    ...(activeTab === key ? ui.tabButtonActive : {}),
-                  }}
+                  className={`tab-button ${activeTab === key ? 'active' : ''}`}
                 >
                   {label}
                 </button>
@@ -1064,7 +1062,8 @@ export default function MyOrdersPage() {
             <select
               value={selectedPatientId}
               onChange={(event) => setSelectedPatientId(event.target.value)}
-              style={ui.patientSelect}
+              // style={ui.patientSelect}
+              className="form-control form-select"
               aria-label="Filter orders by patient"
             >
               <option value="all">All Patients</option>
@@ -1108,292 +1107,228 @@ export default function MyOrdersPage() {
               </p>
             </div>
           ) : (
-            filteredOrders.map((order) => {
-              const stage = getOrderStage(order);
-              const badge = getOrderBadge(order);
-              const patientStatus = getPatientStatus(order);
-              const phlebo = getPhleboLocation(order);
-              const isPaid = order.paymentStatus === "1";
+            <div className="order-main">
+              {filteredOrders.map((order) => {
+                const stage = getOrderStage(order);
+                const badge = getOrderBadge(order);
+                const patientStatus = getPatientStatus(order);
+                const phlebo = getPhleboLocation(order);
+                const isPaid = order.paymentStatus === "1";
 
-              return (
-                <article key={order.id} style={ui.orderCard}>
-                  <div style={ui.hero}>
-                    <div style={ui.heroLeft}>
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 10,
-                          flexWrap: "wrap",
-                        }}
-                      >
-                        <span
-                          style={{
-                            ...ui.badge,
-                            background: badge.background,
-                            color: badge.color,
-                          }}
-                        >
-                          {badge.label}
-                        </span>
-
-                        <span style={ui.orderId}>
-                          Order ID:{" "}
-                          {order.displayBookingNumber || `#${order.id}`}
-                        </span>
-                      </div>
-
-                      <h2 style={ui.heroTitle}>{getOrderHeadline(order)}</h2>
-
-                      <p style={ui.addressLine}>
-                        <i
-                          className="fa-solid fa-location-dot"
-                          style={{ color: GREEN, marginTop: 1 }}
-                        />
-                        <span>{getFullAddress(order)}</span>
-                      </p>
-
-                      <div style={ui.timeline}>
-                        {timelineSteps.map((stepName, index) => {
-                          const completed = stage >= index;
-                          const current = stage === index;
-                          const cancelled = stage === -1;
-
-                          return (
-                            <div key={stepName} style={ui.step}>
-                              <div style={ui.stepTop}>
-                                <span
-                                  style={{
-                                    ...ui.stepCircle,
-                                    background:
-                                      completed && !cancelled
-                                        ? GREEN
-                                        : "#edf0ee",
-                                    color:
-                                      completed && !cancelled
-                                        ? "#fff"
-                                        : "#a4aaa6",
-                                    boxShadow: current
-                                      ? "0 0 0 4px rgba(0,166,81,.10)"
-                                      : "none",
-                                  }}
-                                >
-                                  <i className="fa-solid fa-check" />
-                                </span>
-
-                                {index < timelineSteps.length - 1 && (
-                                  <span
-                                    style={{
-                                      ...ui.stepLine,
-                                      background:
-                                        stage > index && !cancelled
-                                          ? "#74cea0"
-                                          : "#dfe5e1",
-                                    }}
-                                  />
-                                )}
-                              </div>
-
-                              <span style={ui.stepTitle}>{stepName}</span>
-                              <span
-                                style={{
-                                  ...ui.stepMeta,
-                                  color: current ? GREEN : "#87908a",
-                                  fontWeight: current ? 700 : 400,
-                                }}
-                              >
-                                {cancelled
-                                  ? "Cancelled"
-                                  : stage > index
-                                    ? "Completed"
-                                    : current
-                                      ? "Current"
-                                      : "Pending"}
-                              </span>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    </div>
-
-                    <aside style={ui.heroRight}>
-                      <div style={ui.phleboTop}>
-                        <div>
-                          <div
-                            style={{
-                              display: "flex",
-                              alignItems: "center",
-                              flexWrap: "wrap",
-                            }}
-                          >
-                            <h3 style={ui.phleboName}>Phlebotomist</h3>
-                            <span style={ui.assigned}>
-                              {phlebo.isLive ? "Live" : "Tracking"}
-                            </span>
-                          </div>
-                          <p
-                            style={{
-                              margin: "5px 0 0",
-                              fontSize: 11,
-                              color: "rgba(255,255,255,.8)",
-                            }}
-                          >
-                            {stage >= 2
-                              ? "Collection progress available"
-                              : "Track sample collection"}
-                          </p>
-                        </div>
-
-                        <button
-                          type="button"
-                          title="Track phlebotomist"
-                          aria-label="Track phlebotomist"
-                          style={ui.trackRoundButton}
-                          onClick={() => setTrackingOrder(order)}
-                        >
-                          <i className="fa-solid fa-location-crosshairs" />
-                        </button>
-                      </div>
-
-                      <div style={ui.paymentBlock}>
-                        <div>
-                          <span style={ui.paymentLabel}>Payment Summary</span>
-                          <strong style={ui.paymentAmount}>
-                            {formatMoney(order.total_amount)}
-                          </strong>
-                          <small
-                            style={{
-                              display: "block",
-                              marginTop: 2,
-                              color: "rgba(255,255,255,.78)",
-                              fontSize: 9,
-                            }}
-                          >
-                            {isPaid ? "Paid" : "Payment Pending"}
-                          </small>
-                        </div>
-
-                        <button
-                          type="button"
-                          style={ui.heroAction}
-                          onClick={() => setTrackingOrder(order)}
-                        >
-                          Track Order
-                          <i className="fa-solid fa-location-dot" />
-                        </button>
-                      </div>
-                    </aside>
-                  </div>
-
-                  {order.patientWiseBookingDetails.map((patientGroup) => {
-                    const patient = patientGroup.patient;
-                    const age = getAge(patient.dob);
-                    const visibleTests = patientGroup.bookingDetails.slice(
-                      0,
-                      5,
-                    );
-                    const remainingTests = Math.max(
-                      0,
-                      patientGroup.bookingDetails.length - visibleTests.length,
-                    );
-                    const firstBooking = patientGroup.bookingDetails[0];
-
-                    return (
-                      <div key={patientGroup.patientId} style={ui.patientRow}>
-                        <div style={ui.patientTop}>
-                          <div style={ui.patientIdentity}>
-                            <div style={ui.avatar}>
-                              {getInitials(patient.patient_name)}
-                            </div>
-
-                            <div style={{ minWidth: 0 }}>
-                              <div
-                                style={{
-                                  display: "flex",
-                                  alignItems: "center",
-                                  flexWrap: "wrap",
-                                }}
-                              >
-                                <h4 style={ui.patientName}>
-                                  {patient.patient_name}
-                                </h4>
-                                <span style={ui.genderPill}>
-                                  {getGender(patient.gender)}
-                                  {age !== null ? `, ${age} yrs` : ""}
-                                </span>
-                              </div>
-
-                              <p style={ui.patientMeta}>
-                                Investigation ID: INV-
-                                {firstBooking?.id ?? patientGroup.patientId}
-                              </p>
-                            </div>
-                          </div>
-
-                          <span
-                            style={{
-                              ...ui.patientStatus,
-                              background: patientStatus.background,
-                              color: patientStatus.color,
-                            }}
-                          >
-                            {patientStatus.label}
+                return (
+                  <article key={order.id} className="order-card">
+                    <div className="hero">
+                      <div className="hero-left">
+                        <div className="hero-head">
+                          <span className="on-track">On Track</span>
+                          <span className="order-id">
+                            Order ID: {order.displayBookingNumber || `#${order.id}`}
                           </span>
                         </div>
+                        <h2 className="hero-title">{getOrderHeadline(order)}</h2>
+                        <p className="address-line">
+                          <i className="fa-solid fa-location-dot address-icon" />
+                          <span>{getFullAddress(order)}</span>
+                        </p>
 
-                        <div style={ui.testsSection}>
-                          <div style={ui.testHeader}>
-                            <span style={ui.testLabel}>
-                              Includes Investigation Tests
-                            </span>
-                            <span style={ui.parameterPill}>
-                              {patientGroup.bookingDetails.length} Item
-                              {patientGroup.bookingDetails.length === 1
-                                ? ""
-                                : "s"}
-                            </span>
+                        <div className="timeline">
+                          {timelineSteps.map((stepName, index) => {
+                            const completed = stage >= index;
+                            const current = stage === index;
+                            const cancelled = stage === -1;
+
+                            const circleClass = [
+                              "step-circle",
+                              completed && !cancelled && "step-circle--completed",
+                              current && "step-circle--current",
+                            ]
+                              .filter(Boolean)
+                              .join(" ");
+
+                            const lineClass = [
+                              "step-line",
+                              stage > index && !cancelled && "step-line--completed",
+                            ]
+                              .filter(Boolean)
+                              .join(" ");
+
+                            const metaClass = ["step-meta", current && "step-meta--current"]
+                              .filter(Boolean)
+                              .join(" ");
+
+                            return (
+                              <div key={stepName} className="step">
+                                <div className="step-top">
+                                  <span className={circleClass}>
+                                    <i className="fa-solid fa-check" />
+                                  </span>
+
+                                  {index < timelineSteps.length - 1 && (
+                                    <span className={lineClass} />
+                                  )}
+                                </div>
+
+                                <span className="step-title">{stepName}</span>
+                                <span className={metaClass}>
+                                  {cancelled
+                                    ? "Cancelled"
+                                    : stage > index
+                                      ? "Completed"
+                                      : current
+                                        ? "Current"
+                                        : "Pending"}
+                                </span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      <aside className="hero-right">
+                        <div className="phlebo-top">
+                          <div className="left">
+                            <div className="phlebo-header">
+                              <div className="d-flex align-items-center gap-2 mb-2">
+                                <h3 className="phlebo-name">Saikat Ray</h3>
+                                <span className="assigned">
+                                  {phlebo.isLive ? "Live" : "Tracking"}
+                                </span>
+                              </div>
+                            </div>
+                            <p className="phlebo-subtitle">
+                              {stage >= 2
+                                ? "Collection progress available"
+                                : "Track sample collection"}
+                            </p>
+                          </div>
+                          <div className="d-flex gap-3">
+                            <Link href="tel:+917001140151" className="call-btn"><i className="fa-solid fa-phone"></i></Link>
+                            <button
+                              type="button"
+                              title="Track phlebotomist"
+                              aria-label="Track phlebotomist"
+                              className="track-round-button"
+                              onClick={() => setTrackingOrder(order)}
+                            >
+                              <i className="fa-solid fa-location-crosshairs" />
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="payment-block d-flex flex-wrap justify-content-between">
+                          <div className="pay-left">
+                            <p className="payment-label mb-2">Payment Summary</p>
+                            <div className="d-flex gap-1">
+                              <h3 className="payment-amount">
+                                {formatMoney(order.total_amount)}
+                                <span className="payment-status-text">
+                                  {isPaid ? "Paid" : "Payment Pending"}
+                                </span>
+                              </h3>
+
+                            </div>
                           </div>
 
-                          <div style={ui.chips}>
-                            {visibleTests.map((detail) => (
-                              <span key={detail.id} style={ui.chip}>
-                                {detail.testDetails?.test_name ||
-                                  `${detail.productType === "package" ? "Package" : "Test"} #${detail.test_id}`}
-                              </span>
-                            ))}
+                          <button
+                            type="button"
+                            className="exp-btn is-white"
+                          // onClick={() => setTrackingOrder(order)}
+                          >
+                            Download Invoice
+                            <i className="fa-solid fa-download"></i>
+                          </button>
+                        </div>
+                      </aside>
+                    </div>
 
-                            {remainingTests > 0 && (
-                              <span
-                                style={{
-                                  ...ui.chip,
-                                  background: "#111",
-                                  color: "#fff",
-                                  borderColor: "#111",
-                                }}
-                              >
-                                +{remainingTests} More
+                    {order.patientWiseBookingDetails.map((patientGroup) => {
+                      const patient = patientGroup.patient;
+                      const age = getAge(patient.dob);
+                      const visibleTests = patientGroup.bookingDetails.slice(0, 5);
+                      const remainingTests = Math.max(
+                        0,
+                        patientGroup.bookingDetails.length - visibleTests.length,
+                      );
+                      const firstBooking = patientGroup.bookingDetails[0];
+
+                      return (
+                        <div key={patientGroup.patientId} className="patient-row">
+                          <div className="patient-top">
+                            <div className="patient-identity">
+                              <div className="avatar">
+                                <h4>{getInitials(patient.patient_name)}</h4>
+                              </div>
+
+                              <div className="patient-info">
+                                <div className="patient-name-row d-flex align-items-center gap-2 mb-2">
+                                  <h4 className="patient-name">{patient.patient_name}</h4>
+                                  <span className="gender-pill">
+                                    {getGender(patient.gender)}
+                                    {age !== null ? `, ${age} yrs` : ""}
+                                  </span>
+                                </div>
+
+                                <p className="patient-meta">
+                                  Investigation ID: INV-
+                                  {firstBooking?.id ?? patientGroup.patientId}
+                                </p>
+                              </div>
+                            </div>
+
+                            {/* <span
+                              className={`patient-status patient-status--${patientStatus.label.toLowerCase().replace(/\s+/g, "-")}`}
+                            >
+                              {patientStatus.label}
+                            </span> */}
+                            <div className="card-action d-flex align-items-center gap-1">
+                              <span className={`order-status ${badge.label.toLowerCase().replace(/\s+/g, "-")}`}>
+                                {badge.label}
                               </span>
-                            )}
+                              <div className={`act-bar ${isActionOpen ? "active" : ""}`}>
+                                <button type="button" onClick={() => setIsActionOpen(!isActionOpen)}>
+                                  <i className="fa-solid fa-ellipsis-vertical"></i>
+                                </button>
+
+                                <div className="act-content">
+                                  <ul>
+                                    <li>Download Report</li>
+                                    <li>Download Invoice</li>
+                                  </ul>
+                                </div>
+                              </div>
+                            </div>
                           </div>
 
-                          {patientGroup.attachments?.length > 0 && (
-                            <div style={ui.attachmentArea}>
-                              <span
-                                style={{
-                                  color: MUTED,
-                                  fontSize: 10,
-                                  fontWeight: 700,
-                                }}
-                              >
-                                Prescription:
+                          <div className="tests-section">
+                            <div className="test-header">
+                              <h6 className="test-label">Includes Investigation Tests</h6>
+                              <span className="parameter-pill">
+                                {patientGroup.bookingDetails.length} Parameters
+                                {patientGroup.bookingDetails.length === 1 ? "" : "s"}
                               </span>
+                            </div>
 
-                              {patientGroup.attachments
-                                .slice(0, 3)
-                                .map((attachment) => {
-                                  const fileUrl = getAttachmentUrl(
-                                    attachment.attechment,
-                                  );
+                            <div className="chips">
+                              {visibleTests.map((detail) => (
+                                <span key={detail.id} className="chip">
+                                  {detail.testDetails?.test_name ||
+                                    `${detail.productType === "package" ? "Package" : "Test"} #${detail.test_id}`}
+                                </span>
+                              ))}
+
+                              {remainingTests > 0 && (
+                                <span className="chip chip--more">
+                                  +{remainingTests} More
+                                </span>
+                              )}
+                            </div>
+
+                            {patientGroup.attachments?.length > 0 && (
+                              <div className="attachment-area">
+                                <span className="attachment-label">Prescription:</span>
+
+                                {patientGroup.attachments.slice(0, 3).map((attachment) => {
+                                  const fileUrl = getAttachmentUrl(attachment.attechment);
                                   const isPdf = attachment.attechment
                                     .toLowerCase()
                                     .endsWith(".pdf");
@@ -1405,86 +1340,61 @@ export default function MyOrdersPage() {
                                       target="_blank"
                                       rel="noopener noreferrer"
                                       title="View prescription"
-                                      style={{ textDecoration: "none" }}
+                                      className="attachment-link"
                                     >
                                       {isPdf ? (
-                                        <span
-                                          style={{
-                                            ...ui.attachmentThumb,
-                                            display: "flex",
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                            background: "#fff2f2",
-                                            color: "#d13d3d",
-                                          }}
-                                        >
+                                        <span className="attachment-thumb attachment-thumb--pdf">
                                           <i className="fa-solid fa-file-pdf" />
                                         </span>
                                       ) : (
                                         <img
                                           src={fileUrl}
                                           alt="Prescription"
-                                          style={ui.attachmentThumb}
+                                          className="attachment-thumb"
                                         />
                                       )}
                                     </a>
                                   );
                                 })}
-                            </div>
-                          )}
+                              </div>
+                            )}
+                          </div>
                         </div>
+                      );
+                    })}
+
+                    <details className="details">
+                      <summary className="details-summary">View Payment Details</summary>
+
+                      <div className="payment-grid">
+                        {[
+                          ["Gross Amount", formatMoney(order.gross_amount)],
+                          ["Offer Discount", `-${formatMoney(order.offer_discount)}`],
+                          ["Coupon Discount", `-${formatMoney(order.coupon_discount)}`],
+                          ["Paid Amount", formatMoney(order.total_amount)],
+                          ["Payment Type", order.payment_type || "N/A"],
+                          ["Transaction ID", order.transaction_id || "N/A"],
+                        ].map(([label, value]) => (
+                          <div key={label} className="payment-cell">
+                            <span className="payment-cell-label">{label}</span>
+                            <strong
+                              className={`payment-cell-value ${label === "Paid Amount" ? "payment-cell-value--paid" : ""}`}
+                            >
+                              {value}
+                            </strong>
+                          </div>
+                        ))}
                       </div>
-                    );
-                  })}
+                    </details>
+                  </article>
+                );
+              })}
+              <div className="d-flex justify-content-end gap-3">
+                <button className="sec_btn border-0">Reschedule Test</button>
+                <button className="cmn_btn">Re-Book Test</button>
+              </div>
+            </div>
 
-                  <details style={ui.details}>
-                    <summary style={ui.detailsSummary}>
-                      View Payment Details
-                    </summary>
-
-                    <div style={ui.paymentGrid}>
-                      {[
-                        ["Gross Amount", formatMoney(order.gross_amount)],
-                        [
-                          "Offer Discount",
-                          `-${formatMoney(order.offer_discount)}`,
-                        ],
-                        [
-                          "Coupon Discount",
-                          `-${formatMoney(order.coupon_discount)}`,
-                        ],
-                        ["Paid Amount", formatMoney(order.total_amount)],
-                        ["Payment Type", order.payment_type || "N/A"],
-                        ["Transaction ID", order.transaction_id || "N/A"],
-                      ].map(([label, value]) => (
-                        <div key={label} style={ui.paymentCell}>
-                          <span
-                            style={{
-                              display: "block",
-                              color: MUTED,
-                              fontSize: 9,
-                            }}
-                          >
-                            {label}
-                          </span>
-                          <strong
-                            style={{
-                              display: "block",
-                              marginTop: 3,
-                              color: label === "Paid Amount" ? GREEN : TEXT,
-                              fontSize: 11,
-                              wordBreak: "break-word",
-                            }}
-                          >
-                            {value}
-                          </strong>
-                        </div>
-                      ))}
-                    </div>
-                  </details>
-                </article>
-              );
-            })
           )}
         </div>
       </section>
