@@ -412,6 +412,7 @@ ol.breadcrumb li.active{ color:var(--up-black); }
 .order-status.collected{ background:#1CC1E6; }
 .order-status.assigned{ background:#F37900; }
 .order-status.processing{ background:#B9AC77; }
+.order-status.pending{ background:#B9AC77; }
 .order-status.ready{ background:#77ABB9; }
 /* ==== Order Status ==== */
 
