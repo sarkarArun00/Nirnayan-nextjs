@@ -112,6 +112,16 @@ const [isPatientOnlyMode, setIsPatientOnlyMode] = useState(false);
   const STATIC_SCHEMA_NAME = "nir1691144565";
   const STATIC_CENTRE_ID = 13;
 
+
+  const [cartToast, setCartToast] = useState<{ message: string } | null>(null);
+
+  useEffect(() => {
+    if (!cartToast) return;
+
+    const timer = window.setTimeout(() => setCartToast(null), 2500);
+    return () => window.clearTimeout(timer);
+  }, [cartToast]);
+
   const loadPatients = async () => {
     setPatientLoading(true);
     setPatientLoadError("");
@@ -175,7 +185,7 @@ const [isPatientOnlyMode, setIsPatientOnlyMode] = useState(false);
 
       closePatientModal();
 
-      router.push("/cart");
+    setCartToast({ message: "Added to cart" });
     } catch (error) {
       console.error("Save To Cart Error:", error);
     }
@@ -548,6 +558,28 @@ const [isPatientOnlyMode, setIsPatientOnlyMode] = useState(false);
     >
       {children}
 
+      {cartToast && (
+        <div
+          key={cartToast.message}
+          className={styles.cartToast}
+          role="status"
+          aria-live="polite"
+          style={{
+            top: "auto",
+            bottom: 24,
+            right: 24,
+            left: "auto",
+            transform: "none",
+            width: "max-content",
+          }}
+        >
+          <span className={styles.cartToastCheck} aria-hidden="true">
+            ✓
+          </span>
+          {cartToast.message}
+        </div>
+      )}
+
       {isOpen && (
         <div
           className={`cmn-backdrop ${isOpen ? "active" : ""}`}
@@ -612,8 +644,8 @@ const [isPatientOnlyMode, setIsPatientOnlyMode] = useState(false);
                 </div>
               )}
               {/* ======================
-          ADD NEW PATIENT
-      ====================== */}
+                    ADD NEW PATIENT
+                ====================== */}
 
               {mode === "new" && (
                 <div className={styles.patientSection}>

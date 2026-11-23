@@ -54,7 +54,7 @@ const PAGE_LIMIT = 10;
 export default function TestListPage() {
   const { openPatientModal } = usePatientSelection();
 
-  const [filterType, setFilterType] = useState<FilterType>("mostpopular");
+  const [filterType, setFilterType] = useState<FilterType>("organ");
 
   const [organs, setOrgans] = useState<FilterItem[]>([]);
 

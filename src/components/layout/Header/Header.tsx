@@ -246,21 +246,28 @@ export default function Header() {
 
   const [activeFeedIndex, setActiveFeedIndex] = useState(0);
 
-  const updateCartCount = async () => {
-    try {
-      const response = await getCartByUser();
+const updateCartCount = async () => {
+  try {
+    const response = await getCartByUser();
 
-      if (response?.status === 1 && Array.isArray(response.data)) {
-        setCartCount(response.data.length);
-      } else {
-        setCartCount(0);
+    if (response?.status === 1 && Array.isArray(response.data)) {
+    const investigationCount = response.data.reduce((total, group) => {
+      if ("investigation" in group && Array.isArray(group.investigation)) {
+        return total + group.investigation.length;
       }
-    } catch (error) {
-      console.error("Cart count fetch error:", error);
 
+      return total;
+    }, 0);
+
+    setCartCount(investigationCount);
+    } else {
       setCartCount(0);
     }
-  };
+  } catch (error) {
+    console.error("Cart count fetch error:", error);
+    setCartCount(0);
+  }
+};
 
   useEffect(() => {
     if (!loginSession) {

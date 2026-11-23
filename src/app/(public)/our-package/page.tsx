@@ -89,7 +89,7 @@ export default function PackageListPage() {
   const { openPatientModal } = usePatientSelection();
 
   const [filterType, setFilterType] =
-    useState<PackageFilterType>("mostpopular");
+    useState<PackageFilterType>("organ");
 
   const [organs, setOrgans] = useState<FilterItem[]>([]);
 
@@ -899,7 +899,7 @@ export default function PackageListPage() {
                               })
                             }
                           >
-                            Book Now
+                            Add To Cart
                           </button>
                         </div>
                       </div>
@@ -1033,7 +1033,7 @@ export default function PackageListPage() {
                       </div>
                       <span className="discount">Save 10%</span>
                     </div>
-                    <button className="cmn_btn">Book Now</button>
+                    <button className="cmn_btn">Add To Cart</button>
                   </div>
                 </div>
               </div>
@@ -1098,7 +1098,7 @@ export default function PackageListPage() {
                       </div>
                       <span className="discount">Save 10%</span>
                     </div>
-                    <button className="cmn_btn">Book Now</button>
+                    <button className="cmn_btn">Add To Cart</button>
                   </div>
                 </div>
               </div>
@@ -1163,7 +1163,7 @@ export default function PackageListPage() {
                       </div>
                       <span className="discount">Save 10%</span>
                     </div>
-                    <button className="cmn_btn">Book Now</button>
+                    <button className="cmn_btn">Add To Cart</button>
                   </div>
                 </div>
               </div>
@@ -1228,7 +1228,7 @@ export default function PackageListPage() {
                       </div>
                       <span className="discount">Save 10%</span>
                     </div>
-                    <button className="cmn_btn">Book Now</button>
+                    <button className="cmn_btn">Add To Cart</button>
                   </div>
                 </div>
               </div>
@@ -1293,7 +1293,7 @@ export default function PackageListPage() {
                       </div>
                       <span className="discount">Save 10%</span>
                     </div>
-                    <button className="cmn_btn">Book Now</button>
+                    <button className="cmn_btn">Add To Cart</button>
                   </div>
                 </div>
               </div>
@@ -1312,11 +1312,11 @@ export default function PackageListPage() {
               <p>Have any questions? We're here to assist you</p>
             </div>
             {/* <button className="expand-btn">
-                            <span className="icon">
-                                <img src="/assets/images/exp-btn.svg" alt="" />
-                            </span>
-                            <span className="btn-text">View More</span>
-                        </button> */}
+              <span className="icon">
+                  <img src="/assets/images/exp-btn.svg" alt="" />
+              </span>
+              <span className="btn-text">View More</span>
+          </button> */}
           </div>
 
           <div className="accordion" id="faqAccordion">

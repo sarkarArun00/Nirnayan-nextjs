@@ -554,7 +554,7 @@ function PopularPackage() {
                             })
                           }
                         >
-                          Book Now
+                          Add To Cart
                         </button>
                       </div>
                     </div>
