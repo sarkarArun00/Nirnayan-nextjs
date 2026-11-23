@@ -178,20 +178,20 @@ export default function Header() {
       id: "company",
       label: "Company",
       content: [
-        { label: "About Us", link: "/about" },
-        { label: "Our Team", link: "/team" },
-        { label: "Journey", link: "/journey" },
-        { label: "Careers With Us", link: "/careers", badge: "Hiring" },
-        { label: "Contact Us", link: "/contact" },
+        { label: "About Us", link: "/about-us" },
+        { label: "Our Team", link: "/our-team" },
+        { label: "Journey", link: "/our-journey" },
+        { label: "Careers With Us", link: "/career", badge: "Hiring" },
+        { label: "Contact Us", link: "/contact-us" },
       ],
     },
     {
       id: "laboratory",
       label: "Laboratory",
       content: [
-        { label: "Lab Tests", link: "/tests" },
-        { label: "Diagnostic Tools", link: "/diagnostics" },
-        { label: "Quality Standards", link: "/quality" },
+        { label: "Department", link: "/departments" },
+        { label: "Accreditation", link: "/accreditation" },
+        { label: "Quality Control", link: "/quality-control" },
       ],
     },
     {
@@ -200,16 +200,17 @@ export default function Header() {
       content: [
         { label: "Book Appointment", link: "/book" },
         { label: "Download Reports", link: "/reports" },
-        { label: "FAQs", link: "/faqs" },
+        { label: "FAQs", link: "/faq" },
       ],
     },
     {
       id: "patients",
       label: "Patients",
       content: [
-        { label: "Patient Portal", link: "/portal" },
-        { label: "Insurance Info", link: "/insurance" },
-        { label: "Preparation Guide", link: "/prep" },
+        { label: "Find a Centre", link: "/find-center" },
+        { label: "Test Reference", link: "/test-reference" },
+        { label: "Test List", link: "/test-list" },
+        { label: "Packages List", link: "/our-package" },
       ],
     },
   ];
