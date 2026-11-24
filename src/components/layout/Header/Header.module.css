@@ -98,17 +98,13 @@
 .main-header .location h4{ color:var(--up-gray); font-size:15px; line-height:1; font-weight:400; margin:0; }
 .main-header .location h4 i{ font-size:12px; padding-left:3px; }
 
-
-
-
-
 .main-header .btm-wrap .rt-side{ display:flex; align-items:center; }
 .main-header .navigation{ padding-right:35px; }
 .main-header .navigation ul{ display:flex; gap:0 35px; }
 .main-header .navigation ul li{ font-weight:700; color:var(--up-black); }
 .main-header .navigation ul li a{ display:flex; align-items:center; gap:0 8px; color:var(--up-black); transition:all 0.3s; }
 .main-header .navigation ul li a:hover{ color:var(--up-theme); }
-
+.main-header .navigation ul li.active a{ color:var(--up-theme) !important; }
 .main-header .more-btns a{ font-size:15px; line-height:1.2; font-weight:600; color:var(--up-white); background:var(--up-black); display:inline-block; border-radius:30px; padding:14px 15px; transition:all 0.3s ease; }
 .main-header .more-btns a i{ font-size:11px; margin-left:8px; }
 .main-header .more-btns a:hover{ color:var(--up-black); background:#dbb006; }
@@ -164,6 +160,7 @@
 .sub_menu ul.linkList li{ display:flex; align-items:center; gap:0 5px; margin-bottom:15px; }
 .sub_menu ul.linkList li:last-child{ margin-bottom:0; }
 .sub_menu ul.linkList li a{ display:block; font-size:15px; font-weight:400; color:var(--up-black); transition:all 0.4s; }
+.sub_menu ul.linkList li.active a{ color:var(--up-theme); }
 .sub_menu ul.linkList li a:hover{ color:var(--up-secondiary); }
 .sub_menu ul.linkList li span{ background-color:var(--up-secondiary); color:var(--up-black); font-size:12px; font-weight:400; padding:2px 10px; border-radius:50px; }
 
