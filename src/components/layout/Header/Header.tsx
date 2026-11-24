@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import InvestigationSearchModal from "@/components/common/InvestigationSearchModal";
 import styles from "./Header.module.css";
 import {
   requestOtp,
@@ -15,16 +16,11 @@ import {
   logoutSession,
 } from "@/actions/session.actions";
 import { useAlert } from "@/components/common/Alert/AlertProvider";
-import { usePathname } from "next/navigation";
-import { getAllState } from "@/services/master.service"
+
+import { getAllState } from "@/services/master.service";
 import { getCartByUser } from "@/services/cart.service";
-
+import { usePathname, useRouter } from "next/navigation";
 import { debugAccessToken } from "@/actions/session.actions";
-
-
-
-
-
 
 declare global {
   interface Window {
@@ -110,7 +106,7 @@ export default function Header() {
   const [otpRequested, setOtpRequested] = useState(false);
 
   const [loading, setLoading] = useState(false);
-
+  const router = useRouter();
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
@@ -142,7 +138,6 @@ export default function Header() {
   const [signUpTimer, setSignUpTimer] = useState(20);
   const [stateData, setStateData] = useState([]);
 
-
   const [loginSession, setLoginSession] = useState<{
     user: LoginUser;
   } | null>(null);
@@ -165,7 +160,6 @@ export default function Header() {
   const [selectedState, setSelectedState] = useState<StateItem | null>(null);
 
   const [locationSearch, setLocationSearch] = useState("");
-
 
   const [activeIndex, setActiveIndex] = useState(0);
   const [mobileOpenIndex, setMobileOpenIndex] = useState<number | null>(null);
@@ -243,31 +237,30 @@ export default function Header() {
     "Put your health on your calendar. Plan your next appointment.",
   ];
 
-
   const [activeFeedIndex, setActiveFeedIndex] = useState(0);
 
-const updateCartCount = async () => {
-  try {
-    const response = await getCartByUser();
+  const updateCartCount = async () => {
+    try {
+      const response = await getCartByUser();
 
-    if (response?.status === 1 && Array.isArray(response.data)) {
-    const investigationCount = response.data.reduce((total, group) => {
-      if ("investigation" in group && Array.isArray(group.investigation)) {
-        return total + group.investigation.length;
+      if (response?.status === 1 && Array.isArray(response.data)) {
+        const investigationCount = response.data.reduce((total, group) => {
+          if ("investigation" in group && Array.isArray(group.investigation)) {
+            return total + group.investigation.length;
+          }
+
+          return total;
+        }, 0);
+
+        setCartCount(investigationCount);
+      } else {
+        setCartCount(0);
       }
-
-      return total;
-    }, 0);
-
-    setCartCount(investigationCount);
-    } else {
+    } catch (error) {
+      console.error("Cart count fetch error:", error);
       setCartCount(0);
     }
-  } catch (error) {
-    console.error("Cart count fetch error:", error);
-    setCartCount(0);
-  }
-};
+  };
 
   useEffect(() => {
     if (!loginSession) {
@@ -320,7 +313,7 @@ const updateCartCount = async () => {
       if (!header || !banner) return;
       setBannerTouched(
         banner.getBoundingClientRect().bottom <=
-        header.getBoundingClientRect().bottom,
+          header.getBoundingClientRect().bottom,
       );
     };
     window.addEventListener("scroll", handleScroll);
@@ -523,7 +516,6 @@ const updateCartCount = async () => {
     setLangOpen((prev) => !prev);
   };
 
-
   const pathname = usePathname();
 
   useEffect(() => {
@@ -591,7 +583,6 @@ const updateCartCount = async () => {
     };
   }, [isAccountMenuOpen]);
 
-
   useEffect(() => {
     let active = true;
 
@@ -625,7 +616,6 @@ const updateCartCount = async () => {
       active = false;
     };
   }, []);
-
 
   const handleLogout = async () => {
     try {
@@ -736,7 +726,7 @@ const updateCartCount = async () => {
   //   }
   // };
 
-  const [loginOtp, setLoginOtp] = useState("")
+  const [loginOtp, setLoginOtp] = useState("");
   const handleGetLoginOtp = async () => {
     setError("");
     setSuccessMessage("");
@@ -775,8 +765,7 @@ const updateCartCount = async () => {
           message: "OTP sent successfully.",
           autoClose: 1000,
         });
-      }
-      else if (result?.status == 0) {
+      } else if (result?.status == 0) {
         const errorMessage =
           typeof result?.data === "string"
             ? result.data
@@ -1011,11 +1000,11 @@ const updateCartCount = async () => {
       const result =
         typeof response === "object" && response !== null
           ? (response as {
-            data?: unknown;
-            status?: number;
-            success?: boolean;
-            message?: string;
-          })
+              data?: unknown;
+              status?: number;
+              success?: boolean;
+              message?: string;
+            })
           : null;
 
       // SIGNUP SUCCESS
@@ -1169,10 +1158,7 @@ const updateCartCount = async () => {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        menuRef.current &&
-        !menuRef.current.contains(event.target as Node)
-      ) {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
         setIsOpens(false);
       }
     };
@@ -1183,9 +1169,7 @@ const updateCartCount = async () => {
   }, []);
 
   const toggleAccordion = (index: number) => {
-    setMobileOpenIndex((previous) =>
-      previous === index ? null : index
-    );
+    setMobileOpenIndex((previous) => (previous === index ? null : index));
   };
   // For More Menu End
 
@@ -1239,7 +1223,10 @@ const updateCartCount = async () => {
               {/* <i className="fa-solid fa-location-dot location-icon"></i> */}
               <div className={styles["loc_text"]}>
                 <h6>Current Location</h6>
-                <h4>{selectedState?.name || "Select Location"} ...<i className="fa-solid fa-chevron-down"></i></h4>
+                <h4>
+                  {selectedState?.name || "Select Location"} ...
+                  <i className="fa-solid fa-chevron-down"></i>
+                </h4>
                 {/* <i className="fa-solid fa-chevron-down"></i> */}
               </div>
             </div>
@@ -1528,8 +1515,9 @@ const updateCartCount = async () => {
                       <div key={item.id} className={styles.accordionItem}>
                         <button
                           type="button"
-                          className={`${styles.accordionHeader} ${isOpen ? styles.activeHeader : ""
-                            }`}
+                          className={`${styles.accordionHeader} ${
+                            isOpen ? styles.activeHeader : ""
+                          }`}
                           onClick={() => toggleAccordion(index)}
                           aria-expanded={isOpen}
                         >
@@ -1537,15 +1525,17 @@ const updateCartCount = async () => {
 
                           <span className={styles.accordionIcon}>
                             <i
-                              className={`fa-solid ${isOpen ? "fa-chevron-up" : "fa-chevron-down"
-                                }`}
+                              className={`fa-solid ${
+                                isOpen ? "fa-chevron-up" : "fa-chevron-down"
+                              }`}
                             />
                           </span>
                         </button>
 
                         <ul
-                          className={`${styles.linkList} ${isOpen ? styles.open : ""
-                            }`}
+                          className={`${styles.linkList} ${
+                            isOpen ? styles.open : ""
+                          }`}
                         >
                           {item.content.map((linkItem, i) => (
                             <li key={i} className={styles.mobileLinkRow}>
@@ -2056,138 +2046,19 @@ const updateCartCount = async () => {
 
       {/* Search Modal Start */}
       {isSearch && (
-        <div
-          className={`modal_backdrop ${isSearch ? "active" : ""}`}
-          onClick={() => setIsSearch(false)}
-        >
-          <div
-            className="lab-search-panel"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="lab-search-field">
-              <i className="fa-solid fa-magnifying-glass lab-search-symbol"></i>
-              <input
-                type="text"
-                placeholder="Search for Tests, Health Check-ups"
-                name="labSearch"
-                className="form-control"
-              />
-              <div className="flex-dv d-flex align-items-center gap-2">
-                <button type="button" className="lab-search-rx">
-                  <img src="/assets/images/rx.svg" alt="" />
-                </button>
-                <span className="lab-search-line"></span>
-                <button type="button" className="lab-search-mike">
-                  <i className="fa-solid fa-microphone lab-mic-symbol"></i>
-                </button>
-              </div>
-            </div>
-            <div className="lab-search-content">
-              {/* POPULAR TESTS */}
-              <section className="lab-result-group">
-                <h6>Popular Tests</h6>
-                <div className="scroll-pnl">
-                  <div className="lab-result-row">
-                    <div className="lab-result-picture lab-test-picture">
-                      <i className="fa-solid fa-vial"></i>
-                    </div>
+        <InvestigationSearchModal
+          stateId={selectedState?.id ?? null}
+          onClose={() => setIsSearch(false)}
+          onSelect={(item) => {
+            const params = new URLSearchParams({
+              product_type: item.product_type,
+              item_id: String(item.id),
+            });
 
-                    <div className="lab-result-details">
-                      <div className="lab-result-name">CBC</div>
-                      <div className="lab-result-category">Tests</div>
-                    </div>
-
-                    <div className="lab-result-action">
-                      <i className="fa-solid fa-arrow-right"></i>
-                    </div>
-                  </div>
-                </div>
-              </section>
-
-              {/* POPULAR PACKAGE */}
-              <section className="lab-result-group">
-                <h6>Popular Package</h6>
-                <div className="scroll-pnl">
-                  <div className="lab-result-row">
-                    <div className="lab-result-picture lab-package-picture">
-                      <i className="fa-solid fa-file-medical"></i>
-                    </div>
-                    <div className="lab-result-details">
-                      <div className="lab-result-name">
-                        Suswastham 4.2 - Diabetes Check Up Package - Prime
-                      </div>
-                      <div className="lab-result-category">Package</div>
-                    </div>
-
-                    <div className="lab-result-action">
-                      <i className="fa-solid fa-arrow-right"></i>
-                    </div>
-                  </div>
-                </div>
-              </section>
-
-              {/* TRENDING SEARCHES */}
-              <section className="lab-result-group lab-trending-group">
-                <h6>Trending Searches</h6>
-                <div className="lab-result-row">
-                  <div className="lab-result-picture lab-trending-picture">
-                    <i className="fa-solid fa-arrow-trend-up"></i>
-                  </div>
-                  <div className="lab-result-details">
-                    <div className="lab-result-name">
-                      Glucose-Fasting-Plasma
-                    </div>
-                    <div className="lab-result-category">Tests</div>
-                  </div>
-                  <div className="lab-result-action">
-                    <i className="fa-solid fa-arrow-right"></i>
-                  </div>
-                </div>
-
-                <div className="lab-result-row">
-                  <div className="lab-result-picture lab-trending-picture">
-                    <i className="fa-solid fa-arrow-trend-up"></i>
-                  </div>
-                  <div className="lab-result-details">
-                    <div className="lab-result-name">
-                      Glucose-Fasting-Plasma
-                    </div>
-                    <div className="lab-result-category">Tests</div>
-                  </div>
-                  <div className="lab-result-action">
-                    <i className="fa-solid fa-arrow-right"></i>
-                  </div>
-                </div>
-
-                <div className="lab-result-row">
-                  <div className="lab-result-picture lab-trending-picture">
-                    <i className="fa-solid fa-arrow-trend-up"></i>
-                  </div>
-                  <div className="lab-result-details">
-                    <div className="lab-result-name">
-                      Suswastham-125-Infertility-Package-Male-Prime
-                    </div>
-                    <div className="lab-result-category">Package</div>
-                  </div>
-                  <div className="lab-result-action">
-                    <i className="fa-solid fa-arrow-right"></i>
-                  </div>
-                </div>
-              </section>
-
-              <div className="lab-search-assistance">
-                <div className="inn">
-                  <span className="lab-assistance-icon">
-                    <img src="/assets/images/bot.svg" alt="" />
-                  </span>
-                  <span className="lab-assistance-text">
-                    Not Sure which tests right?
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+            setIsSearch(false);
+            router.push(`/investigation-details?${params.toString()}`);
+          }}
+        />
       )}
       {/* Search Modal End */}
     </>
