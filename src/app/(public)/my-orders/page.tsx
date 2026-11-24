@@ -1334,7 +1334,7 @@ export default function MyOrdersPage() {
                                     .endsWith(".pdf");
 
                                   return (
-                                    <a
+                                    <a style={{marginTop:500}}
                                       key={attachment.id}
                                       href={fileUrl}
                                       target="_blank"
@@ -1347,7 +1347,8 @@ export default function MyOrdersPage() {
                                           <i className="fa-solid fa-file-pdf" />
                                         </span>
                                       ) : (
-                                        <img
+                                          <img
+                                            style={{height:100, width:200}}
                                           src={fileUrl}
                                           alt="Prescription"
                                           className="attachment-thumb"

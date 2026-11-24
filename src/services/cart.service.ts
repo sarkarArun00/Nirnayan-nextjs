@@ -1,6 +1,7 @@
-import { getLoggedInUser } from "@/actions/session.actions";
+import { debugAccessToken, getLoggedInUser } from "@/actions/session.actions";
 const BASE_URL =
     process.env.NEXT_PUBLIC_LIMS_API_BASE_URL;
+    
 
 function getBaseUrl() {
     if (!BASE_URL) {
@@ -232,6 +233,59 @@ export type GetPatientAddressesResponse = {
     success: boolean;
     message: string;
 };
+
+
+
+export type CreateCheckoutOrderInput = {
+    cartIds: number[];
+    patientIds: number[];
+    membership_id: number | null;
+    coupon_id: number | null;
+    voucher_id: number | null;
+    coins: number;
+    gross_amount: number;
+    net_amount: number;
+    offer_discount: number;
+    coupon_discount: number;
+    total_amount: number;
+    slot_date: string;
+    slot_id: number;
+    address_id: number;
+    platform: "website";
+};
+
+export type RazorpayPaymentResult = {
+    razorpay_order_id: string;
+    razorpay_payment_id: string;
+    razorpay_signature: string;
+};
+
+type ApiResponse<T> = {
+    status: number;
+    success: boolean;
+    message: string;
+    data: T;
+};
+
+export type CheckoutOrder = {
+    razorpay_order_id: string;
+    razorpay_key_id: string;
+    amount: number;
+    payable_amount: number;
+    currency: "INR";
+};
+
+export type VerifiedBooking = {
+    id: number;
+    user_id: number;
+    paymentStatus: number;
+    paymentId: string;
+    transaction_id: string;
+    displayBookingNumber: string;
+    total_amount: number;
+    bookingStatus: string;
+};
+
 
 const LOCATION_STORAGE_KEY =
     "nirnayan_selected_state";
@@ -580,6 +634,101 @@ export async function getAllCoupons(): Promise<CouponListResponse> {
     }
 
     return result;
+}
+
+
+// New
+async function getCheckoutAuth() {
+    // Reuse the existing session helpers; the JWT is not in localStorage.
+    const [user, session] = await Promise.all([
+        getLoggedInUser(),
+        debugAccessToken(),
+    ]);
+
+    if (!user?.id || !session.accessToken) {
+        throw new Error("Your session has expired. Please sign in again.");
+    }
+
+    return { userId: user.id, accessToken: session.accessToken };
+}
+
+async function postCheckout<T>(
+    path: string,
+    body: object,
+    auth: { userId: number; accessToken: string },
+): Promise<ApiResponse<T>> {
+    const baseUrl = process.env.NEXT_PUBLIC_LIMS_API_BASE_URL;
+    if (!baseUrl) {
+        throw new Error("NEXT_PUBLIC_LIMS_API_BASE_URL is not configured.");
+    }
+
+    const response = await fetch(`${baseUrl.replace(/\/+$/, "")}/${path}`, {
+        method: "POST",
+        headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${auth.accessToken}`,
+            user_id: String(auth.userId),
+        },
+        body: JSON.stringify(body),
+        cache: "no-store",
+    });
+
+    const result: ApiResponse<T> | null = await response.json().catch(() => null);
+    if (!response.ok || result?.status !== 1 || result.success !== true) {
+        throw new Error(result?.message || `Checkout request failed (${response.status}).`);
+    }
+
+    return result;
+}
+
+export async function createCheckoutOrder(input: CreateCheckoutOrderInput) {
+    const auth = await getCheckoutAuth();
+    const result = await postCheckout<CheckoutOrder>(
+        "b2c/create-order",
+        { userId: auth.userId, ...input },
+        auth,
+    );
+
+    const order = result.data;
+    if (
+        !order?.razorpay_order_id ||
+        !order.razorpay_key_id ||
+        !Number.isSafeInteger(order.amount) ||
+        order.amount <= 0 ||
+        order.currency !== "INR"
+    ) {
+        throw new Error("The create-order API returned incomplete payment details.");
+    }
+
+    return { userId: auth.userId, order };
+}
+
+export async function verifyCheckoutPayment(
+    userId: number,
+    payment: RazorpayPaymentResult,
+) {
+    const auth = await getCheckoutAuth();
+    if (auth.userId !== userId) {
+        throw new Error("Sign in with the account used to make this payment.");
+    }
+
+    const result = await postCheckout<{ booking: VerifiedBooking }>(
+        "b2c/verify",
+        {
+            razorpay_order_id: payment.razorpay_order_id,
+            razorpay_payment_id: payment.razorpay_payment_id,
+            razorpay_signature: payment.razorpay_signature,
+            userId: auth.userId,
+        },
+        auth,
+    );
+
+    if (!result.data?.booking?.id || result.data.booking.paymentStatus !== 1) {
+        throw new Error("Payment verification did not return a paid booking.");
+    }
+
+    return result.data.booking;
 }
 
 export { getSelectedStateId };

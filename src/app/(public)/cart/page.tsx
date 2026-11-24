@@ -9,7 +9,6 @@ import {
   getCartByUser,
   removeFromCart,
   getAllSlots,
-  getSelectedStateId,
   updateCartDetails,
   getAllPatientAddresses,
   deletePatientAddress,
@@ -24,17 +23,15 @@ import { usePatientSelection } from "@/components/common/PatientSelectionModal/P
 import { useAlert } from "@/components/common/Alert/AlertProvider";
 import {
   createCheckoutOrder,
-  processToCheckout,
-  type CheckoutBookingDetails,
+  verifyCheckoutPayment,
   type RazorpayPaymentResult,
-} from "@/actions/checkout.actions";
+} from "@/services/cart.service";
 import Script from "next/script";
-import { getLoggedInUser } from "@/actions/session.actions";
 
 type RazorpayResult = RazorpayPaymentResult;
 
 type PendingCheckout = {
-  details: CheckoutBookingDetails;
+  userId: number;
   payment: RazorpayResult;
 };
 
@@ -172,7 +169,6 @@ export default function CartPage() {
 
   const addressDeleteDialogRef = useRef<HTMLDialogElement>(null);
   const addressDeletePendingRef = useRef(false);
-  const checkoutPreviewRef = useRef<HTMLDialogElement>(null);
 
   // const selectedCoupon =
   //   coupons.find((coupon) => coupon.couponId === selectedCouponId) ?? null;
@@ -327,7 +323,6 @@ export default function CartPage() {
 
         const response = await getAllCoupons();
 
-
         if (cancelled) {
           return;
         }
@@ -399,9 +394,9 @@ export default function CartPage() {
 
   const checkoutDate = selectedBookingDate
     ? new Date(`${selectedBookingDate}T00:00:00+05:30`).toLocaleDateString(
-      "en-IN",
-      { dateStyle: "full", timeZone: "Asia/Kolkata" },
-    )
+        "en-IN",
+        { dateStyle: "full", timeZone: "Asia/Kolkata" },
+      )
     : null;
   const checkoutSlot = slots.find(
     (slot) => slot.id === selectedSlotId && slot.threshold !== 0,
@@ -544,25 +539,25 @@ export default function CartPage() {
           return;
         }
 
-        const order = await createCheckoutOrder(
-          {
-            cartIds: cartGroups.map((group) => group.cartId),
-
-            patientIds: [
-              ...new Set(cartGroups.map((group) => group.patientId)),
-            ],
-
-            slot_date: selectedBookingDate,
-
-            slot_id: checkoutSlot.id,
-
-            address_id: checkoutAddress.id,
-
-            coupon_id: selectedCoupon?.couponId ?? null,
-          },
-
-          getSelectedStateId(),
-        );
+        const { userId, order } = await createCheckoutOrder({
+          cartIds: cartGroups.map((group) => group.cartId),
+          patientIds: [...new Set(cartGroups.map((group) => group.patientId))],
+          membership_id: null,
+          coupon_id: isCouponAmountValid
+            ? (selectedCoupon?.couponId ?? null)
+            : null,
+          voucher_id: null,
+          coins: 0,
+          gross_amount: grossAmount,
+          net_amount: totalAmount,
+          offer_discount: offerDiscount,
+          coupon_discount: couponDiscount,
+          total_amount: payableAmount,
+          slot_date: selectedBookingDate,
+          slot_id: checkoutSlot.id,
+          address_id: checkoutAddress.id,
+          platform: "website",
+        });
 
         if (order.amount !== Math.round(payableAmount * 100)) {
           setPaymentMessage(
@@ -571,13 +566,12 @@ export default function CartPage() {
           return;
         }
 
-        // Close the native dialog before opening Razorpay's overlay.
-        checkoutPreviewRef.current?.close();
+        setIsCheckoutPreviewOpen(false);
 
-        const result = await new Promise<RazorpayResult | null>((resolve) => {
+        const payment = await new Promise<RazorpayResult | null>((resolve) => {
           const checkout = new Razorpay({
-            key: order.keyId,
-            order_id: order.orderId,
+            key: order.razorpay_key_id,
+            order_id: order.razorpay_order_id,
             amount: order.amount,
             currency: order.currency,
             name: "Nirnayan Healthcare",
@@ -586,95 +580,38 @@ export default function CartPage() {
             handler: resolve,
             modal: { ondismiss: () => resolve(null) },
           });
-
           checkout.open();
         });
 
-        if (!result) {
+        if (!payment) {
           setPaymentMessage("Payment window closed.");
-          checkoutPreviewRef.current?.showModal();
+          setIsCheckoutPreviewOpen(true);
           return;
         }
 
-        proof = { details: order.details, payment: result };
+        proof = { userId, payment };
         setPendingPayment(proof);
       }
 
-      ///// debug //////
-      const user = await getLoggedInUser();
-
-      if (!user?.id) {
-        throw new Error("Please sign in before confirming your booking.");
-      }
-
-      const checkoutPayload = {
-        userId: user.id,
-
-        cartIds: proof.details.cartIds,
-
-        patientIds: proof.details.patientIds,
-
-        slot_date: proof.details.slot_date,
-
-        slot_id: proof.details.slot_id,
-
-        address_id: proof.details.address_id,
-
-        paymentStatus: 1,
-
-        paymentType: "Online",
-
-        paymentId: proof.payment.razorpay_payment_id,
-
-        transaction_id: proof.payment.razorpay_payment_id,
-
-        gross_amount: proof.details.gross_amount,
-
-        net_amount: proof.details.net_amount,
-
-        offer_discount: proof.details.offer_discount,
-
-        coupon_id: proof.details.coupon_id ?? null,
-
-        coupon_discount: proof.details.coupon_discount,
-
-        total_amount: proof.details.total_amount,
-
-        platform: "website",
-      };
-
-      console.log("FINAL CHECKOUT API PAYLOAD:", checkoutPayload);
-
-      //// debug ////
-
-      const checkoutResult = await processToCheckout(
-        proof.details,
-        proof.payment,
-      );
-
-      if (!checkoutResult.bookingSaved) {
-        throw new Error("Booking could not be confirmed.");
-      }
+      // Retry this request with the same payment if verification fails.
+      const booking = await verifyCheckoutPayment(proof.userId, proof.payment);
 
       setPendingPayment(null);
-      checkoutPreviewRef.current?.close();
-
-      await loadCart();
+      setIsCheckoutPreviewOpen(false);
       window.dispatchEvent(new Event("cartUpdated"));
-      window.alert("Your booking is confirmed.");
-    } catch (error) {
-      const fallbackMessage = proof
-        ? "Booking confirmation is pending. Use Retry Confirmation."
-        : "Unable to open payment. Please try again.";
-
-      setPaymentMessage(
-        process.env.NODE_ENV === "development" && error instanceof Error
-          ? error.message
-          : fallbackMessage,
+      window.alert(
+        `Booking confirmed: ${booking.displayBookingNumber || booking.id}`,
       );
-
-      const dialog = checkoutPreviewRef.current;
-      if (dialog && !dialog.open) dialog.showModal();
+      await loadCart();
+    } catch (error: unknown) {
+      const message =
+        error instanceof Error ? error.message : "Please try again.";
+      setPaymentMessage(
+        proof
+          ? `Payment received. Booking verification is pending. ${message} Use Retry Confirmation.`
+          : message,
+      );
+      setIsCheckoutPreviewOpen(true);
     } finally {
       paymentBusyRef.current = false;
       setPaymentBusy(false);
@@ -764,8 +701,6 @@ export default function CartPage() {
       }
     };
   }, [addressToDelete]);
-
-
 
   if (loadingCart) {
     return <div className="container py-5">Loading cart...</div>;
@@ -859,7 +794,7 @@ export default function CartPage() {
                           <p>
                             <i className="fa-solid fa-venus-mars"></i>{" "}
                             {group.patient_age !== null &&
-                              group.patient_age !== undefined
+                            group.patient_age !== undefined
                               ? `${group.patient_age} Y`
                               : "Age N/A"}
                             {" • "}
@@ -888,7 +823,7 @@ export default function CartPage() {
                         }}
                       >
                         {group.doctor_name ||
-                          (group.attachments && group.attachments.length > 0)
+                        (group.attachments && group.attachments.length > 0)
                           ? "Edit Rx & Doctor"
                           : "Upload Rx & Doctor"}
                         <img
@@ -928,7 +863,7 @@ export default function CartPage() {
                             <span className="is-discount">
                               {Math.round(
                                 ((item.mrpAmount - price) / item.mrpAmount) *
-                                100,
+                                  100,
                               )}
                               % Off
                             </span>
@@ -1169,12 +1104,14 @@ export default function CartPage() {
                           <button
                             key={slot.id}
                             type="button"
-                            className={`timeSlotButton ${isSelected && !isInactive ? "active" : ""
-                              }`}
+                            className={`timeSlotButton ${
+                              isSelected && !isInactive ? "active" : ""
+                            }`}
                             disabled={!selectedBookingDate || isInactive}
                             aria-pressed={isSelected && !isInactive}
-                            aria-label={`${slot.slot_label}, ${timeLabel}${isInactive ? ", unavailable" : ""
-                              }`}
+                            aria-label={`${slot.slot_label}, ${timeLabel}${
+                              isInactive ? ", unavailable" : ""
+                            }`}
                             onClick={() => setSelectedSlotId(slot.id)}
                           >
                             {timeLabel}
@@ -1442,11 +1379,9 @@ export default function CartPage() {
                     </li>
                     <li>
                       <span>Coupon Discount</span>
-                      {selectedCoupon ? (
-                        `- ₹ ${couponDiscount.toFixed(2)}`
-                      ) : (
-                        '₹ 0.00'
-                      )}
+                      {selectedCoupon
+                        ? `- ₹ ${couponDiscount.toFixed(2)}`
+                        : "₹ 0.00"}
                     </li>
                   </ul>
                   <div className="total-amount">
@@ -1547,8 +1482,7 @@ export default function CartPage() {
           </button>
 
           <div className="header">
-            <h4>Review Your Booking
-            </h4>
+            <h4>Review Your Booking</h4>
             <p>Review your tests, packages, and collection details.</p>
           </div>
 
@@ -1559,7 +1493,10 @@ export default function CartPage() {
               </h3>
 
               {cartGroups.map((group) => (
-                <section key={group.cartId} className="rounded-3 border p-3 mb-3">
+                <section
+                  key={group.cartId}
+                  className="rounded-3 border p-3 mb-3"
+                >
                   <h4 className="h6 mb-1">{group.patient_name}</h4>
                   <p className="small text-muted mb-2">
                     {group.patient_age != null && `${group.patient_age} Y · `}

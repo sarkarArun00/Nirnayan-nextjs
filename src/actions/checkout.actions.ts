@@ -4,6 +4,8 @@ import { createHmac, randomUUID, timingSafeEqual } from "node:crypto";
 import { getSession } from "@/lib/server/session";
 
 
+
+
 export type CheckoutSelection = {
     cartIds: number[];
     patientIds: number[];
@@ -572,3 +574,4 @@ export async function processToCheckout(
 
     return { bookingSaved: result?.status === 1 || result?.status === "1" };
 }
+
