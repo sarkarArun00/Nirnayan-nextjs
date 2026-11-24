@@ -16,8 +16,8 @@
 .ava-pkg .btm-block .select-pnls .left-block{ flex:1; position:relative; }
 .ava-pkg .btm-block .select-pnls .left-block .form-control{ height:60px !important; border:1px solid #D9F3E5; box-shadow:0px 0px 4px 0px #0000001F; padding:0 40px 0 45px !important; }
 .ava-pkg .btm-block .select-pnls .left-block button{ position:absolute; right:25px; top:19px; color:var(--up-theme); font-size:16px; border:0; background:none; padding:0; }
+.ava-pkg .btm-block .select-pnls .select-pnl{ max-width:200px; }
 .ava-pkg .btm-block .select-pnls .left-block i.search-icon{ position:absolute; left:20px; top:22px; color:var(--up-gray); font-size:16px; }
-.ava-pkg .btm-block .select-pnls .select-pnl{ max-width:150px; }
 .ava-pkg .btm-block .select-pnls .select-pnl .form-control{ border-color:var(--up-theme); height:60px !important; }
 
 .ava-pkg .btm-block .box{ display:flex; margin-top:25px; }
@@ -36,7 +36,7 @@
 .ava-pkg .organ-slider button{ width:100%; border:0; text-align:center; background:none; }
 .ava-pkg .organ-slider button .organ-icon{ width:110px; height:110px; border:1px solid var(--up-white); background:var(--up-white); border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto; }
 .ava-pkg .organ-slider button.active .organ-icon{ border-color:var(--up-theme); box-shadow:0px 7px 25px 0px #FAC80140 inset; }
-.ava-pkg .organ-slider button .organ-icon img{ display:block; width:100%; height:100%; object-fit:contain; }
+.ava-pkg .organ-slider button .organ-icon img{ display:block; width:100%; height:100%; object-fit:contain; border-radius:50%; }
 .ava-pkg .organ-slider button h6{ font-weight:500; color:var(--up-black); margin:15px 0 0; }
 .ava-pkg .organ-slider button.active h6{ color:var(--up-theme); }
 

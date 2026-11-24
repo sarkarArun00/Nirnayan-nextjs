@@ -686,47 +686,7 @@ export default function Header() {
   }, []);
   // Ctrl + K Search Function
 
-  // const handleGetOtp = async () => {
-  //   setError("");
-  //   setSuccessMessage("");
-
-  //   const mobile = mobileNumber.trim();
-
-  //   if (!mobile) {
-  //     setError("Please enter your mobile number.");
-  //     return;
-  //   }
-
-  //   if (!/^\d{10}$/.test(mobile)) {
-  //     setError("Please enter a valid 10 digit mobile number.");
-  //     return;
-  //   }
-
-  //   try {
-  //     setLoading(true);
-
-  //     const response = await requestOtp(mobile);
-
-  //     console.log("Request OTP Response:", response);
-
-  //     setOtpRequested(true);
-  //     setTimer(20);
-
-  //     setSuccessMessage("OTP sent successfully.");
-  //   } catch (error: unknown) {
-  //     console.error("Request OTP Error:", error);
-
-  //     if (error instanceof Error) {
-  //       setError(error.message);
-  //     } else {
-  //       setError("Unable to send OTP. Please try again.");
-  //     }
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-
-  const [loginOtp, setLoginOtp] = useState("");
+  const [loginOtp, setLoginOtp] = useState("")
   const handleGetLoginOtp = async () => {
     setError("");
     setSuccessMessage("");
@@ -1268,16 +1228,15 @@ export default function Header() {
           </div>
           <div className={styles["rt-side"]}>
             <div className={styles.navigation}>
-              <ul>
-                <li>
+              <ul className={styles.navList}>
+                <li className={pathname === '/test-list' ? styles.active : ''}>
                   <Link href="/test-list">
                     <img src="/assets/images/blood.svg" alt="Test Icon" /> Test
                   </Link>
                 </li>
-                <li>
+                <li className={pathname === '/our-package' ? styles.active : ''}>
                   <Link href="/our-package">
-                    <img src="/assets/images/package.svg" alt="Package Icon" />{" "}
-                    Packages
+                    <img src="/assets/images/package.svg" alt="Package Icon" /> Packages
                   </Link>
                 </li>
               </ul>
@@ -1494,16 +1453,25 @@ export default function Header() {
                   </ul>
 
                   <ul className={styles.linkList}>
-                    {menuData[activeIndex]?.content.map((linkItem, i) => (
-                      <li key={i} className={styles.linkRow}>
-                        <a href={linkItem.link} className={styles.navLink}>
-                          {linkItem.label}
-                        </a>
-                        {linkItem.badge && (
-                          <span className={styles.badge}>{linkItem.badge}</span>
-                        )}
-                      </li>
-                    ))}
+                    {menuData[activeIndex]?.content.map((linkItem, i) => {
+                      const isActive = pathname === linkItem.link;
+                      return (
+                        <li
+                          key={i}
+                          className={`${styles.linkRow} ${isActive ? styles.active : ''}`}
+                        >
+                          <Link
+                            href={linkItem.link}
+                            className={`${styles.navLink} ${isActive ? styles.active : ''}`}
+                          >
+                            {linkItem.label}
+                          </Link>
+                          {linkItem.badge && (
+                            <span className={styles.badge}>{linkItem.badge}</span>
+                          )}
+                        </li>
+                      );
+                    })}
                   </ul>
                 </div>
 
