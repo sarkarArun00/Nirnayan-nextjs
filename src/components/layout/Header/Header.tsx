@@ -159,6 +159,8 @@ export default function Header() {
 
   const [selectedState, setSelectedState] = useState<StateItem | null>(null);
 
+  const isLocationRequired = selectedState === null;
+
   const [locationSearch, setLocationSearch] = useState("");
 
   const [activeIndex, setActiveIndex] = useState(0);
@@ -420,24 +422,24 @@ export default function Header() {
       return;
     }
 
-    // Set React state
+    // Keep local UI state in sync before refresh.
     setSelectedState(matchedState);
+    setSelectedStateName(matchedState.name);
 
-    // Store state permanently
+    // Persist the selected state. localStorage.setItem is synchronous,
+    // so the value is available immediately after the page reloads.
     localStorage.setItem(LOCATION_STORAGE_KEY, JSON.stringify(matchedState));
 
-    // Console selected values
     console.log("Selected City:", city.name);
-
     console.log("Selected State:", matchedState.name);
-
     console.log("Selected State ID:", matchedState.id);
 
-    // Close modal
+    setLocationSearch("");
     setIsLocation(false);
 
-    // Clear search
-    setLocationSearch("");
+    // Refresh the complete application so all pages/components/services
+    // start again with the newly selected state from localStorage.
+    window.location.reload();
   };
 
   /* ================================
@@ -488,27 +490,44 @@ export default function Header() {
     try {
       const savedState = localStorage.getItem(LOCATION_STORAGE_KEY);
 
+      // Location is mandatory. Keep the modal open until the user
+      // selects one of the supported locations.
       if (!savedState) {
+        setSelectedState(null);
+        setSelectedStateName("");
+        setIsLocation(true);
         return;
       }
 
       const parsedState = JSON.parse(savedState) as StateItem;
 
-      if (
+      const isValidSavedState =
         parsedState &&
         typeof parsedState.id === "number" &&
-        typeof parsedState.name === "string"
-      ) {
+        Number.isFinite(parsedState.id) &&
+        typeof parsedState.name === "string" &&
+        parsedState.name.trim().length > 0;
+
+      if (isValidSavedState) {
         setSelectedState(parsedState);
-
-        // console.log("Restored State:", parsedState);
-
-        // console.log("Restored State ID:", parsedState.id);
+        setSelectedStateName(parsedState.name);
+        setIsLocation(false);
+        return;
       }
+
+      // Invalid/stale localStorage value should behave exactly like
+      // no location being selected.
+      localStorage.removeItem(LOCATION_STORAGE_KEY);
+      setSelectedState(null);
+      setSelectedStateName("");
+      setIsLocation(true);
     } catch (error) {
       console.error("Unable to restore selected state:", error);
 
       localStorage.removeItem(LOCATION_STORAGE_KEY);
+      setSelectedState(null);
+      setSelectedStateName("");
+      setIsLocation(true);
     }
   }, []);
 
@@ -686,7 +705,7 @@ export default function Header() {
   }, []);
   // Ctrl + K Search Function
 
-  const [loginOtp, setLoginOtp] = useState("")
+  const [loginOtp, setLoginOtp] = useState("");
   const handleGetLoginOtp = async () => {
     setError("");
     setSuccessMessage("");
@@ -1229,14 +1248,17 @@ export default function Header() {
           <div className={styles["rt-side"]}>
             <div className={styles.navigation}>
               <ul className={styles.navList}>
-                <li className={pathname === '/test-list' ? styles.active : ''}>
+                <li className={pathname === "/test-list" ? styles.active : ""}>
                   <Link href="/test-list">
                     <img src="/assets/images/blood.svg" alt="Test Icon" /> Test
                   </Link>
                 </li>
-                <li className={pathname === '/our-package' ? styles.active : ''}>
+                <li
+                  className={pathname === "/our-package" ? styles.active : ""}
+                >
                   <Link href="/our-package">
-                    <img src="/assets/images/package.svg" alt="Package Icon" /> Packages
+                    <img src="/assets/images/package.svg" alt="Package Icon" />{" "}
+                    Packages
                   </Link>
                 </li>
               </ul>
@@ -1458,16 +1480,18 @@ export default function Header() {
                       return (
                         <li
                           key={i}
-                          className={`${styles.linkRow} ${isActive ? styles.active : ''}`}
+                          className={`${styles.linkRow} ${isActive ? styles.active : ""}`}
                         >
                           <Link
                             href={linkItem.link}
-                            className={`${styles.navLink} ${isActive ? styles.active : ''}`}
+                            className={`${styles.navLink} ${isActive ? styles.active : ""}`}
                           >
                             {linkItem.label}
                           </Link>
                           {linkItem.badge && (
-                            <span className={styles.badge}>{linkItem.badge}</span>
+                            <span className={styles.badge}>
+                              {linkItem.badge}
+                            </span>
                           )}
                         </li>
                       );
@@ -1978,7 +2002,13 @@ export default function Header() {
       {isLocation && (
         <div
           className={`location-modal-backdrop ${isLocation ? "active" : ""}`}
-          onClick={() => setIsLocation(false)}
+          onClick={() => {
+            // When no location is selected, this modal is mandatory and
+            // clicking the backdrop must not dismiss it.
+            if (!isLocationRequired) {
+              setIsLocation(false);
+            }
+          }}
         >
           <div className="inn" onClick={(e) => e.stopPropagation()}>
             <div className="search-wrap position-relative">
