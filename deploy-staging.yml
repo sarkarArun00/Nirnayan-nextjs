@@ -1,0 +1,29 @@
+name: Deploy Staging
+
+on:
+  push:
+    branches:
+      - <BRANCH>
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to Hostinger VPS
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            set -e
+            cd /var/www/staging-nirnayan
+            git fetch origin <BRANCH>
+            git reset --hard origin/<BRANCH>
+            npm ci
+            npm run build
+            PORT=3001 pm2 restart nirnayan-staging --update-env
+            pm2 save
