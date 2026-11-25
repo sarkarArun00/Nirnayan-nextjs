@@ -1819,6 +1819,8 @@ export default function CartPage() {
         </div>
       )}
 
+      
+      
       <Script
         id="razorpay-checkout"
         src="https://checkout.razorpay.com/v1/checkout.js"
