@@ -1,0 +1,35 @@
+.breadcrumb-wrap{ padding-top:var(--istop-gap); }
+
+.team-section{ padding:var(--cmngap-btm) 0; }
+.team-section .text-block h2{ font-weight:600; color:var(--up-black); }
+.team-section .text-block p{ font-weight:400; color:var(--up-gray); }
+.team-section .text-block p:last-child{ margin-bottom:0; }
+
+.team-wrapper{ display:flex; gap:20px; width:100%; height:510px; overflow:hidden; }
+.team-card{ position:relative; flex:1; min-width:0; height:100%; border-radius:25px; overflow:hidden; cursor:pointer; transition:flex .7s cubic-bezier(.22,1,.36,1); }
+.team-card.active{ flex:2.3; }
+.team-img{ width:100%; height:100%; object-fit:cover; object-position:center; display:block; transition:transform .8s cubic-bezier(.22,1,.36,1); }
+.team-card:hover .team-img{ transform:scale(1.04); }
+.team-overlay{ position:absolute; inset:0; display:flex; align-items:flex-end; padding:25px; background:linear-gradient(to top,rgba(0,0,0,.85) 0%,rgba(0,0,0,.15) 45%,transparent 75%); opacity:0; transition:opacity .5s ease; }
+.team-card.active .team-overlay{ opacity:1; }
+.team-content{ width:100%; color:#fff; transform:translateY(25px); opacity:0; transition:all .6s ease .15s; }
+.team-card.active .team-content{ transform:translateY(0); opacity:1; }
+.team-content h4{ font-weight:600; color:var(--up-white); margin-bottom:10px; }
+.team-content span{ display:block; font-size:14px; color:var(--up-white); margin-bottom:10px; }
+.team-content p{ margin:0; color:var(--up-white); }
+
+.core-team{ background:linear-gradient(180deg, rgba(217,243,229,0.5) 0%, var(--up-white) 100%); padding:var(--cmngap-btm) 0; }
+.core-team h2.core-team-title{ font-weight:600; color:var(--up-black); text-align:center; margin-bottom:25px; }
+.core-team .team-filter{ display:flex; flex-wrap:wrap; justify-content:center; gap:5px 15px; margin-bottom:45px; }
+.core-team .team-filter button{ font-size:20px; line-height:1.2; font-weight:400; border:1px solid var(--up-gray); background:var(--up-white); border-radius:25px; transition:all 0.4s; padding:12px 15px; }
+.core-team .team-filter button.active{ background:var(--up-black); border-color:var(--up-black); color:var(--up-white); }
+.core-team .team-filter button:hover{ background:var(--up-black); border-color:var(--up-black); color:var(--up-white); }
+
+
+
+
+
+
+
+
+
