@@ -117,8 +117,6 @@ function Page() {
                 breakpoint: 576,
                 settings: {
                     slidesToShow: 1,
-                    centerMode: true,
-                    centerPadding: "25px",
                 },
             },
         ],
@@ -229,19 +227,21 @@ function Page() {
                                 {...sliderSettings} className="is_slick_dot"
                             >
                                 {filteredTeam.map((item, index) => (
-                                    <div className="team-slide" key={item.name}>
-                                        <div className={`team-card ${index === 0 ? "highlight" : ""}`}>
-                                            <div className="team-profile">
-                                                <img src={item.image} alt={item.name} />
-                                            </div>
-                                            <h3>{item.name}</h3>
-                                            <p>{item.designation}</p>
-                                            <div className="team-qualifications">
-                                                {item.qualifications.map((qualification) => (
-                                                    <span key={qualification}>
-                                                        {qualification}
-                                                    </span>
-                                                ))}
+                                    <div className="team-slide cmn_padding" key={item.name}>
+                                        <div className={`team-cards ${index === 0 ? "highlight" : ""}`}>
+                                            <div className="team-cards-inn">
+                                                <div className="team-profile">
+                                                    <img src={item.image} alt={item.name} />
+                                                </div>
+                                                <h4>{item.name}</h4>
+                                                <p>{item.designation}</p>
+                                                <div className="team-qua">
+                                                    {item.qualifications.map((qualification) => (
+                                                        <span key={qualification}>
+                                                            {qualification}
+                                                        </span>
+                                                    ))}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

@@ -25,11 +25,17 @@
 .core-team .team-filter button.active{ background:var(--up-black); border-color:var(--up-black); color:var(--up-white); }
 .core-team .team-filter button:hover{ background:var(--up-black); border-color:var(--up-black); color:var(--up-white); }
 
-
-
-
-
-
-
+.core-team .team-cards{ position:relative; padding:1px; border-radius:25px; background:transparent; margin-bottom:10px; z-index:0; }
+.core-team .team-cards:before{ content:""; position:absolute; inset:0; border-radius:25px; background:linear-gradient(133.53deg,#FAC801 1.51%,#00A651 98.7%); opacity:0; z-index:-1; pointer-events:none; transition:opacity .4s ease; }
+.core-team .team-cards:hover:before{ opacity:1; }
+.core-team .team-cards .team-cards-inn{ position:relative; z-index:1; background:var(--up-white); box-shadow:0 4px 4px rgba(185,185,185,.5); border-radius:24px; padding:30px 15px; }
+.core-team .team-cards .team-profile{ position:relative; z-index:1; width:150px; height:150px; background:var(--up-gray2); border-radius:50%; padding:4px; margin:0 auto 20px; }
+.core-team .team-cards .team-profile:before{ content:""; position:absolute; inset:0; border-radius:50%; background:linear-gradient(128.28deg, #FAC801 17.75%, #00A651 85.18%); opacity:0; z-index:-1; transition:opacity 0.4s ease; }
+.core-team .team-cards:hover .team-profile::before { opacity: 1; }
+.core-team .team-cards .team-profile img{ width:100%; height:100%; object-fit:cover; border-radius:50%; }
+.core-team .team-cards h4{ font-weight:600; color:var(--up-black); text-align:center; margin-bottom:15px; }
+.core-team .team-cards p{ font-weight:400; color:var(--up-gray); text-align:center; margin-bottom:15px; }
+.core-team .team-qua{ display:flex; flex-wrap:wrap; justify-content:center; gap:6px; }
+.core-team .team-qua span{ font-size:13px; line-height:1.2; font-weight:500; border:1px solid var(--up-gray3); background:var(--up-gray3); border-radius:25px; transition:all 0.4s; padding:8px 14px; }
 
 
