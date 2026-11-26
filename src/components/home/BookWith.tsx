@@ -49,7 +49,7 @@ const slides = [
 ];
 
 function BookWith() {
-    const { slidesToShow, centerPadding } = useResponsiveSlider({ desktop:4,laptop:3, tablet:2,mobile:1,});
+    const { slidesToShow, centerPadding } = useResponsiveSlider({ desktop:4, mediumLaptop:3, smallLaptop:2, tablet:1, smallTablet: 1, mobile:1,});
 
     const slideConfig = {
         dots: true,
@@ -62,8 +62,6 @@ function BookWith() {
         centerMode: true,
         centerPadding,
     };
-
-
 
     return (
         <>
@@ -82,7 +80,7 @@ function BookWith() {
                         </button>
                     </div>
                     <div className="cmn-right-align">
-                        <Slider {...slideConfig} className='is_slick_dot'>
+                        <Slider {...slideConfig} className='is_slick_dot' key={`${slidesToShow}-${centerPadding}`}>
                             {slides.map((slide, index) => (
                                 <div className={styles.slide} key={index}>
                                     <div

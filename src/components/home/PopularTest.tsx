@@ -77,12 +77,7 @@ function PopularTest({ section = "all", hideButton = false, removeBg = false }: 
   const { openPatientModal } = usePatientSelection();
 
   //organs array
-  const { slidesToShow, centerPadding } = useResponsiveSlider({
-    desktop: 4,
-    laptop: 3,
-    tablet: 2,
-    mobile: 1,
-  });
+  const { slidesToShow, centerPadding } = useResponsiveSlider({ desktop:4, mediumLaptop:3, smallLaptop:2, tablet:2, smallTablet: 1, mobile:1,});
   const popular_slider = {
     dots: true,
     arrows: false,

@@ -2,74 +2,54 @@
 import React from 'react';
 import Slider from 'react-slick';
 import styles from './LifestylePackages.module.css';
+import useResponsiveSlider from '@/hooks/useResponsiveSlider';
+
+const packages = [
+  {
+    id: 'pkg-1',
+    title: 'Diabetes Check Up Package - Prime',
+    image: '/assets/images/pkg1.png',
+    isPopular: false
+  },
+  {
+    id: 'pkg-2',
+    title: 'Woman Wellness Package',
+    image: '/assets/images/pkg2.png',
+    isPopular: true
+  },
+  {
+    id: 'pkg-3',
+    title: 'Sexual Wellness Package',
+    image: '/assets/images/pkg3.png',
+    isPopular: true
+  },
+  {
+    id: 'pkg-4',
+    title: 'Thyroid Profile Test',
+    image: '/assets/images/pkg4.png',
+    isPopular: false
+  },
+  {
+    id: 'pkg-5',
+    title: 'Woman Wellness Package',
+    image: '/assets/images/pkg2.png',
+    isPopular: true
+  },
+];
 
 function LifestylePackages() {
-  // Added const declaration
-  const packages = [
-    {
-      id: 'pkg-1',
-      title: 'Diabetes Check Up Package - Prime',
-      image: '/assets/images/pkg1.png',
-      isPopular: false
-    },
-    {
-      id: 'pkg-2',
-      title: 'Woman Wellness Package',
-      image: '/assets/images/pkg2.png',
-      isPopular: true
-    },
-    {
-      id: 'pkg-3',
-      title: 'Sexual Wellness Package',
-      image: '/assets/images/pkg3.png',
-      isPopular: true
-    },
-    {
-      id: 'pkg-4',
-      title: 'Thyroid Profile Test',
-      image: '/assets/images/pkg4.png',
-      isPopular: false
-    },
-    {
-      id: 'pkg-5',
-      title: 'Woman Wellness Package',
-      image: '/assets/images/pkg2.png',
-      isPopular: true
-    },
-  ];
-
+  const { slidesToShow, centerPadding } = useResponsiveSlider({ desktop: 4, mediumLaptop: 3, smallLaptop: 2, tablet: 2, mobile: 1, padding: { mobile: "0px" }, });
   const slideConfig = {
-    centerMode: true,
-    centerPadding: '60px',
-    slidesToShow: 4,
-    slidesToScroll: 1,
     dots: true,
     arrows: false,
-    infinite: true,
+    infinite: packages.length > slidesToShow,
     autoplay: true,
-    autoplaySpeed: 3000,
-    responsive: [
-      {
-        breakpoint: 1400,
-        settings: {
-          slidesToShow: 3,
-        }
-      },
-      {
-        breakpoint: 1199,
-        settings: {
-          slidesToShow: 2,
-          centerPadding: '30px',
-        }
-      },
-      {
-        breakpoint: 767,
-        settings: {
-          slidesToShow: 1,
-          centerPadding: '0',
-        }
-      }
-    ],
+    speed: 500,
+    slidesToShow,
+    slidesToScroll: 1,
+    centerMode: true,
+    centerPadding,
+
   };
 
   return (
@@ -89,7 +69,7 @@ function LifestylePackages() {
         </div>
 
         <div className="cmn-right-align">
-          <Slider {...slideConfig} className={`is_slick_dot ${styles.carousel}`}>
+          <Slider {...slideConfig} className={`is_slick_dot ${styles.carousel}`} key={`${slidesToShow}-${centerPadding}`}>
             {packages.map((pkg, index) => (
               <div key={pkg.id || index} className="slide">
                 <div className={`cmn_margin ${styles.packageCard}`}>

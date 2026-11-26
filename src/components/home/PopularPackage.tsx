@@ -8,7 +8,7 @@ import {
   getPopularPackagesPost,
 } from "@/services/master.service";
 import { usePatientSelection } from "@/components/common/PatientSelectionModal/PatientSelectionProvider";
-
+import useResponsiveSlider from "@/hooks/useResponsiveSlider";
 type FilterItem = {
   id: number;
   name: string;
@@ -23,39 +23,7 @@ interface Organ {
 }
 
 function PopularPackage() {
-  var popular_slider = {
-    dots: true,
-    arrows: false,
-    infinite: true,
-    autoplay: true,
-    speed: 500,
-    slidesToShow: 4,
-    slidesToScroll: 1,
-    centerMode: true,
-    centerPadding: "60px",
-    responsive: [
-      {
-        breakpoint: 1400,
-        settings: {
-          slidesToShow: 3,
-        }
-      },
-      {
-        breakpoint: 1199,
-        settings: {
-          slidesToShow: 2,
-          centerPadding: '30px',
-        }
-      },
-      {
-        breakpoint: 767,
-        settings: {
-          slidesToShow: 1,
-          centerPadding: '20px',
-        }
-      }
-    ],
-  };
+  const { slidesToShow, centerPadding } = useResponsiveSlider({ desktop:4, mediumLaptop:3, smallLaptop:2, tablet:2, smallTablet: 1, mobile:1,});
 
   type PackageItem = {
     id: number;
@@ -86,7 +54,17 @@ function PopularPackage() {
   };
 
   const [packageList, setPackageList] = useState<any[]>([]);
-
+  var popular_slider = {
+    dots: true,
+    arrows: false,
+    infinite: packageList.length > slidesToShow,
+    autoplay: true,
+    speed: 500,
+    slidesToShow,
+    slidesToScroll: 1,
+    centerMode: true,
+    centerPadding,
+  };
   const [packageLoading, setPackageLoading] = useState(false);
 
   const [organs, setOrgans] = useState<FilterItem[]>([]);
@@ -354,9 +332,8 @@ function PopularPackage() {
                     <button
                       key={`${filterType}-${item.id}`}
                       type="button"
-                      className={`organ-tab ${
-                        selectedOrgan?.id === item.id ? "active" : ""
-                      }`}
+                      className={`organ-tab ${selectedOrgan?.id === item.id ? "active" : ""
+                        }`}
                       onClick={() => selectOrgan(item)}
                     >
                       <span className="icon">
@@ -394,7 +371,7 @@ function PopularPackage() {
                 <p>Loading packages...</p>
               </div>
             ) : packageList.length > 0 ? (
-              <Slider {...popular_slider} className="is_slick_dot">
+              <Slider {...popular_slider} className="is_slick_dot" key={`${slidesToShow}-${centerPadding}`}>
                 {packageList.map((item) => (
                   <div className="item" key={item.id}>
                     <div className="pack-card cmn_margin">
@@ -530,7 +507,7 @@ function PopularPackage() {
 
                             {item.offerAmount &&
                               Number(item.finalAmount) <
-                                Number(item.mrpAmount) && (
+                              Number(item.mrpAmount) && (
                                 <h6 className="old-price">
                                   ₹{Number(item.mrpAmount).toFixed(2)}
                                 </h6>

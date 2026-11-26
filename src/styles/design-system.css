@@ -514,6 +514,7 @@ ol.breadcrumb li.active{ color:var(--up-black); }
   .is_slick_dot .slick-dots {
     bottom: -27px;
   }
+  .is_slick_dot .test-box{ margin:0 6px; }
   .is_slick_dot {
     margin-bottom: 27px !important;
   } 
