@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import Slider from 'react-slick';
 import styles from './Testimonial.module.css';
-
+import useResponsiveSlider from '@/hooks/useResponsiveSlider';
 interface Testimonial {
     id: string;
     type: 'text' | 'video';
@@ -89,30 +89,17 @@ function Testimonial() {
             videoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
         },
     ];
-
+    const { slidesToShow, centerPadding } = useResponsiveSlider({ desktop: 4, mediumLaptop: 3, smallLaptop: 2, tablet: 2, mobile: 1, padding:{ mobile:'0',}, });
     const slideConfig = {
         dots: true,
-        infinite: true,
-        speed: 500,
-        slidesToShow: 4,
-        slidesToScroll: 1,
         arrows: false,
+        infinite: testimonials.length > slidesToShow,
+        autoplay: true,
+        speed: 500,
+        slidesToShow,
+        slidesToScroll: 1,
         centerMode: true,
-        centerPadding: '60px',
-        responsive: [
-            {
-                breakpoint: 1400,
-                settings: { slidesToShow: 3 },
-            },
-            {
-                breakpoint: 1199,
-                settings: { slidesToShow: 2, centerPadding: '30px', },
-            },
-            {
-                breakpoint: 767,
-                settings: { slidesToShow: 1, centerPadding: '0', },
-            },
-        ],
+        centerPadding,
     };
 
     const handleOpenReview = (item: Testimonial) => {
@@ -163,7 +150,7 @@ function Testimonial() {
                     <div className="cmn-right-align">
                         <Slider
                             {...slideConfig}
-                            className={`carousel is_slick_dot is_white is_right_space ${styles.carousel}`}>
+                            className={`carousel is_slick_dot is_white is_right_space ${styles.carousel}`} key={`${slidesToShow}-${centerPadding}`}>
                             {testimonials.map((item) => (
                                 <div key={item.id} className="slide">
                                     <div className="cmn_margin">

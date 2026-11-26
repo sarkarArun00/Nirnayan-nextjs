@@ -11,7 +11,7 @@ function Blog() {
   const [blogs, setBlogs] = useState<WordPressBlog[]>([]);
 
   const [loading, setLoading] = useState(true);
-  const { slidesToShow, centerPadding } = useResponsiveSlider({ desktop: 3, mediumLaptop: 3, smallLaptop: 2, tablet: 2, mobile: 1, });
+  const { slidesToShow, centerPadding } = useResponsiveSlider({ desktop: 3, mediumLaptop: 3, smallLaptop: 2, tablet: 2, mobile: 1, padding:{ mobile:'0',} });
   const slideConfig = {
     dots: true,
     arrows: false,
