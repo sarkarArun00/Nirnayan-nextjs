@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import Slider from 'react-slick';
 import styles from './OurLocation.module.css';
+import useResponsiveSlider from '@/hooks/useResponsiveSlider';
 
 function OurLocation() {
     const locations = [
@@ -52,28 +53,24 @@ function OurLocation() {
         window.open(item.map, '_blank', 'noopener,noreferrer');
     };
 
+    const { slidesToShow, centerPadding } = useResponsiveSlider({ desktop: 1, mediumLaptop: 1, smallLaptop: 1, tablet: 1, mobile: 1, padding: {
+      desktop: "100px",
+      mediumLaptop: "80px",
+      smallLaptop: "60px",
+      tablet: "40px",
+      smallTablet: "20px",
+      mobile: "20px",
+    }, });
     const locationSlideConfig = {
-        slidesToShow: 1,
-        slidesToScroll: 1,
         dots: true,
         arrows: false,
-        infinite: true,
+        infinite: locations.length > slidesToShow,
         autoplay: true,
         speed: 500,
-        cssEase: 'ease',
-        afterChange: handleAfterChange,
+        slidesToShow,
+        slidesToScroll: 1,
         centerMode: true,
-        centerPadding: '100px',
-        responsive: [
-            {
-                breakpoint: 1024,
-                settings: { slidesToShow: 2 },
-            },
-            {
-                breakpoint: 767,
-                settings: { slidesToShow: 1, centerPadding: '30px', },
-            },
-        ],
+        centerPadding,
     };
 
     const logoSlideConfig = {
@@ -158,7 +155,7 @@ function OurLocation() {
                                     </div>
                                 </div>
                                 <div className="sliderWrapper">
-                                    <Slider {...locationSlideConfig} className={`is_slick_dot ${styles.carousel}`}>
+                                    <Slider {...locationSlideConfig} className={`is_slick_dot ${styles.carousel}`} key={`${slidesToShow}-${centerPadding}`}>
                                         {locations.map((item) => (
                                             <div key={item.id} className="slide">
                                                 <div className="cmn_margin">
