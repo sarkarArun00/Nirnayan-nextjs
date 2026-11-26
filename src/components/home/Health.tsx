@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import styles from './Health.module.css';
 import Slider from 'react-slick';
 import { getAllSpeciality } from "@/services/master.service";
+import useResponsiveSlider from "@/hooks/useResponsiveSlider";
 
 type SpecialityItem = {
   id: number;
@@ -20,32 +21,17 @@ type SpecialityItem = {
 function Health() {
   const [specialities, setSpecialities] = useState<SpecialityItem[]>([]);
   const [loading, setLoading] = useState(true);
-
+  const { slidesToShow, centerPadding } = useResponsiveSlider({ desktop: 4, mediumLaptop: 3, smallLaptop: 2, tablet: 2, mobile: 1, });
   const settings = {
     dots: true,
     arrows: false,
-    infinite: true,
+    infinite: specialities.length > slidesToShow,
+    autoplay: true,
     speed: 500,
-    slidesToShow: 3,
+    slidesToShow,
     slidesToScroll: 1,
     centerMode: true,
-    focusOnSelect: true,
-    centerPadding: '60px',
-    variablewidth: false,
-    responsive: [
-      {
-        breakpoint: 1400,
-        settings: { slidesToShow: 3 },
-      },
-      {
-        breakpoint: 1199,
-        settings: { slidesToShow: 2, centerPadding: '30px', },
-      },
-      {
-        breakpoint: 767,
-        settings: { slidesToShow: 1, centerPadding: '20px', },
-      },
-    ],
+    centerPadding,
   };
 
   useEffect(() => {

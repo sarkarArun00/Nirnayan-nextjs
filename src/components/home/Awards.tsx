@@ -7,7 +7,7 @@ import {
   getAwardImageUrl,
   type AwardItem,
 } from "@/services/master.service";
-
+import useResponsiveSlider from "@/hooks/useResponsiveSlider";
 const text = "We provide comprehensive test lists like culture tests, routine tests, Gene sequencing analysis, TSH, Blood Sugar tests, and antibody tests with the shortest TAT for timely and better patient treatment";
 
 type AwardsProps = {
@@ -62,25 +62,32 @@ function Awards({ section = "all", pageClass = "" }: AwardsProps) {
   }, []);
 
   const words = text.split(" ");
-
+  const { slidesToShow, centerPadding } = useResponsiveSlider({
+    desktop: 1,
+    mediumLaptop: 1,
+    smallLaptop: 1,
+    tablet: 1,
+    smallTablet: 1,
+    mobile: 1,
+    padding: {
+      desktop: "25%",
+      mediumLaptop: "20%",
+      smallLaptop: "15%",
+      tablet: "0%",
+      smallTablet: "0%",
+      mobile: "0%",
+    },
+  });
   const awardsConfig = {
     dots: true,
     arrows: false,
-    infinite: true,
+    infinite: awards.length > slidesToShow,
+    autoplay: true,
     speed: 500,
-    slidesToShow: 1,
+    slidesToShow,
     slidesToScroll: 1,
     centerMode: true,
-    centerPadding: '26%',
-    responsive: [
-      {
-        breakpoint: 991,
-        settings: {
-          centerPadding: "0",
-        },
-      },
-    ]
-
+    centerPadding,
   };
 
   const showSection1 = section === "all" || section === 1;
@@ -134,7 +141,7 @@ function Awards({ section = "all", pageClass = "" }: AwardsProps) {
                 No awards available at the moment.
               </p>
             ) : (
-              <Slider {...awardsConfig} className="carousel is_slick_dot is-award">
+              <Slider {...awardsConfig} className="carousel is_slick_dot is-award" key={`${slidesToShow}-${centerPadding}`}>
                 {awards.map((award) => (
                   <div className="item" key={award.id}>
                     <div className={`award_item ${styles.award_item}`}>
