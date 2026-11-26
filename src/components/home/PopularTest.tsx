@@ -10,6 +10,7 @@ import {
   getOrganConditionsDepartment,
   getPopularPackagesPost,
 } from "@/services/master.service";
+import Link from "next/link";
 
 interface Organ {
   name: string;
@@ -442,11 +443,13 @@ function PopularTest({ section = "all", hideButton = false, removeBg = false }: 
                         {gridData.map((item, index) => (
                           <div key={index} className="cmn_padding">
                             <div
-                              className={`${styles.box} ${index % 2 === 0 ? styles.oddBox : styles.evenBox
-                                } ${index === 2 || index === 3
+                              className={`${styles.box} ${
+                                index % 2 === 0 ? styles.oddBox : styles.evenBox
+                              } ${
+                                index === 2 || index === 3
                                   ? styles.specialBox
                                   : ""
-                                }`}
+                              }`}
                             >
                               <div className={styles.inn}>
                                 <img
@@ -503,8 +506,9 @@ function PopularTest({ section = "all", hideButton = false, removeBg = false }: 
                           <button
                             key={`${filterType}-${item.id}`}
                             type="button"
-                            className={`organ-tab ${selectedOrgan?.id === item.id ? "active" : ""
-                              }`}
+                            className={`organ-tab ${
+                              selectedOrgan?.id === item.id ? "active" : ""
+                            }`}
                             onClick={() => selectOrgan(item)}
                           >
                             <span className="icon">
@@ -578,72 +582,97 @@ function PopularTest({ section = "all", hideButton = false, removeBg = false }: 
                           </div>
 
                           <div className="wh-block">
-                            <div className="inn-pnl">
-                              <h2>
-                                <span>{test.test_name}</span>
-                              </h2>
+                            <Link
+                              href={{
+                                pathname: "/investigation-details",
+                                query: {
+                                  product_type: "test",
+                                  item_id: String(test.id),
+                                },
+                              }}
+                              className="inn-pnl"
+                              style={{
+                                display: "block",
+                                color: "inherit",
+                                textDecoration: "none",
+                              }}
+                            >
+                              <div className="inn-pnl">
+                                <h2>
+                                  <span>{test.test_name}</span>
+                                </h2>
 
-                              <p>
-                                {test.description || "No description available"}
-                              </p>
+                                <p>
+                                  {test.description ||
+                                    "No description available"}
+                                </p>
 
-                              {/* Report TAT */}
-                              <div className="info">
-                                <div className="left">
-                                  <img src="/assets/images/report.svg" alt="" />
+                                {/* Report TAT */}
+                                <div className="info">
+                                  <div className="left">
+                                    <img
+                                      src="/assets/images/report.svg"
+                                      alt=""
+                                    />
 
-                                  <h6>Reports in</h6>
-                                </div>
+                                    <h6>Reports in</h6>
+                                  </div>
 
-                                <div className="right">
-                                  <span className="days">
-                                    {formatTat(test.tat?.normalTat)}
-                                  </span>
-                                </div>
-                              </div>
-
-                              {/* Availability */}
-                              <div className="info">
-                                <div className="left">
-                                  <img src="/assets/images/ava.svg" alt="" />
-
-                                  <h6>Available in</h6>
-                                </div>
-
-                                <div className="right">
-                                  {test.homeCollection && (
-                                    <span className="lab">
-                                      <img
-                                        src="/assets/images/home.svg"
-                                        alt=""
-                                      />
-                                      Home
+                                  <div className="right">
+                                    <span className="days">
+                                      {formatTat(test.tat?.normalTat)}
                                     </span>
-                                  )}
+                                  </div>
+                                </div>
+
+                                {/* Availability */}
+                                <div className="info">
+                                  <div className="left">
+                                    <img src="/assets/images/ava.svg" alt="" />
+
+                                    <h6>Available in</h6>
+                                  </div>
+
+                                  <div className="right">
+                                    {test.homeCollection && (
+                                      <span className="lab">
+                                        <img
+                                          src="/assets/images/home.svg"
+                                          alt=""
+                                        />
+                                        Home
+                                      </span>
+                                    )}
+                                  </div>
                                 </div>
                               </div>
-                            </div>
 
-                            <div className="btm-pnl">
-                              {/* <div className="d-flex align-items-center gap-2">
+                              <div className="btm-pnl">
+                                {/* <div className="d-flex align-items-center gap-2">
                                 <span className="price">
                                   ₹{Number(test.mrpAmount || 0).toFixed(2)}
                                 </span>
                               </div> */}
-                              <div className="d-flex align-items-center gap-2">
-                                {test.offerAmount ? (
-                                  <>
-                                    <span
-                                      className="price"
-                                      style={{
-                                        color: "#111",
-                                        fontWeight: 700,
-                                      }}
-                                    >
-                                      ₹{Number(test.offerAmount).toFixed(2)} <del>₹{Number(test.mrpAmount || 0).toFixed(2)}</del>
-                                    </span>
+                                <div className="d-flex align-items-center gap-2">
+                                  {test.offerAmount ? (
+                                    <>
+                                      <span
+                                        className="price"
+                                        style={{
+                                          color: "#111",
+                                          fontWeight: 700,
+                                        }}
+                                      >
+                                        ₹{Number(test.offerAmount).toFixed(2)}{" "}
+                                        <del>
+                                          ₹
+                                          {Number(test.mrpAmount || 0).toFixed(
+                                            2,
+                                          )}
+                                        </del>
+                                      </span>
 
-                                    {/* <span
+                                      {/* <span
                                       style={{
                                         color: "#e53935",
                                         textDecoration: "line-through",
@@ -652,32 +681,33 @@ function PopularTest({ section = "all", hideButton = false, removeBg = false }: 
                                     >
                                       ₹{Number(test.mrpAmount || 0).toFixed(2)}
                                     </span> */}
-                                  </>
-                                ) : (
-                                  <span className="price">
-                                    ₹{Number(test.mrpAmount || 0).toFixed(2)}
-                                  </span>
-                                )}
-                              </div>
+                                    </>
+                                  ) : (
+                                    <span className="price">
+                                      ₹{Number(test.mrpAmount || 0).toFixed(2)}
+                                    </span>
+                                  )}
+                                </div>
 
-                              {/* <button type="button" className="cmn_btn">
+                                {/* <button type="button" className="cmn_btn">
                                 Add to Cart
                               </button> */}
-                              <button
-                                type="button"
-                                className="cmn_btn"
-                                onClick={() =>
-                                  openPatientModal({
-                                    id: test.id,
-                                    name: test.test_name,
-                                    productType: "test",
-                                    price: test.mrpAmount,
-                                  })
-                                }
-                              >
-                                Add to Cart
-                              </button>
-                            </div>
+                                <button
+                                  type="button"
+                                  className="cmn_btn"
+                                  onClick={() =>
+                                    openPatientModal({
+                                      id: test.id,
+                                      name: test.test_name,
+                                      productType: "test",
+                                      price: test.mrpAmount,
+                                    })
+                                  }
+                                >
+                                  Add to Cart
+                                </button>
+                              </div>
+                            </Link>
                           </div>
                         </div>
                       </div>

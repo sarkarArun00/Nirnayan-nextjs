@@ -1750,6 +1750,7 @@ export default function CartPage() {
               <h4>Add Prescription & Doctor</h4>
             </div>
 
+            
             {/* Doctor Name Field */}
             <div className="mb-3">
               <label>Doctor's Name</label>
@@ -1764,6 +1765,7 @@ export default function CartPage() {
             </div>
 
             {/* File Upload Field */}
+
             <div className="mb-3">
               <label>Upload Prescription (PDF, JPG, PNG)</label>
               <div className="input-group">
@@ -1779,6 +1781,7 @@ export default function CartPage() {
                   }}
                 />
               </div>
+
               {modalFiles.length > 0 && (
                 <small className="text-success fw-medium mt-1 d-block">
                   <i className="fa-solid fa-check-circle me-1"></i>{" "}
@@ -1787,6 +1790,7 @@ export default function CartPage() {
               )}
             </div>
 
+            
             {/* Action Buttons */}
             <div className="d-flex gap-3 justify-content-end pt-2">
               {/* <button
@@ -1797,6 +1801,7 @@ export default function CartPage() {
               >
                 Cancel
               </button> */}
+
               <button
                 type="button"
                 className="cmn_btn"
@@ -1820,7 +1825,7 @@ export default function CartPage() {
       )}
 
       
-      
+
       <Script
         id="razorpay-checkout"
         src="https://checkout.razorpay.com/v1/checkout.js"

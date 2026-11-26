@@ -750,7 +750,24 @@ const payload: {
 
                         <div className="wh-block">
                           <div className="inn-pnl">
-                            <h2>{test.test_name}</h2>
+                            {/* <h2>{test.test_name}</h2> */}
+                            <h2 className="title">
+                              <Link
+                                href={{
+                                  pathname: "/investigation-details",
+                                  query: {
+                                    product_type: "test",
+                                    item_id: String(test.id),
+                                  },
+                                }}
+                                style={{
+                                  color: "inherit",
+                                  textDecoration: "none",
+                                }}
+                              >
+                                {test.test_name}
+                              </Link>
+                            </h2>
 
                             <p>
                               {test.description || "No description available"}

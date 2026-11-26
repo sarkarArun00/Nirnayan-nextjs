@@ -517,6 +517,17 @@ export default function PackageListPage() {
     return Math.round(((mrp - finalPrice) / mrp) * 100);
   };
 
+
+  const selectedGroupImage =
+    (filterType === "organ" ||
+      filterType === "condition" ||
+      filterType === "department") &&
+    selectedFilter?.icon
+      ? getImageUrl(selectedFilter.icon)
+      : "";
+
+  const packageImage = selectedGroupImage || "/assets/images/pack-img.png";
+
   return (
     <div className="test-list">
       <div className="bred-camp">
@@ -766,9 +777,31 @@ export default function PackageListPage() {
                       <div className="pack-card" key={item.id}>
                         <div className="image-section">
                           <div className="img">
-                            <img
+                            {/* <img
                               src="/assets/images/pack-img.png"
                               alt={item.test_name}
+                            /> */}
+                            <img
+                              key={packageImage}
+                              src={packageImage}
+                              alt={
+                                selectedGroupImage
+                                  ? selectedFilter?.name || item.test_name
+                                  : item.test_name
+                              }
+                              style={
+                                selectedGroupImage
+                                  ? { objectFit: "contain" }
+                                  : undefined
+                              }
+                              onError={(event) => {
+                                const image = event.currentTarget;
+
+                                if (image.dataset.fallbackApplied) return;
+
+                                image.dataset.fallbackApplied = "true";
+                                image.src = "/assets/images/pack-img.png";
+                              }}
                             />
 
                             <div className="img-lbl">{item.test_code}</div>
@@ -799,7 +832,23 @@ export default function PackageListPage() {
                             )}
                         </div>
 
-                        <h2 className="title">{item.test_name}</h2>
+                        <h2 className="title">
+                          <Link
+                            href={{
+                              pathname: "/investigation-details",
+                              query: {
+                                product_type: "package",
+                                item_id: String(item.id),
+                              },
+                            }}
+                            style={{
+                              color: "inherit",
+                              textDecoration: "none",
+                            }}
+                          >
+                            {item.test_name}
+                          </Link>
+                        </h2>
 
                         <div className="contains-row">
                           <h6>Contains</h6>

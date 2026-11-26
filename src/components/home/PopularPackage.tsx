@@ -1,6 +1,7 @@
 "use client";
 
-import React, { use, useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
 import styles from "./PopularPackage.module.css";
 import Slider from "react-slick";
 import {
@@ -23,7 +24,14 @@ interface Organ {
 }
 
 function PopularPackage() {
-  const { slidesToShow, centerPadding } = useResponsiveSlider({ desktop:4, mediumLaptop:3, smallLaptop:2, tablet:2, smallTablet: 1, mobile:1,});
+  const { slidesToShow, centerPadding } = useResponsiveSlider({
+    desktop: 4,
+    mediumLaptop: 3,
+    smallLaptop: 2,
+    tablet: 2,
+    smallTablet: 1,
+    mobile: 1,
+  });
 
   type PackageItem = {
     id: number;
@@ -296,6 +304,12 @@ function PopularPackage() {
     return finalUrl;
   };
 
+  const selectedGroupImage =
+    filterType !== "mostpopular" && selectedOrgan?.icon
+      ? getImageUrl(selectedOrgan.icon)
+      : "";
+  const packageImage = selectedGroupImage || "/assets/images/pack-img.png";
+
   const formatPackageTat = (tat?: { value: string; isHour: boolean }) => {
     if (!tat?.value) {
       return "-";
@@ -332,8 +346,9 @@ function PopularPackage() {
                     <button
                       key={`${filterType}-${item.id}`}
                       type="button"
-                      className={`organ-tab ${selectedOrgan?.id === item.id ? "active" : ""
-                        }`}
+                      className={`organ-tab ${
+                        selectedOrgan?.id === item.id ? "active" : ""
+                      }`}
                       onClick={() => selectOrgan(item)}
                     >
                       <span className="icon">
@@ -371,16 +386,51 @@ function PopularPackage() {
                 <p>Loading packages...</p>
               </div>
             ) : packageList.length > 0 ? (
-              <Slider {...popular_slider} className="is_slick_dot" key={`${slidesToShow}-${centerPadding}`}>
+              <Slider
+                {...popular_slider}
+                className="is_slick_dot"
+                key={`${slidesToShow}-${centerPadding}`}
+              >
                 {packageList.map((item) => (
                   <div className="item" key={item.id}>
                     <div className="pack-card cmn_margin">
                       {/* Image */}
-                      <div className="image-section">
+                      <Link
+                        href={{
+                          pathname: "/investigation-details",
+                          query: {
+                            product_type: "package",
+                            item_id: String(item.id),
+                          },
+                        }}
+                        className="image-section"
+                        style={{
+                          display: "block",
+                          color: "inherit",
+                          textDecoration: "none",
+                        }}
+                        aria-label={`View ${item.test_name}`}
+                      >
                         <div className="img">
                           <img
-                            src="/assets/images/pack-img.png"
-                            alt={item.test_name}
+                            key={packageImage}
+                            src={packageImage}
+                            style={
+                              selectedGroupImage
+                                ? { objectFit: "contain" }
+                                : undefined
+                            }
+                            alt={
+                              selectedGroupImage
+                                ? selectedOrgan?.name || item.test_name
+                                : item.test_name
+                            }
+                            onError={(event) => {
+                              const image = event.currentTarget;
+                              if (image.dataset.fallbackApplied) return;
+                              image.dataset.fallbackApplied = "true";
+                              image.src = "/assets/images/pack-img.png";
+                            }}
                           />
 
                           <div className="img-lbl">{item.test_code}</div>
@@ -394,21 +444,22 @@ function PopularPackage() {
                             <h6>Most Popular</h6>
                           </div>
                         )}
-
-                        {/* Selected organ icon */}
-                        {filterType === "organ" && selectedOrgan?.icon && (
-                          <div className="icon">
-                            <img
-                              src={getImageUrl(selectedOrgan.icon)}
-                              alt={selectedOrgan.name}
-                            />
-                          </div>
-                        )}
-                      </div>
+                      </Link>
 
                       {/* Package name */}
                       <h2 className="title">
-                        <span>{item.test_name}</span>
+                        <Link
+                          href={{
+                            pathname: "/investigation-details",
+                            query: {
+                              product_type: "package",
+                              item_id: String(item.id),
+                            },
+                          }}
+                          style={{ color: "inherit", textDecoration: "none" }}
+                        >
+                          <span>{item.test_name}</span>
+                        </Link>
                       </h2>
 
                       {/* Description */}
@@ -507,7 +558,7 @@ function PopularPackage() {
 
                             {item.offerAmount &&
                               Number(item.finalAmount) <
-                              Number(item.mrpAmount) && (
+                                Number(item.mrpAmount) && (
                                 <h6 className="old-price">
                                   ₹{Number(item.mrpAmount).toFixed(2)}
                                 </h6>
