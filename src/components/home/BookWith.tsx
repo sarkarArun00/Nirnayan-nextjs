@@ -2,90 +2,68 @@
 import React from 'react'
 import styles from './BookWith.module.css';
 import Slider from 'react-slick';
+import useResponsiveSlider from '@/hooks/useResponsiveSlider';
+
+const slides = [
+    {
+        title: "Accurate Reports",
+        description:
+            "Clear, accurate medical insights at a glance.",
+        imgSrc: "/assets/images/with-icon1.png",
+        bgColor: "#ECF3FE",
+    },
+    {
+        title: "4000+ Lab Tests & Packages",
+        description:
+            "Explore 4,000+ lab tests and packages for your healthcare needs.",
+        imgSrc: "/assets/images/with-icon2.png",
+        bgColor: "#D9F3E5",
+    },
+    {
+        title: "Home Collection Facility",
+        description:
+            "Blood sample collection at your preferred time, from home.",
+        imgSrc: "/assets/images/with-icon3.png",
+        bgColor: "#F2F2F2",
+    },
+    {
+        title: "NABL Accredited Pathology",
+        description:
+            "Trusted testing from a NABL-accredited Pathology laboratory.",
+        imgSrc: "/assets/images/with-icon4.png",
+        bgColor: "#EDE6F3",
+    },
+    {
+        title: "Trained Phlebotomist",
+        description: "Skilled professionals for safe and comfortable sample collection.",
+        imgSrc: "/assets/images/with-icon5.png",
+        bgColor: "#FFFAE6",
+    },
+    {
+        title: "Expert Pathologists",
+        description:
+            "We have around 100+ trusted pathologists to deliver accurate reports with proper research",
+        imgSrc: "/assets/images/with-icon6.png",
+        bgColor: "#FFE6E6",
+    },
+];
+
 function BookWith() {
+    const { slidesToShow, centerPadding } = useResponsiveSlider({ desktop:4,laptop:3, tablet:2,mobile:1,});
+
     const slideConfig = {
-        slidesToShow: 4,
-        slidesToScroll: 1,
         dots: true,
         arrows: false,
-        infinite: true,
+        infinite: slides.length > slidesToShow,
         autoplay: true,
+        speed: 500,
+        slidesToShow,
+        slidesToScroll: 1,
         centerMode: true,
-        centerPadding: '60px',
-        responsive: [
-            {
-                breakpoint: 1700,
-                settings: {
-                    slidesToShow: 3,
-                },
-            },
-            {
-                breakpoint: 1200,
-                settings: {
-                    slidesToShow: 2,
-                },
-            },
-            {
-                breakpoint: 991,
-                settings: {
-                    slidesToShow: 1,
-                    centerPadding: '30px',
-                },
-            },
-            {
-                breakpoint: 767,
-                settings: {
-                    slidesToShow: 1,
-                    centerPadding: '0',
-
-                },
-            },
-        ],
+        centerPadding,
     };
 
-    const slides = [
-        {
-            title: "Accurate Reports",
-            description:
-                "Clear, accurate medical insights at a glance.",
-            imgSrc: "/assets/images/with-icon1.png",
-            bgColor: "#ECF3FE",
-        },
-        {
-            title: "4000+ Lab Tests & Packages",
-            description:
-                "Explore 4,000+ lab tests and packages for your healthcare needs.",
-            imgSrc: "/assets/images/with-icon2.png",
-            bgColor: "#D9F3E5",
-        },
-        {
-            title: "Home Collection Facility",
-            description:
-                "Blood sample collection at your preferred time, from home.",
-            imgSrc: "/assets/images/with-icon3.png",
-            bgColor: "#F2F2F2",
-        },
-        {
-            title: "NABL Accredited Pathology",
-            description:
-                "Trusted testing from a NABL-accredited Pathology laboratory.",
-            imgSrc: "/assets/images/with-icon4.png",
-            bgColor: "#EDE6F3",
-        },
-        {
-            title: "Trained Phlebotomist",
-            description: "Skilled professionals for safe and comfortable sample collection.",
-            imgSrc: "/assets/images/with-icon5.png",
-            bgColor: "#FFFAE6",
-        },
-        {
-            title: "Expert Pathologists",
-            description:
-                "We have around 100+ trusted pathologists to deliver accurate reports with proper research",
-            imgSrc: "/assets/images/with-icon6.png",
-            bgColor: "#FFE6E6",
-        },
-    ];
+
 
     return (
         <>
