@@ -84,12 +84,6 @@ const categories = [
 function Page() {
     const [activeIndex, setActiveIndex] = useState(0);
     const [activeCategory, setActiveCategory] = useState("All");
-    const { slidesToShow } = useResponsiveSlider({
-        desktop: 4,
-        laptop: 3,
-        tablet: 2,
-        mobile: 1,
-    });
 
     const filteredTeam =
         activeCategory === "All"
@@ -97,6 +91,7 @@ function Page() {
             : doctorData.filter(
                 (item) => item.category === activeCategory
             );
+    const { slidesToShow, } = useResponsiveSlider({ desktop: 4, mediumLaptop: 3, smallLaptop: 2, tablet: 2, mobile: 1, });
 
     const sliderSettings = {
         dots: true,
@@ -211,7 +206,7 @@ function Page() {
                         <div className="cmn-right-align">
                             {filteredTeam.length > 0 ? (
                                 <Slider
-                                    key={`${activeCategory}-${slidesToShow}`}
+                                    key={`${slidesToShow}`}
                                     {...sliderSettings}
                                     className="is_slick_dot"
                                 >
