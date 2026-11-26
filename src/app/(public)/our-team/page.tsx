@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import "@fancyapps/ui/dist/fancybox/fancybox.css";
 import Slider from "react-slick";
 import Link from "next/link";
+import useResponsiveSlider from "@/hooks/useResponsiveSlider";
 import "./page.css";
 
 const teamData = [
@@ -83,8 +84,13 @@ const categories = [
 function Page() {
     const [activeIndex, setActiveIndex] = useState(0);
     const [activeCategory, setActiveCategory] = useState("All");
+    const { slidesToShow } = useResponsiveSlider({
+        desktop: 4,
+        laptop: 3,
+        tablet: 2,
+        mobile: 1,
+    });
 
-    const [slidesToShow, setSlidesToShow] = useState(0);
     const filteredTeam =
         activeCategory === "All"
             ? doctorData
@@ -97,39 +103,11 @@ function Page() {
         arrows: false,
         infinite: filteredTeam.length > slidesToShow,
         speed: 600,
-        slidesToShow: slidesToShow,
+        slidesToShow,
         slidesToScroll: 1,
-        autoplay: false,
+        autoplay: true,
         swipeToSlide: true,
-        // centerMode: true,
-        // centerPadding: "0",
     };
-
-    useEffect(() => {
-        const updateSlider = () => {
-            if (window.innerWidth <= 575) {
-                setSlidesToShow(1);
-            } else if (window.innerWidth <= 767) {
-                setSlidesToShow(2);
-            } else if (window.innerWidth <= 992) {
-                setSlidesToShow(2);
-            } else if (window.innerWidth <= 1199) {
-                setSlidesToShow(3);
-            } else {
-                setSlidesToShow(4);
-            }
-        };
-
-        updateSlider();
-
-        window.addEventListener("resize", updateSlider);
-        window.addEventListener("orientationchange", updateSlider);
-
-        return () => {
-            window.removeEventListener("resize", updateSlider);
-            window.removeEventListener("orientationchange", updateSlider);
-        };
-    }, []);
 
     return (
         <>
@@ -248,9 +226,7 @@ function Page() {
                                                     <p>{item.designation}</p>
                                                     <div className="team-qua">
                                                         {item.qualifications.map((qualification) => (
-                                                            <span key={qualification}>
-                                                                {qualification}
-                                                            </span>
+                                                            <span key={qualification}>{qualification}</span>
                                                         ))}
                                                     </div>
                                                 </div>
@@ -259,16 +235,12 @@ function Page() {
                                     ))}
                                 </Slider>
                             ) : (
-                                <p className="empty-state m-0">
-                                    No team members found.
-                                </p>
+                                <p className="empty-state m-0">No team members found.</p>
                             )}
                         </div>
                     </div>
                 </div>
             </section>
-
-
         </>
     );
 }

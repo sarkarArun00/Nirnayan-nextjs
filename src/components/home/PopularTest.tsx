@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import styles from "./PopularTest.module.css";
 import Slider from "react-slick";
 import { usePatientSelection } from "@/components/common/PatientSelectionModal/PatientSelectionProvider";
-
+import useResponsiveSlider from "@/hooks/useResponsiveSlider";
 
 import {
   getOrganConditionsDepartment,
@@ -55,41 +55,9 @@ type PopularTestItem = {
 
 type FilterType = "mostpopular" | "organ" | "condition" | "department";
 
-function PopularTest({ section = "all", hideButton = false, removeBg = false }: PopularTestProps) {
-  var popular_slider = {
-    dots: true,
-    arrows: false,
-    infinite: true,
-    autoplay: true,
-    speed: 500,
-    slidesToShow: 4,
-    slidesToScroll: 1,
-    centerMode: true,
-    centerPadding: '60px',
-    responsive: [
-      {
-        breakpoint: 1400,
-        settings: {
-          slidesToShow: 3,
-        }
-      },
-      {
-        breakpoint: 1199,
-        settings: {
-          slidesToShow: 2,
-          centerPadding: '30px',
-        }
-      },
-      {
-        breakpoint: 767,
-        settings: {
-          slidesToShow: 1,
-          centerPadding: '0',
-        }
-      }
-    ],
-  };
 
+
+function PopularTest({ section = "all", hideButton = false, removeBg = false }: PopularTestProps) {
   const [organs, setOrgans] = useState<FilterItem[]>([]);
   const [conditions, setConditions] = useState<FilterItem[]>([]);
   const [departments, setDepartments] = useState<FilterItem[]>([]);
@@ -109,7 +77,23 @@ function PopularTest({ section = "all", hideButton = false, removeBg = false }: 
   const { openPatientModal } = usePatientSelection();
 
   //organs array
-
+  const { slidesToShow, centerPadding } = useResponsiveSlider({
+    desktop: 4,
+    laptop: 3,
+    tablet: 2,
+    mobile: 1,
+  });
+  const popular_slider = {
+    dots: true,
+    arrows: false,
+    infinite: testList.length > slidesToShow,
+    autoplay: true,
+    speed: 500,
+    slidesToShow,
+    slidesToScroll: 1,
+    centerMode: true,
+    centerPadding,
+  };
   // Why Choose mobile Slider Start
   const settings = {
     dots: true,
@@ -580,7 +564,11 @@ function PopularTest({ section = "all", hideButton = false, removeBg = false }: 
                     <p>Loading tests...</p>
                   </div>
                 ) : testList.length > 0 ? (
-                  <Slider {...popular_slider} className="is_slick_dot">
+                  <Slider
+                    key={`${slidesToShow}-${centerPadding}`}
+                    {...popular_slider}
+                    className="is_slick_dot"
+                  >
                     {testList.map((test) => (
                       <div className="item" key={test.id}>
                         <div className="test-box is-popular">
