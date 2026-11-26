@@ -4,47 +4,24 @@ import React, { useEffect, useState } from "react";
 
 import styles from "./Blog.module.css";
 import Slider from "react-slick";
-
+import useResponsiveSlider from "@/hooks/useResponsiveSlider";
 import { getAllWordPressBlogs, WordPressBlog } from "@/services/master.service";
 
 function Blog() {
   const [blogs, setBlogs] = useState<WordPressBlog[]>([]);
 
   const [loading, setLoading] = useState(true);
-
+  const { slidesToShow, centerPadding } = useResponsiveSlider({ desktop: 3, mediumLaptop: 3, smallLaptop: 2, tablet: 2, mobile: 1, });
   const slideConfig = {
-    slidesToShow: 3,
-    slidesToScroll: 1,
     dots: true,
     arrows: false,
-    infinite: true,
+    infinite: blogs.length > slidesToShow,
     autoplay: true,
+    speed: 500,
+    slidesToShow,
+    slidesToScroll: 1,
     centerMode: true,
-    centerPadding: "60px",
-
-    responsive: [
-      {
-        breakpoint: 1199,
-        settings: {
-          slidesToShow: 2,
-          centerPadding: '30px',
-        },
-      },
-      {
-        breakpoint: 991,
-        settings: {
-          slidesToShow: 2,
-          centerPadding: '30px',
-        },
-      },
-      {
-        breakpoint: 767,
-        settings: {
-          slidesToShow: 1,
-          centerPadding: "0",
-        },
-      },
-    ],
+    centerPadding,
   };
 
   useEffect(() => {
@@ -136,7 +113,7 @@ function Blog() {
           {loading ? (
             <div>Loading blogs...</div>
           ) : blogs.length > 0 ? (
-            <Slider {...slideConfig} className="is_slick_dot">
+            <Slider {...slideConfig} className="is_slick_dot" key={`${slidesToShow}-${centerPadding}`}>
               {blogs.map((blog) => (
                 <div key={blog.id} className="item">
                   <div className={`cmn_margin ${styles.img_block}`}>
