@@ -84,6 +84,7 @@ function Page() {
     const [activeIndex, setActiveIndex] = useState(0);
     const [activeCategory, setActiveCategory] = useState("All");
 
+    const [slidesToShow, setSlidesToShow] = useState(0);
     const filteredTeam =
         activeCategory === "All"
             ? doctorData
@@ -94,33 +95,41 @@ function Page() {
     const sliderSettings = {
         dots: true,
         arrows: false,
-        infinite: filteredTeam.length > 4,
+        infinite: filteredTeam.length > slidesToShow,
         speed: 600,
-        slidesToShow: 4,
+        slidesToShow: slidesToShow,
         slidesToScroll: 1,
         autoplay: false,
         swipeToSlide: true,
-        responsive: [
-            {
-                breakpoint: 1200,
-                settings: {
-                    slidesToShow: 3,
-                },
-            },
-            {
-                breakpoint: 992,
-                settings: {
-                    slidesToShow: 2,
-                },
-            },
-            {
-                breakpoint: 576,
-                settings: {
-                    slidesToShow: 1,
-                },
-            },
-        ],
+        // centerMode: true,
+        // centerPadding: "0",
     };
+
+    useEffect(() => {
+        const updateSlider = () => {
+            if (window.innerWidth <= 575) {
+                setSlidesToShow(1);
+            } else if (window.innerWidth <= 767) {
+                setSlidesToShow(2);
+            } else if (window.innerWidth <= 992) {
+                setSlidesToShow(2);
+            } else if (window.innerWidth <= 1199) {
+                setSlidesToShow(3);
+            } else {
+                setSlidesToShow(4);
+            }
+        };
+
+        updateSlider();
+
+        window.addEventListener("resize", updateSlider);
+        window.addEventListener("orientationchange", updateSlider);
+
+        return () => {
+            window.removeEventListener("resize", updateSlider);
+            window.removeEventListener("orientationchange", updateSlider);
+        };
+    }, []);
 
     return (
         <>
@@ -221,37 +230,40 @@ function Page() {
                     </div>
 
                     <div className="core-team-slider">
-                        {filteredTeam.length > 0 ? (
-                            <Slider
-                                key={activeCategory}
-                                {...sliderSettings} className="is_slick_dot"
-                            >
-                                {filteredTeam.map((item, index) => (
-                                    <div className="team-slide cmn_padding" key={item.name}>
-                                        <div className={`team-cards ${index === 0 ? "highlight" : ""}`}>
-                                            <div className="team-cards-inn">
-                                                <div className="team-profile">
-                                                    <img src={item.image} alt={item.name} />
-                                                </div>
-                                                <h4>{item.name}</h4>
-                                                <p>{item.designation}</p>
-                                                <div className="team-qua">
-                                                    {item.qualifications.map((qualification) => (
-                                                        <span key={qualification}>
-                                                            {qualification}
-                                                        </span>
-                                                    ))}
+                        <div className="cmn-right-align">
+                            {filteredTeam.length > 0 ? (
+                                <Slider
+                                    key={`${activeCategory}-${slidesToShow}`}
+                                    {...sliderSettings}
+                                    className="is_slick_dot"
+                                >
+                                    {filteredTeam.map((item, index) => (
+                                        <div className="team-slide cmn_padding" key={item.name}>
+                                            <div className={`team-cards ${index === 0 ? "highlight" : ""}`}>
+                                                <div className="team-cards-inn">
+                                                    <div className="team-profile">
+                                                        <img src={item.image} alt={item.name} />
+                                                    </div>
+                                                    <h4>{item.name}</h4>
+                                                    <p>{item.designation}</p>
+                                                    <div className="team-qua">
+                                                        {item.qualifications.map((qualification) => (
+                                                            <span key={qualification}>
+                                                                {qualification}
+                                                            </span>
+                                                        ))}
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
-                                    </div>
-                                ))}
-                            </Slider>
-                        ) : (
-                            <p className="team-empty">
-                                No team members found.
-                            </p>
-                        )}
+                                    ))}
+                                </Slider>
+                            ) : (
+                                <p className="empty-state m-0">
+                                    No team members found.
+                                </p>
+                            )}
+                        </div>
                     </div>
                 </div>
             </section>
