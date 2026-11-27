@@ -1163,18 +1163,18 @@ export default function Header() {
 
           <p className="d-none d-lg-block">
             <span>{healthFeedMessages[activeFeedIndex]}</span>{" "}
-            <a href="#">
+            <Link href="/test-list">
               Book Test{" "}
               <img src="/assets/images/right-arrow.svg" alt="Right Arrow" />
-            </a>
+            </Link>
           </p>
 
           <p className="d-block d-lg-none">
             <span>{healthFeedMessages[activeFeedIndex]}</span>{" "}
-            <a href="#">
+            <Link href="/test-list">
               Book Test{" "}
               <img src="/assets/images/right-arrow.svg" alt="Right Arrow" />
-            </a>
+            </Link>
           </p>
         </div>
         <div className={styles["btm-wrap"]}>
